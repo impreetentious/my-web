@@ -1,0 +1,26 @@
+{
+  "name": "Sidakpreet Singh",
+  "headline": "Manager · Strategy & GTM · HCLSoftware",
+  "tagline": "IIM Indore MBA · B.Pharm (DPSRU) · Bain & Company",
+  "bio": [
+    "Strategy and GTM professional with 2 years of post-MBA experience at HCLSoftware, working across three interconnected verticals: Product GTM for Aftermarket Cloud India, Product Strategy for Growth Markets and VoltMX, and Sales Strategy for the India public sector.",
+    "Built a 0-to-1 GTM motion across 75+ accounts and activated 20+ SI partnerships. Defined 55+ product features across 10+ buyer personas and 15+ sector use cases. Closed the public sector year with $8M in pipeline and over $1.5M in ACV — as the function's founding year.",
+    "Previously a Summer Associate at Bain & Company. MBA from IIM Indore (top 2%, Strategic Management cohort). B.Pharm from DPSRU, Delhi."
+  ],
+  "currentFocus": "Active job search targeting Strategy Consulting (MBB, Deloitte S&O, EY-P), GTM/Commercial Strategy, Product Strategy, and BizOps roles at companies such as Mastercard, Visa, and select high-growth firms. Open to relocation.",
+  "stats": [
+    { "value": "~$4M", "label": "Pipeline built (Aftermarket Cloud)" },
+    { "value": ">$1.5M", "label": "ACV closed (Public Sector Yr 1)" },
+    { "value": "75+", "label": "Accounts developed" },
+    { "value": "20+", "label": "SI partnerships activated" }
+  ],
+  "skills": [
+    "GTM Strategy", "Product Strategy", "Sales Strategy", "Market Entry",
+    "Competitive Analysis", "Partner Ecosystem", "Case Frameworks",
+    "Stakeholder Management", "Business Storytelling", "Data Analysis"
+  ],
+  "stack": [
+    "Excel (Advanced)", "PowerPoint (Advanced)", "Alteryx (Intermediate)",
+    "Tableau (Intermediate)", "SQL (Intermediate)", "Python (Foundational)", "Notion"
+  ]
+}

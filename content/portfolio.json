@@ -1,0 +1,42 @@
+[
+  {
+    "id": "aftermarket-cloud-india",
+    "title": "Aftermarket Cloud India — 0-to-1 GTM Build",
+    "year": "2024–25",
+    "description": "Built the full GTM motion from scratch for a new SaaS product entering the Indian market. Developed the ICP and account segmentation across 75+ targets, generated ~$4M in qualified pipeline, and activated 20+ SI relationships producing ~$2.5M in net-new partner pipeline. Established positioning, outreach playbooks, and SI onboarding frameworks.",
+    "tags": ["GTM Strategy", "Product GTM", "Partner Activation", "Pipeline Development"],
+    "href": null
+  },
+  {
+    "id": "voltmx-growth-markets",
+    "title": "VoltMX Product Strategy — Growth Markets",
+    "year": "2024",
+    "description": "Led product strategy and requirements definition for the VoltMX low-code platform across growth markets. Authored 55+ structured feature definitions, mapped 10+ distinct buyer personas, and developed 15+ sector-specific use cases spanning BFSI, healthcare, and the India public sector.",
+    "tags": ["Product Strategy", "Low-Code", "Feature Definition", "Persona Research"],
+    "href": null
+  },
+  {
+    "id": "india-public-sector",
+    "title": "India Public Sector — Sales Strategy, Year 1",
+    "year": "2023–24",
+    "description": "Stood up the sales strategy function for the India public sector vertical — the founding year of the practice. Built a $8M pipeline across 60+ accounts and closed >$1.5M in ACV. Developed account intelligence frameworks, competitive battle cards, and the full sector engagement playbook.",
+    "tags": ["Sales Strategy", "Public Sector", "Revenue Generation", "Account Planning"],
+    "href": null
+  },
+  {
+    "id": "bain-summer-associate",
+    "title": "Bain & Company — Summer Associate",
+    "year": "Apr–Jun 2023",
+    "description": "Worked on client engagements applying hypothesis-driven problem structuring, data-driven insight generation, and executive-ready communication under senior guidance.",
+    "tags": ["Strategy Consulting", "Problem Structuring", "Client Engagement"],
+    "href": null
+  },
+  {
+    "id": "national-consulting-olympiad",
+    "title": "National Consulting Olympiad — 4th Nationally",
+    "year": "2022",
+    "description": "Competed in the National Consulting Olympiad out of IIM Indore. Ranked 4th nationally across 300+ teams through multiple elimination rounds solving business strategy cases under strict time constraints.",
+    "tags": ["Case Competition", "Strategy", "IIM Indore"],
+    "href": null
+  }
+]

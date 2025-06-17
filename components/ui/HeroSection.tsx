@@ -88,7 +88,8 @@ export default function HeroSection() {
         pointerEvents: 'none',
       }}
     >
-      <div style={{ maxWidth: '600px', textAlign: 'center' }}>
+      {/* width:100% (not fit-content) so long lines wrap inside narrow viewports */}
+      <div style={{ width: '100%', maxWidth: '600px', padding: '0 24px', textAlign: 'center' }}>
         <p
           ref={tagRef}
           style={{

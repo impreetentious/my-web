@@ -2,6 +2,7 @@
 import { activeSections } from '@/lib/activeSections';
 import { getCardPositions } from '@/lib/cardPositioner';
 import { useMobile } from '@/lib/useMobile';
+import { HEADER_HEIGHT_PX, FOOTER_HEIGHT_PX } from '@/config/world';
 import { Card } from '@/components/cards/Card';
 
 export default function CardGrid() {
@@ -13,7 +14,9 @@ export default function CardGrid() {
       <div style={{
         position: 'relative',
         width: '100%',
-        padding: '120px 24px 80px',
+        // Top padding clears the absolutely-positioned hero zone; bottom padding
+        // reserves the strip the absolutely-anchored footer renders into.
+        padding: `${HEADER_HEIGHT_PX}px 24px ${FOOTER_HEIGHT_PX}px`,
         display: 'flex',
         flexDirection: 'column',
         gap: '24px',

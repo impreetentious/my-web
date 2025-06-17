@@ -1,95 +1,67 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import dynamic from 'next/dynamic';
+import { activeSections } from '@/lib/activeSections';
+import { useMobile } from '@/lib/useMobile';
+import {
+  SECTION_HEIGHT_PX,
+  HEADER_HEIGHT_PX,
+  FOOTER_HEIGHT_PX,
+} from '@/config/world';
+import SpineSVG from '@/components/spine/SpineSVG';
+import CardGrid from '@/components/cards/CardGrid';
+import PanelOverlay from '@/components/panels/PanelOverlay';
+import LoadingScreen from '@/components/ui/LoadingScreen';
+import NavDots from '@/components/ui/NavDots';
+import EmailIcon from '@/components/ui/EmailIcon';
+import DepthIndicator from '@/components/ui/DepthIndicator';
+import HeroSection from '@/components/ui/HeroSection';
+import FooterSection from '@/components/ui/FooterSection';
+
+const ExperienceCanvas = dynamic(
+  () => import('@/components/canvas/ExperienceCanvas'),
+  { ssr: false }
+);
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const isMobile = useMobile();
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  const totalHeight =
+    HEADER_HEIGHT_PX +
+    activeSections.length * SECTION_HEIGHT_PX +
+    FOOTER_HEIGHT_PX;
+
+  return (
+    <>
+      {/* Layer 0: WebGL Atmosphere (fixed, behind everything, desktop only) */}
+      {!isMobile && <ExperienceCanvas />}
+
+      {/* Layer 1: Scroll Container — fixed section-slot height on desktop;
+          on mobile the stacked CardGrid column defines the height instead */}
+      <div style={{ position: 'relative', height: isMobile ? 'auto' : totalHeight, zIndex: 1 }}>
+        {/* Hero landing area */}
+        <HeroSection />
+
+        {/* SVG Spine (desktop only) */}
+        {!isMobile && <SpineSVG totalHeight={totalHeight} />}
+
+        {/* Cards */}
+        <CardGrid />
+
+        {/* Footer closing section */}
+        <FooterSection />
+      </div>
+
+      {/* Layer 2: Fixed UI */}
+      <NavDots />
+      <EmailIcon />
+      <DepthIndicator />
+
+      {/* Layer 3: Panel Overlay */}
+      <PanelOverlay />
+
+      {/* Layer 4: Loading Screen */}
+      <LoadingScreen />
+    </>
   );
 }

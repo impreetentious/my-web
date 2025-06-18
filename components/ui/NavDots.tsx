@@ -36,13 +36,13 @@ export default function NavDots() {
       aria-label="Section navigation"
       style={{
         position: 'fixed',
-        right: '24px',
+        right: '15px', // 24px buttons centre the 6px dots where they sat before
         top: '50%',
         transform: 'translateY(-50%)',
         zIndex: 10,
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
+        gap: '4px',
       }}
     >
       {activeSections.map((section) => {
@@ -53,7 +53,7 @@ export default function NavDots() {
             <span
               style={{
                 position: 'absolute',
-                right: '18px',
+                right: '30px',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 background: 'var(--color-elevated)',
@@ -76,22 +76,34 @@ export default function NavDots() {
               onClick={() => scrollToY(HEADER_HEIGHT_PX + section.index * SECTION_HEIGHT_PX)}
               onMouseEnter={() => setHoveredId(section.id)}
               onMouseLeave={() => setHoveredId(null)}
+              // 24px button = WCAG minimum target size; the visible dot stays 6px
               style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 padding: 0,
                 border: 'none',
+                background: 'transparent',
                 cursor: 'pointer',
-                background: isActive
-                  ? 'var(--color-accent)'
-                  : isHovered
-                    ? 'rgba(0, 255, 238, 0.5)'
-                    : 'var(--color-text-muted)',
-                boxShadow: isActive ? '0 0 6px var(--color-accent)' : 'none',
-                transition: 'background 0.3s ease, box-shadow 0.3s ease',
               }}
-            />
+            >
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: isActive
+                    ? 'var(--color-accent)'
+                    : isHovered
+                      ? 'rgba(0, 255, 238, 0.5)'
+                      : 'var(--color-text-muted)',
+                  boxShadow: isActive ? '0 0 6px var(--color-accent)' : 'none',
+                  transition: 'background 0.3s ease, box-shadow 0.3s ease',
+                }}
+              />
+            </button>
           </div>
         );
       })}

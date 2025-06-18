@@ -52,5 +52,5 @@ Every push to `main` auto-deploys via Vercel (~60 seconds).
 
 ## Version Control
 
-* **Base Format Version:** 0.3.0
-* **Portfolio Version:** v0.3.0_2025-06-18_02:42:18 (IST)
+* **Base Format Version:** 0.4.0
+* **Portfolio Version:** v0.4.0_2025-06-19_02:00:33 (IST)

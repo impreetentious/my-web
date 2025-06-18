@@ -30,8 +30,10 @@ export default function PanelOverlay() {
       stopScroll();
 
       if (motionAllowed()) {
+        // autoAlpha animates opacity AND flips visibility, so the closed overlay
+        // is out of the focus order / accessibility tree, not just transparent
         gsap.to(overlay, {
-          opacity: 1,
+          autoAlpha: 1,
           duration: 0.45,
           ease: 'power2.out',
           onStart: () => {
@@ -41,6 +43,7 @@ export default function PanelOverlay() {
         gsap.fromTo(content, { y: 30 }, { y: 0, duration: 0.45, ease: 'power2.out' });
       } else {
         overlay.style.opacity = '1';
+        overlay.style.visibility = 'visible';
         overlay.style.pointerEvents = 'auto';
       }
 
@@ -50,7 +53,7 @@ export default function PanelOverlay() {
 
       if (motionAllowed()) {
         gsap.to(overlay, {
-          opacity: 0,
+          autoAlpha: 0,
           duration: 0.3,
           ease: 'power2.inOut',
           onComplete: () => {
@@ -61,6 +64,7 @@ export default function PanelOverlay() {
         gsap.to(content, { y: 30, duration: 0.3, ease: 'power2.inOut' });
       } else {
         overlay.style.opacity = '0';
+        overlay.style.visibility = 'hidden';
         overlay.style.pointerEvents = 'none';
         setRenderedPanelId(null);
       }
@@ -113,6 +117,7 @@ export default function PanelOverlay() {
         inset: 0,
         zIndex: 50,
         opacity: 0,
+        visibility: 'hidden',
         pointerEvents: 'none',
       }}
     >

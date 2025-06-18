@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { activeSections } from '@/lib/activeSections';
 import { useMobile } from '@/lib/useMobile';
+import { useSiteStore } from '@/store/useSiteStore';
 import {
   SECTION_HEIGHT_PX,
   HEADER_HEIGHT_PX,
@@ -25,6 +26,7 @@ const ExperienceCanvas = dynamic(
 
 export default function Home() {
   const isMobile = useMobile();
+  const isLoading = useSiteStore((s) => s.isLoading);
 
   const totalHeight =
     HEADER_HEIGHT_PX +
@@ -33,8 +35,10 @@ export default function Home() {
 
   return (
     <>
-      {/* Layer 0: WebGL Atmosphere (fixed, behind everything, desktop only) */}
-      {!isMobile && <ExperienceCanvas />}
+      {/* Layer 0: WebGL Atmosphere (fixed, behind everything, desktop only).
+          Mounted only after the loading screen exits — no point booting WebGL
+          underneath an opaque overlay, and it keeps heavy init off the load path */}
+      {!isMobile && !isLoading && <ExperienceCanvas />}
 
       {/* Layer 1: Scroll Container — fixed section-slot height on desktop;
           on mobile the stacked CardGrid column defines the height instead */}

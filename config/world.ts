@@ -26,13 +26,14 @@ export const SPINE_CONTROL_DISTANCE_PX = 220;
 export const CARD_WIDTH_PX = 280;
 
 // Scroll T thresholds for zone changes.
-// These determine at what scroll progress the environment zone changes.
-// Adjust these to make zones longer or shorter.
+// v2 beats (sky = ~¾ of the journey): orbit + atmosphere to 0.5, golden-hour
+// approach to 0.72, the crossing itself to 0.80, then the deep. Keep in step
+// with lib/descent.ts (CROSS_T, zoneWeights) when retuning.
 export const ZONE_THRESHOLDS = {
   sky: 0,           // always starts here
-  horizon: 0.35,    // spine enters the sea-level area
-  sea: 0.55,        // fully at sea level
-  underwater: 0.72, // below the surface
+  horizon: 0.50,    // golden-hour descent, sea visible below
+  sea: 0.72,        // breaking the surface
+  underwater: 0.80, // below it
 } as const;
 
 // Mobile breakpoint. This value is intentionally duplicated in lib/useMobile.ts —

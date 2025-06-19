@@ -19,8 +19,17 @@ export const useSiteStore = create<SiteStore>()(
     activeZone: 'sky',
 
     activePanelId: null,
-    openPanel: (id) => set({ activePanelId: id }),
+    openPanel: (id) =>
+      set((state) => ({
+        activePanelId: id,
+        // mission recap: every dossier ever decoded, counted once
+        openedPanelIds: state.openedPanelIds.includes(id)
+          ? state.openedPanelIds
+          : [...state.openedPanelIds, id],
+      })),
     closePanel: () => set({ activePanelId: null }),
+
+    openedPanelIds: [],
 
     isLoading: true,
     setIsLoading: (value) => set({ isLoading: value }),

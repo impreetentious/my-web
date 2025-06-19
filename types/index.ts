@@ -45,6 +45,7 @@ export interface SiteStore {
   activePanelId: string | null;       // id of currently open panel, null if none
   openPanel: (id: string) => void;
   closePanel: () => void;
+  openedPanelIds: string[];           // dossiers decoded this visit (recap counter)
 
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;

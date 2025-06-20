@@ -17,7 +17,8 @@ export default function ExperienceCanvas() {
       }}
     >
       <Canvas
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        dpr={[1, 2]}
         camera={{ position: [0, 0, 5], fov: 75 }}
         style={{ background: 'transparent' }}
       >

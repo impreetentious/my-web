@@ -9,7 +9,7 @@ export default async function Image() {
   return new ImageResponse(
     (
       <div style={{
-        background: '#080808', width: '100%', height: '100%',
+        background: '#05060D', width: '100%', height: '100%',
         display: 'flex', flexDirection: 'column',
         justifyContent: 'flex-end', padding: '72px',
         position: 'relative', fontFamily: 'system-ui',

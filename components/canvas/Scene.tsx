@@ -1,38 +1,22 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useThree } from '@react-three/fiber';
-import { FogExp2 } from 'three';
-import { useSiteStore } from '@/store/useSiteStore';
-import { SkyParticles } from '@/components/canvas/SkyParticles';
+import { SkyOcean } from '@/components/canvas/SkyOcean';
+import { Starfield } from '@/components/canvas/Starfield';
+import { UnderwaterField } from '@/components/canvas/UnderwaterField';
+import { ShootingStar } from '@/components/canvas/ShootingStar';
 
+// All systems stay mounted for the whole session and fade via shader opacity
+// uniforms driven by scroll — mount/unmount at zone thresholds caused a
+// visible pop. SkyOcean draws first (renderOrder −10) as the opaque world;
+// the particle layers sit in front of it inside the same canvas. No scene
+// fog: the old FogExp2 ramp blacked out every particle by mid-page.
 export function Scene() {
-  const { scene } = useThree();
-  const activeZone = useSiteStore((s) => s.activeZone);
-
-  // Fog density deepens with scroll — updated directly on the scene, no re-renders
-  useEffect(() => {
-    const fog = new FogExp2(0x080808, 0.01);
-    scene.fog = fog;
-
-    const unsubscribe = useSiteStore.subscribe(
-      (state) => state.scrollT,
-      (scrollT) => {
-        // 0.01 at the top of the page, 0.08 fully scrolled
-        fog.density = 0.01 + scrollT * 0.07;
-      }
-    );
-
-    return () => {
-      unsubscribe();
-      scene.fog = null;
-    };
-  }, [scene]);
-
   return (
     <>
-      <ambientLight intensity={0.3} color={0x111111} />
-      {(activeZone === 'sky' || activeZone === 'horizon') && <SkyParticles />}
+      <SkyOcean />
+      <Starfield />
+      <ShootingStar />
+      <UnderwaterField />
     </>
   );
 }

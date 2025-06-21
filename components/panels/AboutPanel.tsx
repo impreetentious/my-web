@@ -1,99 +1,61 @@
 'use client';
 
 import aboutData from '@/content/about.json';
-
-const pillStyle: React.CSSProperties = {
-  display: 'inline-block',
-  border: '1px solid rgba(255, 255, 255, 0.15)',
-  padding: '4px 12px',
-  borderRadius: '2px',
-  fontSize: '12px',
-  fontFamily: 'var(--font-mono)',
-  color: 'var(--color-text-secondary)',
-  margin: '4px',
-};
-
-const subheadingStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: '11px',
-  letterSpacing: '0.15em',
-  textTransform: 'uppercase',
-  color: 'var(--color-accent)',
-  marginTop: '40px',
-  marginBottom: '16px',
-};
+import { DossierBlock, DossierHead, Chip, ChipRow } from '@/components/panels/dossier';
 
 export function AboutPanel() {
   return (
     <div>
-      <p
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          color: 'var(--color-accent)',
-        }}
-      >
-        About Me
-      </p>
+      {/* Lede */}
+      <DossierBlock>
+        <p
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '19px',
+            fontWeight: 400,
+            color: 'var(--color-text-primary)',
+            lineHeight: 1.5,
+          }}
+        >
+          {aboutData.name} — {aboutData.headline}
+        </p>
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            letterSpacing: '0.08em',
+            color: 'var(--color-text-muted)',
+            marginTop: '10px',
+          }}
+        >
+          {aboutData.tagline}
+        </p>
+      </DossierBlock>
 
-      <h2
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '32px',
-          fontWeight: 300,
-          color: 'var(--color-text-primary)',
-          marginTop: '16px',
-        }}
-      >
-        {aboutData.name}
-      </h2>
-      <p
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '14px',
-          color: 'var(--color-text-secondary)',
-          marginTop: '8px',
-        }}
-      >
-        {aboutData.headline}
-      </p>
-      <p
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          color: 'var(--color-text-muted)',
-          marginTop: '4px',
-        }}
-      >
-        {aboutData.tagline}
-      </p>
-
-      {/* Impact stat grid */}
-      <div
+      {/* Impact readout */}
+      <DossierHead>Field readings</DossierHead>
+      <DossierBlock
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '16px',
-          marginTop: '32px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '2px',
         }}
       >
         {aboutData.stats.map((stat) => (
           <div
             key={stat.label}
             style={{
-              border: '1px solid var(--color-border-subtle)',
-              borderRadius: '4px',
-              padding: '16px',
+              background: 'rgba(255, 255, 255, 0.025)',
+              padding: '18px 16px 16px',
             }}
           >
             <p
               style={{
                 fontFamily: 'var(--font-sans)',
-                fontSize: '26px',
+                fontSize: '28px',
                 fontWeight: 300,
-                color: 'var(--color-accent)',
+                color: 'var(--color-text-primary)',
+                fontVariantNumeric: 'tabular-nums',
               }}
             >
               {stat.value}
@@ -101,24 +63,24 @@ export function AboutPanel() {
             <p
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                letterSpacing: '0.1em',
+                fontSize: '10px',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
                 color: 'var(--color-text-muted)',
-                marginTop: '6px',
+                marginTop: '8px',
               }}
             >
               {stat.label}
             </p>
           </div>
         ))}
-      </div>
+      </DossierBlock>
 
       {/* Bio */}
-      <div style={{ marginTop: '40px' }}>
-        {aboutData.bio.map((paragraph) => (
+      <DossierHead>Transcript</DossierHead>
+      {aboutData.bio.map((paragraph) => (
+        <DossierBlock key={paragraph.slice(0, 32)}>
           <p
-            key={paragraph.slice(0, 32)}
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '15px',
@@ -126,45 +88,49 @@ export function AboutPanel() {
               color: 'var(--color-text-secondary)',
               lineHeight: 1.8,
               marginBottom: '16px',
+              maxWidth: '560px',
             }}
           >
             {paragraph}
           </p>
-        ))}
-      </div>
+        </DossierBlock>
+      ))}
 
       {/* Current focus */}
-      <p style={subheadingStyle}>Currently</p>
-      <p
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '15px',
-          color: 'var(--color-text-secondary)',
-          lineHeight: 1.8,
-        }}
-      >
-        {aboutData.currentFocus}
-      </p>
+      <DossierHead>Current heading</DossierHead>
+      <DossierBlock>
+        <p
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '15px',
+            color: 'var(--color-text-secondary)',
+            lineHeight: 1.8,
+            maxWidth: '560px',
+          }}
+        >
+          {aboutData.currentFocus}
+        </p>
+      </DossierBlock>
 
       {/* Skills */}
-      <p style={subheadingStyle}>Skills</p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', margin: '-4px' }}>
-        {aboutData.skills.map((skill) => (
-          <span key={skill} style={pillStyle}>
-            {skill}
-          </span>
-        ))}
-      </div>
+      <DossierHead>Instruments</DossierHead>
+      <DossierBlock>
+        <ChipRow>
+          {aboutData.skills.map((skill) => (
+            <Chip key={skill}>{skill}</Chip>
+          ))}
+        </ChipRow>
+      </DossierBlock>
 
       {/* Stack */}
-      <p style={subheadingStyle}>Stack</p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', margin: '-4px' }}>
-        {aboutData.stack.map((tool) => (
-          <span key={tool} style={pillStyle}>
-            {tool}
-          </span>
-        ))}
-      </div>
+      <DossierHead>Onboard systems</DossierHead>
+      <DossierBlock>
+        <ChipRow>
+          {aboutData.stack.map((tool) => (
+            <Chip key={tool}>{tool}</Chip>
+          ))}
+        </ChipRow>
+      </DossierBlock>
     </div>
   );
 }

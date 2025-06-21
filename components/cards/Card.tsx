@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
-import { motionAllowed } from '@/lib/motion';
+import { motionAllowed, EASE_ARRIVE, EASE_ARRIVE_CSS } from '@/lib/motion';
 import { useSiteStore } from '@/store/useSiteStore';
 import { CARD_OFFSET_PX } from '@/config/world';
 import type { ActiveSection, CardPosition } from '@/types';
@@ -36,13 +36,19 @@ export function Card({ section, position, isMobile }: CardProps) {
           if (motionAllowed()) {
             gsap.fromTo(
               el,
-              { opacity: 0, y: 20 },
+              { opacity: 0, y: 26, scale: 0.985, filter: 'blur(6px)' },
               {
                 opacity: 1,
                 y: 0,
-                duration: 0.55,
-                ease: 'power2.out',
-                delay: 0.1 * section.index,
+                scale: 1,
+                filter: 'blur(0px)',
+                duration: 0.7,
+                ease: EASE_ARRIVE,
+                // Small stagger for cards revealed together; capped so a
+                // deep-link or nav-dot jump to a late section isn't penalised
+                delay: Math.min(0.1 * section.index, 0.2),
+                // Hand transform/filter back to CSS so the hover lift works
+                clearProps: 'transform,filter',
               }
             );
           } else {
@@ -58,32 +64,20 @@ export function Card({ section, position, isMobile }: CardProps) {
     return () => observer.disconnect();
   }, [section.index]);
 
-  const positionStyle: React.CSSProperties = isMobile
-    ? {
-        position: 'relative',
-        width: '100%',
-      }
-    : {
-        position: 'absolute',
-        top: position ? `${position.yCenter}px` : 0,
-        transform: 'translateY(-50%)',
-        width: 'var(--card-width)',
-        // The card starts 20px beyond the spine anchor so the anchor node
-        // circle stays visible at the card's inner edge (B.1 geometry).
-        ...(section.side === 'left'
-          ? { right: `calc(50% + ${CARD_OFFSET_PX + 20}px)` }
-          : { left: `calc(50% + ${CARD_OFFSET_PX + 20}px)` }),
-      };
-
-  const sharedStyle: React.CSSProperties = {
-    ...positionStyle,
+  const visualStyle: React.CSSProperties = {
     display: 'block',
-    background: 'rgba(8, 8, 8, 0.85)',
+    width: '100%',
+    background: 'rgba(9, 13, 18, 0.72)',
     backdropFilter: 'blur(12px)',
-    border: `1px solid ${hovered ? 'rgba(0, 255, 238, 0.7)' : 'rgba(0, 255, 238, 0.2)'}`,
+    border: `1px solid ${hovered ? 'rgba(0, 255, 238, 0.45)' : 'rgba(0, 255, 238, 0.16)'}`,
     borderRadius: '4px',
     padding: '24px',
-    transition: 'border-color 0.25s ease',
+    transform: hovered ? 'translateY(-3px)' : 'none',
+    boxShadow: hovered
+      ? '0 18px 50px -18px rgba(0, 255, 238, 0.20), 0 0 24px -6px rgba(0, 255, 238, 0.08)'
+      : '0 8px 30px -18px rgba(0, 0, 0, 0.8)',
+    transition:
+      `border-color 0.3s ease, transform 0.35s ${EASE_ARRIVE_CSS}, box-shadow 0.35s ease`,
     textAlign: 'left',
     cursor: 'pointer',
     opacity: 0, // GSAP reveals the card on viewport entry
@@ -96,15 +90,34 @@ export function Card({ section, position, isMobile }: CardProps) {
     <>
       <div
         style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          color: 'var(--color-accent)',
-          opacity: 0.9,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
         }}
       >
-        {section.label}
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            color: 'var(--color-accent)',
+            opacity: 0.9,
+          }}
+        >
+          {section.label}
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            letterSpacing: '0.1em',
+            color: hovered ? 'rgba(0, 255, 238, 0.5)' : 'rgba(255, 255, 255, 0.22)',
+            transition: 'color 0.3s ease',
+          }}
+        >
+          {String(section.index + 1).padStart(2, '0')}
+        </div>
       </div>
       <p
         style={{
@@ -126,7 +139,17 @@ export function Card({ section, position, isMobile }: CardProps) {
           transition: 'color 0.25s ease',
         }}
       >
-        {section.type === 'panel' ? 'Open →' : 'Read →'}
+        {section.type === 'panel' ? 'Decode' : 'Read'}
+        <span
+          style={{
+            display: 'inline-block',
+            marginLeft: '6px',
+            transform: hovered ? 'translateX(4px)' : 'translateX(0)',
+            transition: `transform 0.3s ${EASE_ARRIVE_CSS}`,
+          }}
+        >
+          →
+        </span>
       </div>
     </>
   );
@@ -137,32 +160,52 @@ export function Card({ section, position, isMobile }: CardProps) {
     onMouseLeave: () => setHovered(false),
   };
 
-  if (section.type === 'route' && section.href) {
-    return (
+  const interactive =
+    section.type === 'route' && section.href ? (
       <Link
         href={section.href}
         ref={(el) => {
           cardRef.current = el;
         }}
-        style={sharedStyle}
+        style={visualStyle}
         {...interactionProps}
       >
         {inner}
       </Link>
+    ) : (
+      <button
+        type="button"
+        ref={(el) => {
+          cardRef.current = el;
+        }}
+        style={visualStyle}
+        onClick={() => useSiteStore.getState().openPanel(section.id)}
+        {...interactionProps}
+      >
+        {inner}
+      </button>
     );
+
+  if (isMobile) {
+    return <div style={{ position: 'relative', width: '100%' }}>{interactive}</div>;
   }
 
+  // Positioning lives on this wrapper so GSAP's transform tweens on the inner
+  // element can never clobber the translateY(-50%) centring (B.1 geometry:
+  // the card starts 20px beyond the spine anchor, keeping the node visible).
   return (
-    <button
-      type="button"
-      ref={(el) => {
-        cardRef.current = el;
+    <div
+      style={{
+        position: 'absolute',
+        top: position ? `${position.yCenter}px` : 0,
+        transform: 'translateY(-50%)',
+        width: 'var(--card-width)',
+        ...(section.side === 'left'
+          ? { right: `calc(50% + ${CARD_OFFSET_PX + 20}px)` }
+          : { left: `calc(50% + ${CARD_OFFSET_PX + 20}px)` }),
       }}
-      style={sharedStyle}
-      onClick={() => useSiteStore.getState().openPanel(section.id)}
-      {...interactionProps}
     >
-      {inner}
-    </button>
+      {interactive}
+    </div>
   );
 }

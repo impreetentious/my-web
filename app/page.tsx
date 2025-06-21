@@ -1,15 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { activeSections } from '@/lib/activeSections';
+import { totalPageHeight } from '@/lib/activeSections';
 import { useMobile } from '@/lib/useMobile';
 import { useSiteStore } from '@/store/useSiteStore';
-import {
-  SECTION_HEIGHT_PX,
-  HEADER_HEIGHT_PX,
-  FOOTER_HEIGHT_PX,
-} from '@/config/world';
 import SpineSVG from '@/components/spine/SpineSVG';
+import AltitudeMilestones from '@/components/ui/AltitudeMilestones';
 import CardGrid from '@/components/cards/CardGrid';
 import PanelOverlay from '@/components/panels/PanelOverlay';
 import LoadingScreen from '@/components/ui/LoadingScreen';
@@ -18,6 +14,7 @@ import EmailIcon from '@/components/ui/EmailIcon';
 import DepthIndicator from '@/components/ui/DepthIndicator';
 import HeroSection from '@/components/ui/HeroSection';
 import FooterSection from '@/components/ui/FooterSection';
+import BackgroundGradient from '@/components/ui/BackgroundGradient';
 
 const ExperienceCanvas = dynamic(
   () => import('@/components/canvas/ExperienceCanvas'),
@@ -28,14 +25,15 @@ export default function Home() {
   const isMobile = useMobile();
   const isLoading = useSiteStore((s) => s.isLoading);
 
-  const totalHeight =
-    HEADER_HEIGHT_PX +
-    activeSections.length * SECTION_HEIGHT_PX +
-    FOOTER_HEIGHT_PX;
+  const totalHeight = totalPageHeight;
 
   return (
     <>
-      {/* Layer 0: WebGL Atmosphere (fixed, behind everything, desktop only).
+      {/* Layer 0a: descent colour stage (CSS, all devices, fixed) — the
+          space → dusk → waterline → abyss journey lives here */}
+      <BackgroundGradient />
+
+      {/* Layer 0b: WebGL atmosphere (fixed, over the gradient, desktop only).
           Mounted only after the loading screen exits — no point booting WebGL
           underneath an opaque overlay, and it keeps heavy init off the load path */}
       {!isMobile && !isLoading && <ExperienceCanvas />}
@@ -48,6 +46,9 @@ export default function Home() {
 
         {/* SVG Spine (desktop only) */}
         {!isMobile && <SpineSVG totalHeight={totalHeight} />}
+
+        {/* Altitude milestones drifting past at their real heights (desktop only) */}
+        {!isMobile && <AltitudeMilestones />}
 
         {/* Cards */}
         <CardGrid />

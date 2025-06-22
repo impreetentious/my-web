@@ -1,8 +1,59 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+import { useSiteStore } from '@/store/useSiteStore';
+import { altitudeKm, depthMetres } from '@/lib/descent';
+import { journey } from '@/lib/journey';
+
+// The seafloor: a faint ridge silhouette, settled motes, a slow sonar ping
+// behind the end tag — and the mission recap (§3.5.4), quiet live counters
+// nobody's template has: distance fallen, transmissions decoded, time on
+// mission. Numbers are written imperatively; no re-render per tick.
+
+const MOTES: Array<{ left: string; bottom: number; size: number; o: number }> = [
+  { left: '9%', bottom: 26, size: 2, o: 0.22 },
+  { left: '18%', bottom: 14, size: 1.5, o: 0.16 },
+  { left: '31%', bottom: 30, size: 2.5, o: 0.2 },
+  { left: '44%', bottom: 12, size: 1.5, o: 0.14 },
+  { left: '58%', bottom: 24, size: 2, o: 0.2 },
+  { left: '69%', bottom: 15, size: 1.5, o: 0.15 },
+  { left: '81%', bottom: 28, size: 2, o: 0.2 },
+  { left: '92%', bottom: 18, size: 1.5, o: 0.16 },
+];
+
+function travelledKm(maxT: number): number {
+  return altitudeKm(0) - altitudeKm(maxT) + depthMetres(maxT) / 1000;
+}
+
 export default function FooterSection() {
+  const distanceRef = useRef<HTMLSpanElement>(null);
+  const clockRef = useRef<HTMLSpanElement>(null);
+  const transmissions = useSiteStore((s) => s.openedPanelIds.length);
+
+  useEffect(() => {
+    const tick = () => {
+      if (distanceRef.current) {
+        distanceRef.current.textContent = `${travelledKm(journey.maxT).toFixed(1)} KM TRAVELLED`;
+      }
+      if (clockRef.current) {
+        const startedAt = journey.startedAt;
+        const elapsed = startedAt === null ? 0 : performance.now() - startedAt;
+        const mm = String(Math.floor(elapsed / 60000)).padStart(2, '0');
+        const ss = String(Math.floor((elapsed % 60000) / 1000)).padStart(2, '0');
+        clockRef.current.textContent = `T+${mm}:${ss}`;
+      }
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    const unsubscribe = useSiteStore.subscribe((s) => s.scrollT, tick);
+    return () => {
+      clearInterval(interval);
+      unsubscribe();
+    };
+  }, []);
+
   const linkStyle: React.CSSProperties = {
-    color: '#444444',
+    color: '#44505A',
     transition: 'color 0.25s ease',
     textDecoration: 'none',
     display: 'flex',
@@ -20,26 +71,81 @@ export default function FooterSection() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '24px',
+      gap: '22px',
       pointerEvents: 'auto',
     }}>
+      {/* Seafloor ridge silhouette */}
+      <svg
+        aria-hidden="true"
+        width="100%"
+        height="90"
+        viewBox="0 0 1200 90"
+        preserveAspectRatio="none"
+        style={{ position: 'absolute', bottom: 0, left: 0, display: 'block' }}
+      >
+        <path
+          d="M0,90 L0,58 Q80,42 160,55 T340,50 T520,62 T700,44 T880,58 T1060,48 L1200,56 L1200,90 Z"
+          fill="rgba(0, 3, 5, 0.8)"
+        />
+      </svg>
+
+      {/* Settled motes on the floor */}
+      {MOTES.map((m, i) => (
+        <span
+          key={i}
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: m.left,
+            bottom: `${m.bottom}px`,
+            width: `${m.size}px`,
+            height: `${m.size}px`,
+            borderRadius: '50%',
+            background: `rgba(101, 168, 158, ${m.o})`,
+          }}
+        />
+      ))}
+
       {/* Vertical fade-in line */}
       <div style={{
         width: '1px',
-        height: '48px',
-        background: 'linear-gradient(to bottom, transparent, rgba(0,255,238,0.25))',
+        height: '44px',
+        background: 'linear-gradient(to bottom, transparent, rgba(63, 168, 152, 0.35))',
       }} />
 
+      {/* Mission recap — quiet live counters */}
+      <p
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '10px',
+          letterSpacing: '0.2em',
+          color: 'rgba(140, 165, 175, 0.5)',
+          display: 'flex',
+          gap: '12px',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          fontVariantNumeric: 'tabular-nums',
+          position: 'relative',
+          padding: '0 16px',
+        }}
+      >
+        <span ref={distanceRef}>0.0 KM TRAVELLED</span>
+        <span aria-hidden="true">·</span>
+        <span>{String(transmissions).padStart(2, '0')} TRANSMISSIONS RECEIVED</span>
+        <span aria-hidden="true">·</span>
+        <span ref={clockRef}>T+00:00</span>
+      </p>
+
       {/* Social link row */}
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '20px', alignItems: 'center', position: 'relative' }}>
         <a
           href="https://www.linkedin.com/in/sidakpreet-singh/"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="LinkedIn"
           style={linkStyle}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#00FFEE'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#444444'; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#44505A'; }}
         >
           {/* LinkedIn SVG */}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -54,8 +160,8 @@ export default function FooterSection() {
           rel="noopener noreferrer"
           aria-label="GitHub"
           style={linkStyle}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#00FFEE'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#444444'; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#44505A'; }}
         >
           {/* GitHub SVG */}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -64,16 +170,31 @@ export default function FooterSection() {
         </a>
       </div>
 
-      {/* End tag */}
-      <p style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '10px',
-        letterSpacing: '0.2em',
-        color: '#2A2A2A',
-        textTransform: 'uppercase',
-      }}>
-        — end of transmission —
-      </p>
+      {/* End tag with the sonar ping behind it */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          aria-hidden="true"
+          className="sonar-ring"
+          style={{
+            position: 'absolute',
+            width: '190px',
+            height: '190px',
+            borderRadius: '50%',
+            border: '1px solid rgba(63, 168, 152, 0.3)',
+            pointerEvents: 'none',
+          }}
+        />
+        <p style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '10px',
+          letterSpacing: '0.2em',
+          color: '#3A464E',
+          textTransform: 'uppercase',
+          position: 'relative',
+        }}>
+          — end of transmission —
+        </p>
+      </div>
     </div>
   );
 }

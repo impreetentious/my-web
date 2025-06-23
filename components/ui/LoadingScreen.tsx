@@ -165,6 +165,7 @@ export default function LoadingScreen() {
         alignItems: 'center',
         justifyContent: 'center',
         gap: '12px',
+        padding: '0 20px',
       }}
     >
       {BOOT_LINES.map((line, i) => {
@@ -175,7 +176,9 @@ export default function LoadingScreen() {
             ref={(el) => { rowRefs.current[i] = el; }}
             style={{
               display: 'flex',
-              gap: '16px',
+              width: '100%',
+              maxWidth: '448px',
+              gap: 'clamp(10px, 3vw, 16px)',
               alignItems: 'center',
               opacity: i < revealedCount ? 1 : 0,
               transition: 'opacity 0.15s ease',
@@ -185,8 +188,9 @@ export default function LoadingScreen() {
               ref={isLast ? lastLabelRef : undefined}
               style={{
                 color: '#54595F',
-                width: '260px',
-                fontSize: '11px',
+                flex: '1 1 auto',
+                minWidth: 0,
+                fontSize: 'clamp(9px, 2.8vw, 11px)',
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 fontFamily: 'var(--font-mono)',
@@ -197,7 +201,8 @@ export default function LoadingScreen() {
             <div
               ref={(el) => { if (isLast) lastExtrasRef.current[0] = el; }}
               style={{
-                width: '120px',
+                width: 'clamp(48px, 18vw, 120px)',
+                flexShrink: 0,
                 height: '2px',
                 background: 'rgba(0,255,238,0.14)',
                 position: 'relative',
@@ -220,9 +225,10 @@ export default function LoadingScreen() {
               ref={(el) => { if (isLast) lastExtrasRef.current[1] = el; }}
               style={{
                 color: 'rgba(0, 255, 238, 0.75)',
-                fontSize: '10px',
+                fontSize: 'clamp(8px, 2.4vw, 10px)',
                 letterSpacing: '0.15em',
                 fontFamily: 'var(--font-mono)',
+                flexShrink: 0,
                 opacity: i < revealedCount ? 1 : 0,
               }}
             >

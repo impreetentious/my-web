@@ -42,3 +42,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local working docs — not part of the shipped repo
+REVAMP_BRIEF.md

@@ -117,17 +117,21 @@ export function DossierRow({
           >
             {title}
           </h3>
-          <span
-            className="dossier-row-arrow"
-            aria-hidden="true"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-              color: 'var(--color-accent)',
-            }}
-          >
-            {arrowLabel ?? '→'}
-          </span>
+          {/* The arrow is affordance language — only rows that actually go
+              somewhere may speak it */}
+          {href && (
+            <span
+              className="dossier-row-arrow"
+              aria-hidden="true"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '13px',
+                color: 'var(--color-accent)',
+              }}
+            >
+              {arrowLabel ?? '→'}
+            </span>
+          )}
         </div>
         <p
           style={{
@@ -181,7 +185,9 @@ export function DossierRow({
           {inner}
         </a>
       ) : (
-        <div className="dossier-row" style={rowStyle}>
+        // No .dossier-row class: hover choreography implies clickability,
+        // and these rows don't go anywhere
+        <div style={rowStyle}>
           {inner}
         </div>
       )}

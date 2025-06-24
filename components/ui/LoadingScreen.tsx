@@ -12,6 +12,11 @@ import { scrambleText } from '@/lib/scramble';
 // scramble-morphing into "— SIGNAL RECEIVED —", the veil lifts underneath it
 // (comet igniting at the top of the path in the same beat), and the hero's
 // own tag crossfades in beneath the departing line. No screen swap.
+//
+// B6 — every beat rides ONE GSAP timeline. The old setInterval/setTimeout
+// stack desynced under tab throttling (boot observed stretched to multiple
+// seconds); gsap's ticker + lagSmoothing keep the sequence coherent and
+// finish() is guarded to run exactly once.
 
 const BOOT_LINES = [
   'TELEMETRY LINK ESTABLISHED',
@@ -20,16 +25,17 @@ const BOOT_LINES = [
   'ACQUIRING CARRIER SIGNAL',
 ];
 
-const REVEAL_INTERVAL_MS = 280;
+const REVEAL_INTERVAL_S = 0.28;
 const HANDOFF_TEXT = '— SIGNAL RECEIVED —';
 
 export default function LoadingScreen() {
   const [visible, setVisible] = useState(true);
-  const [revealedCount, setRevealedCount] = useState(0);
   const screenRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const barRefs = useRef<(HTMLDivElement | null)[]>([]);
   const lastLabelRef = useRef<HTMLSpanElement>(null);
   const lastExtrasRef = useRef<(HTMLElement | null)[]>([]);
+  const finishedRef = useRef(false);
 
   useEffect(() => {
     if (!motionAllowed()) {
@@ -56,19 +62,12 @@ export default function LoadingScreen() {
       };
     }
 
-    const interval = setInterval(() => {
-      setRevealedCount((count) => {
-        if (count >= BOOT_LINES.length) {
-          clearInterval(interval);
-          return count;
-        }
-        return count + 1;
-      });
-    }, REVEAL_INTERVAL_MS);
-
-    let tl: gsap.core.Timeline | null = null;
+    let handoff: gsap.core.Timeline | null = null;
 
     const finish = () => {
+      if (finishedRef.current) return;
+      finishedRef.current = true;
+
       const screen = screenRef.current;
       const label = lastLabelRef.current;
       const target = document.querySelector('[data-hero-tag]') as HTMLElement | null;
@@ -93,17 +92,17 @@ export default function LoadingScreen() {
       const lrect = label.getBoundingClientRect();
       const trect = target.getBoundingClientRect();
 
-      tl = gsap.timeline();
+      handoff = gsap.timeline();
       // the other rows and the final row's chrome cut away…
       const fading = [
         ...rowRefs.current.slice(0, BOOT_LINES.length - 1),
         ...lastExtrasRef.current,
       ].filter(Boolean) as HTMLElement[];
-      tl.to(fading, { opacity: 0, duration: 0.3, ease: EASE_CUT, stagger: 0.035 });
+      handoff.to(fading, { opacity: 0, duration: 0.3, ease: EASE_CUT, stagger: 0.035 });
 
       // …the acquisition line detaches and settles onto the hero tag's spot,
       // decoding into the received signal
-      tl.set(label, {
+      handoff.set(label, {
         position: 'fixed',
         left: lrect.left,
         top: lrect.top,
@@ -111,8 +110,8 @@ export default function LoadingScreen() {
         margin: 0,
         zIndex: 2,
       });
-      tl.call(() => scrambleText(label, () => HANDOFF_TEXT, 420));
-      tl.to(
+      handoff.call(() => scrambleText(label, () => HANDOFF_TEXT, 420));
+      handoff.to(
         label,
         {
           left: trect.left,
@@ -124,29 +123,40 @@ export default function LoadingScreen() {
         },
         '<'
       );
-      tl.to({}, { duration: 0.22 }); // hold the received signal
+      handoff.to({}, { duration: 0.22 }); // hold the received signal
 
       // veil lifts — world + comet ignition + hero reveal, one beat
-      tl.call(() => {
+      handoff.call(() => {
         journey.heroHandoff = true;
         screen.style.pointerEvents = 'none';
         release();
       });
-      tl.to(screen, { backgroundColor: 'rgba(5, 6, 13, 0)', duration: 0.65, ease: EASE_CUT });
+      handoff.to(screen, { backgroundColor: 'rgba(5, 6, 13, 0)', duration: 0.65, ease: EASE_CUT });
       // the departing line crossfades with the hero's identical tag beneath it
-      tl.to(label, { opacity: 0, duration: 0.4, ease: 'none' }, '<+0.2');
-      tl.call(() => setVisible(false));
+      handoff.to(label, { opacity: 0, duration: 0.4, ease: 'none' }, '<+0.2');
+      handoff.call(() => setVisible(false));
     };
 
-    const timeout = setTimeout(
+    // One clock for the whole boot: row reveals, bar fills, then the handoff
+    const boot = gsap.timeline();
+    BOOT_LINES.forEach((_, i) => {
+      const at = i * REVEAL_INTERVAL_S;
+      boot.to(rowRefs.current[i], { opacity: 1, duration: 0.15, ease: 'none' }, at);
+      boot.to(
+        barRefs.current[i],
+        { width: '100%', duration: 0.22, ease: 'power1.out' },
+        at
+      );
+    });
+    boot.call(
       finish,
-      REVEAL_INTERVAL_MS * BOOT_LINES.length + 480
+      undefined,
+      BOOT_LINES.length * REVEAL_INTERVAL_S + 0.48
     );
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-      tl?.kill();
+      boot.kill();
+      handoff?.kill();
     };
   }, []);
 
@@ -180,8 +190,7 @@ export default function LoadingScreen() {
               maxWidth: '448px',
               gap: 'clamp(10px, 3vw, 16px)',
               alignItems: 'center',
-              opacity: i < revealedCount ? 1 : 0,
-              transition: 'opacity 0.15s ease',
+              opacity: 0, // the boot timeline reveals each row
             }}
           >
             <span
@@ -210,14 +219,14 @@ export default function LoadingScreen() {
               }}
             >
               <div
+                ref={(el) => { barRefs.current[i] = el; }}
                 style={{
                   position: 'absolute',
                   top: 0,
                   left: 0,
                   height: '100%',
-                  width: i < revealedCount ? '100%' : '0%',
+                  width: '0%',
                   background: 'rgba(0, 255, 238, 0.75)',
-                  transition: 'width 0.22s ease-out',
                 }}
               />
             </div>
@@ -229,7 +238,6 @@ export default function LoadingScreen() {
                 letterSpacing: '0.15em',
                 fontFamily: 'var(--font-mono)',
                 flexShrink: 0,
-                opacity: i < revealedCount ? 1 : 0,
               }}
             >
               LOCK

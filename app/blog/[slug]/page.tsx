@@ -9,6 +9,10 @@ export async function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
 }
 
+// B13 — only pre-rendered slugs are valid: anything else 404s before it can
+// reach getPostBySlug with an unsanitised path segment.
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {

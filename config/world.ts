@@ -36,8 +36,8 @@ export const ZONE_THRESHOLDS = {
   underwater: 0.80, // below it
 } as const;
 
-// Mobile breakpoint. This value is intentionally duplicated in lib/useMobile.ts —
-// that file's isolation rule forbids it from importing config/, so there is no way
-// to share this constant. If you change this number, also change the literal 768
-// inside lib/useMobile.ts (F0.10). Nothing will warn you if the two drift apart.
+// Mobile breakpoint — THE single source (B10): lib/useMobile.ts builds its
+// matchMedia query from this constant. The CSS twin lives in
+// styles/globals.css as `@media (max-width: 767px)` (CSS cannot read TS);
+// if this number changes, change those media queries in the same edit.
 export const MOBILE_BREAKPOINT_PX = 768;

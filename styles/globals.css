@@ -37,6 +37,166 @@
   padding: 0;
 }
 
+/* ─── World layout (A1/A8) ───────────────────────────────────────────────────
+   Geometry lives in CSS behind media queries so the FIRST paint is right on
+   every device — no JS breakpoint flip, no CLS. All values come through
+   custom properties set from config/world.ts constants in app/page.tsx.
+   The 767px max-width is the CSS twin of MOBILE_BREAKPOINT_PX. */
+
+.world-container {
+  position: relative;
+  z-index: 1;
+  height: var(--world-h-desktop);
+  /* nothing escapes sideways (hero pulse ring, spine sway) — clip, not
+     hidden, so no scroll container is created and overflow-y stays visible */
+  overflow-x: clip;
+}
+
+.hero-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--hero-h-desktop);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+/* One DOM for both breakpoints: slots are absolutely positioned — beside the
+   spine on desktop, indented off the gutter wake on mobile. */
+.card-slot {
+  position: absolute;
+  top: var(--slot-top);
+  transform: translateY(-50%);
+  width: var(--card-width);
+  pointer-events: auto;
+}
+.card-slot[data-side='left'] { right: var(--card-side-offset); }
+.card-slot[data-side='right'] { left: var(--card-side-offset); }
+
+.footer-section {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--footer-h-desktop);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  pointer-events: auto;
+}
+
+@media (max-width: 767px) {
+  .world-container {
+    height: calc(var(--world-svh-mobile) * 1vh);
+    height: calc(var(--world-svh-mobile) * 1svh);
+  }
+  .hero-section {
+    height: 100vh;
+    height: 100svh;
+  }
+  .card-slot,
+  .card-slot[data-side='left'],
+  .card-slot[data-side='right'] {
+    top: var(--slot-top-m);
+    left: calc(var(--m-gutter) + 22px);
+    right: 18px;
+    width: auto;
+  }
+  .footer-section {
+    height: calc(var(--footer-svh-mobile) * 1vh);
+    height: calc(var(--footer-svh-mobile) * 1svh);
+  }
+}
+
+/* ─── Fixed HUD placement (A4/A9) ──────────────────────────────────────── */
+
+.depth-indicator {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  z-index: 10;
+  font-family: var(--font-mono);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.depth-indicator .depth-value { font-size: 13px; }
+.depth-indicator .depth-zone { font-size: 9px; }
+
+.milestone {
+  position: absolute;
+  right: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  white-space: nowrap;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* display lives HERE, not inline, so the mobile media query below can turn
+   these off — an inline display would win the cascade and resurrect them */
+.email-fab { display: flex; }
+.nav-dots { display: flex; }
+
+@media (max-width: 767px) {
+  /* telemetry returns, smaller (A4) */
+  .depth-indicator { bottom: 14px; left: 14px; gap: 4px; }
+  .depth-indicator .depth-value { font-size: 11px; }
+  .depth-indicator .depth-zone { font-size: 8px; }
+
+  /* only the landmark trio drifts past on phones */
+  .milestone { right: 14px; font-size: 9px; letter-spacing: 0.16em; }
+  .milestone[data-extra='true'] { display: none; }
+
+  /* the fixed email plate would overlap full-width cards (A9) — on phones
+     the contact affordance lives in the footer's social row instead */
+  .email-fab { display: none; }
+  .nav-dots { display: none; }
+}
+
+/* ─── B11: one keyboard voice — a thin world-gold outline ────────────────── */
+
+:where(a, button, [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 1px solid rgba(224, 178, 110, 0.9);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ─── B12: skip link — the first tab stop, hidden until focused ──────────── */
+
+.skip-link {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 200;
+  padding: 9px 14px;
+  background: #05060D;
+  border: 1px solid rgba(224, 178, 110, 0.55);
+  color: #E0B26E;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 20px));
+  transition: transform 0.2s ease;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 html {
   scroll-behavior: auto; /* Lenis handles smooth scroll — do NOT set smooth here */
 }
@@ -164,11 +324,16 @@ body {
   transform: translateX(0);
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 4px; }
+/* Scrollbar — tuned to the world (B14): dim teal thumb over the abyss track,
+   brightening toward the wake's aqua on hover. Firefox gets the same voice. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(63, 168, 152, 0.38) #05060D;
+}
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
-::-webkit-scrollbar-thumb { background: var(--color-text-muted); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+::-webkit-scrollbar-thumb { background: rgba(63, 168, 152, 0.38); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(127, 196, 184, 0.62); }
 
 /* ─── Accessibility: Respect system motion preferences ─────────────────── */
 

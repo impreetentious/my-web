@@ -11,7 +11,7 @@ import {
   Vector2,
 } from 'three';
 import { useSiteStore } from '@/store/useSiteStore';
-import { zoneWeights, abyssGate } from '@/lib/descent';
+import { zoneWeights, abyssGate, waterlineScreenVh } from '@/lib/descent';
 import { journey, IDLE_EVENT } from '@/lib/journey';
 import { motionAllowed } from '@/lib/motion';
 
@@ -82,6 +82,7 @@ const FRAGMENT = /* glsl */ `
   uniform float uAspect;
   uniform float uWake;
   uniform float uIdlePulse;
+  uniform float uWaterNdcY; // waterline in NDC — the ocean's particles stay in the ocean
 
   varying float vKind;
   varying float vPulse;
@@ -97,21 +98,28 @@ const FRAGMENT = /* glsl */ `
       color = vec3(0.72, 0.82, 0.87);
       alpha = smoothstep(0.5, 0.1, d) * 0.26;
     } else if (vKind < 1.5) {
-      // bubbles: bright rim, hollow centre; livelier in the wake
-      float rim = smoothstep(0.5, 0.38, d) - smoothstep(0.30, 0.12, d) * 0.7;
-      color = vec3(0.68, 0.88, 0.92);
-      alpha = max(rim, 0.0) * (0.42 + uWake * 0.5);
+      // bubble as refraction, not outline (B1): a thin rim lit from the
+      // upper-left, one displaced glint, interior left transparent
+      float ring = smoothstep(0.50, 0.40, d) * smoothstep(0.26, 0.40, d);
+      float rimLight = 0.25 + 0.75 * smoothstep(-0.3, 0.9, dot(uv / max(d, 1e-4), vec2(-0.55, 0.72)));
+      float glint = smoothstep(0.15, 0.03, length(uv - vec2(0.11, 0.13)));
+      color = vec3(0.72, 0.90, 0.93);
+      alpha = (ring * rimLight + glint * 0.55) * (0.42 + uWake * 0.5);
     } else {
       color = vec3(0.18, 0.78, 0.72);
       alpha = smoothstep(0.5, 0.05, d) * vPulse * (0.65 + uIdlePulse * 0.9);
     }
+
+    // B1 — clipped above the on-screen waterline (inverse of Starfield's
+    // occlusion test): during the crossing gate nothing floats in the sky
+    float belowWater = smoothstep(uWaterNdcY + 0.02, uWaterNdcY - 0.02, vNdc.y);
 
     // the deep is lit only by the probe
     vec2 toComet = (vNdc - uCometNdc) * vec2(uAspect, 1.0);
     float glow = exp(-dot(toComet, toComet) * 1.4);
     float lit = mix(1.0, min(1.2, 0.10 + glow * 1.5), uAbyss);
 
-    gl_FragColor = vec4(color, alpha * uOpacity * lit);
+    gl_FragColor = vec4(color, alpha * uOpacity * lit * belowWater);
   }
 `;
 
@@ -170,6 +178,7 @@ export function UnderwaterField() {
         uAspect: { value: 1 },
         uWake: { value: 0 },
         uIdlePulse: { value: 0 },
+        uWaterNdcY: { value: 2 }, // above the frame → nothing clipped
       },
       transparent: true,
       depthWrite: false,
@@ -186,6 +195,8 @@ export function UnderwaterField() {
     u.uPixelRatio.value = state.gl.getPixelRatio();
     u.uAbyss.value = abyssGate(t);
     u.uAspect.value = state.size.width / state.size.height;
+    // vh from top → NDC y (+1 top, −1 bottom) — same mapping Starfield uses
+    u.uWaterNdcY.value = 1 - waterlineScreenVh(t) / 50;
     u.uCometNdc.value.set(
       (journey.cometX / state.size.width) * 2 - 1,
       1 - (journey.cometY / state.size.height) * 2

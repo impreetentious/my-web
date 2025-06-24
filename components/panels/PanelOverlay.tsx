@@ -154,11 +154,17 @@ export default function PanelOverlay() {
     overlay.style.pointerEvents = 'auto';
     tlRef.current?.kill();
 
+    // B5 — the overlay becomes visible SYNCHRONOUSLY, then focus moves. The
+    // focus used to race the timeline's first tick: focusing an element that
+    // is still visibility:hidden silently no-ops, stranding focus on the
+    // invoking card.
+    gsap.set(overlay, { autoAlpha: 1 });
+    closeButtonRef.current?.focus();
+
     if (motionAllowed()) {
       const tl = gsap.timeline();
       tlRef.current = tl;
 
-      tl.set(overlay, { autoAlpha: 1 }, 0);
       tl.set(frame, { opacity: 1, y: 0 }, 0);
       tl.fromTo(veilRef.current, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: EASE_ARRIVE }, 0);
       tl.fromTo(
@@ -211,12 +217,9 @@ export default function PanelOverlay() {
         0.28
       );
     } else {
-      gsap.set(overlay, { autoAlpha: 1 });
       gsap.set(frame, { opacity: 1, y: 0 });
       gsap.set(veilRef.current, { opacity: 1 });
     }
-
-    requestAnimationFrame(() => closeButtonRef.current?.focus());
   }, [renderedPanelId]);
 
   // Escape closes; Tab is trapped inside the overlay while a panel is rendered

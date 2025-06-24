@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useSiteStore } from '@/store/useSiteStore';
-import { useMobile } from '@/lib/useMobile';
 import { depthReading } from '@/lib/descent';
 import { PLUNGE_EVENT } from '@/lib/journey';
 import { scrambleText } from '@/lib/scramble';
@@ -16,7 +15,6 @@ const ZONE_LABELS: Record<ZoneName, string> = {
 };
 
 export default function DepthIndicator() {
-  const isMobile = useMobile();
   const activeZone = useSiteStore((s) => s.activeZone);
   const [displayZone, setDisplayZone] = useState<ZoneName>('sky');
   const [labelOpacity, setLabelOpacity] = useState(0.45);
@@ -60,25 +58,14 @@ export default function DepthIndicator() {
     return () => clearTimeout(timeout);
   }, [activeZone, displayZone]);
 
-  if (isMobile) return null;
-
+  // A4 — the ticker lives on every device: placement and type scale are
+  // CSS-resolved (.depth-indicator), smaller and tucked lower on phones.
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '28px',
-        left: '28px',
-        zIndex: 10,
-        fontFamily: 'var(--font-mono)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '6px',
-      }}
-    >
+    <div className="depth-indicator">
       <div
         ref={valueRef}
+        className="depth-value"
         style={{
-          fontSize: '13px',
           letterSpacing: '0.12em',
           color: 'var(--color-text-primary)',
           opacity: 0.8,
@@ -88,8 +75,8 @@ export default function DepthIndicator() {
         ALT 400 KM
       </div>
       <div
+        className="depth-zone"
         style={{
-          fontSize: '9px',
           letterSpacing: '0.22em',
           color: 'var(--color-text-muted)',
           opacity: labelOpacity,

@@ -225,7 +225,7 @@ export default function MobileSpine() {
 
       const targetY = Math.min(
         H,
-        Math.max(0, window.scrollY + ((easedVh ?? targetVh) / 100) * vh)
+        Math.max(0, window.scrollY + (easedVh / 100) * vh)
       );
       const s = arcAtPageY(targetY);
       const head = pointAtArc(s);

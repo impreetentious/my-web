@@ -161,6 +161,10 @@ export function cometScreenVh(t: number): number {
   return 100 * (t - (CROSS_T - 0.5) * rise * fall);
 }
 
+/** Mobile comet screen path (A3), in vh from the top of the viewport. The
+ *  probe hovers in the upper third while the sky is young, meets the
+ *  waterline mid-frame at CROSS_T — the plunge beat is shared with desktop —
+ *  then pulls ahead into the lower third across the deep. */
 export function cometScreenVhMobile(t: number): number {
   return (
     12 +
@@ -261,14 +265,22 @@ export interface Milestone {
   reading: string;  // '100 KM'
   t: number;        // scroll moment the caption is at its true altitude
   accent?: boolean; // sea level gets the gold
+  /** Opacity bell half-width in t (default 0.085). Narrowed where milestones
+   *  cluster around the crossing so at most one caption is prominent near
+   *  the plunge (B8) — the set piece stays uncrowded. */
+  bell?: number;
+  /** Survives the mobile cut (A4) — phones show only the landmark trio. */
+  core?: boolean;
 }
 
 export const MILESTONES: Milestone[] = [
-  { label: 'KÁRMÁN LINE', reading: '100 KM', t: tAtAltitudeKm(100) },
+  { label: 'KÁRMÁN LINE', reading: '100 KM', t: tAtAltitudeKm(100), core: true },
   { label: 'METEOR LAYER', reading: '80 KM', t: tAtAltitudeKm(80) },
   { label: 'CRUISING ALTITUDE', reading: '11 KM', t: tAtAltitudeKm(11) },
   { label: 'CLOUD DECK', reading: '2 KM', t: tAtAltitudeKm(2) },
-  { label: 'SEA LEVEL', reading: '0 M', t: 0.748, accent: true },
-  { label: 'PHOTIC LIMIT', reading: '−200 M', t: tAtDepthM(200) },
-  { label: 'ABYSSAL PLAIN', reading: '−3,800 M', t: 0.985 },
+  { label: 'SEA LEVEL', reading: '0 M', t: 0.748, accent: true, bell: 0.03, core: true },
+  { label: 'PHOTIC LIMIT', reading: '−200 M', t: tAtDepthM(200), bell: 0.03 },
+  // Bell tightened so the caption marks the arrival then yields — at full
+  // rest (t=1) it has faded instead of sitting lit over the footer recap.
+  { label: 'ABYSSAL PLAIN', reading: '−3,800 M', t: 0.985, bell: 0.016, core: true },
 ];

@@ -3,13 +3,15 @@
 import { useEffect, useRef } from 'react';
 import { useSiteStore } from '@/store/useSiteStore';
 import { zoneWeights, waterlineScreenVh } from '@/lib/descent';
-import { useMobile } from '@/lib/useMobile';
+import { PLUNGE_EVENT } from '@/lib/journey';
+import { motionAllowed } from '@/lib/motion';
 
-// v2: the real sky lives in the WebGL fragment shader (SkyOcean). This layer
-// is now (a) a static backstop under the canvas on desktop, and (b) the full
-// scroll-driven fallback on mobile, where WebGL never mounts — same journey,
-// desaturated palette, with a tiled grain overlay standing in for the
-// shader's dither.
+// The real sky lives in the WebGL fragment shader (SkyOcean). This layer is
+// (a) a static backstop under the canvas while a shader tier runs, and
+// (b) the FULL scroll-driven fallback world whenever quality is 'low' — no
+// WebGL, an fps demotion, or a lost context — on desktop and mobile alike
+// (B3/A2). The fallback animates, carries grain in place of the shader's
+// dither, and dips its palette on the plunge (A5).
 
 const GRAIN_TILE =
   `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
@@ -21,7 +23,7 @@ const layerBase: React.CSSProperties = {
 };
 
 export default function BackgroundGradient() {
-  const isMobile = useMobile();
+  const active = useSiteStore((s) => s.quality === 'low');
   const spaceRef = useRef<HTMLDivElement>(null);
   const duskRef = useRef<HTMLDivElement>(null);
   const seaRef = useRef<HTMLDivElement>(null);
@@ -29,10 +31,11 @@ export default function BackgroundGradient() {
   const raysRef = useRef<HTMLDivElement>(null);
   const waterRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
+  const dipRef = useRef<HTMLDivElement>(null);
 
-  // Scroll-driven layer mix — mobile only; on desktop the shader owns this
+  // Scroll-driven layer mix — only while this stack IS the world
   useEffect(() => {
-    if (!isMobile) return;
+    if (!active) return;
 
     const apply = (t: number) => {
       const w = zoneWeights(t);
@@ -49,8 +52,27 @@ export default function BackgroundGradient() {
 
     apply(useSiteStore.getState().scrollT);
     const unsubscribe = useSiteStore.subscribe((s) => s.scrollT, apply);
-    return () => unsubscribe();
-  }, [isMobile]);
+
+    // A5 — the plunge on the fallback world: a brief palette dip standing in
+    // for the shader's shock envelope
+    const onPlunge = () => {
+      if (!motionAllowed() || !dipRef.current) return;
+      dipRef.current.animate(
+        [
+          { opacity: 0 },
+          { opacity: 0.4, offset: 0.18 },
+          { opacity: 0 },
+        ],
+        { duration: 950, easing: 'ease-out' }
+      );
+    };
+    window.addEventListener(PLUNGE_EVENT, onPlunge);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener(PLUNGE_EVENT, onPlunge);
+    };
+  }, [active]);
 
   return (
     <div
@@ -64,7 +86,7 @@ export default function BackgroundGradient() {
         background: '#05060D',
       }}
     >
-      {/* Orbit backstop — also all the desktop DOM ever shows behind the canvas */}
+      {/* Orbit backstop — also all the DOM ever shows behind a live canvas */}
       <div
         ref={spaceRef}
         style={{
@@ -77,7 +99,7 @@ export default function BackgroundGradient() {
         }}
       />
 
-      {isMobile && (
+      {active && (
         <>
           {/* High atmosphere → dusk, a restrained warm hint low in the frame */}
           <div
@@ -192,7 +214,17 @@ export default function BackgroundGradient() {
             }}
           />
 
-          {/* Grain — the mobile stand-in for shader dither; kills the poster look */}
+          {/* Plunge palette dip (A5) — flashed dark by the WAAPI burst above */}
+          <div
+            ref={dipRef}
+            style={{
+              ...layerBase,
+              opacity: 0,
+              background: '#010609',
+            }}
+          />
+
+          {/* Grain — the stand-in for shader dither; kills the poster look */}
           <div
             style={{
               ...layerBase,

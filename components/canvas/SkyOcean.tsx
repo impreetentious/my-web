@@ -12,7 +12,7 @@ import {
 import { useSiteStore } from '@/store/useSiteStore';
 import { waterlineScreenVh, zoneWeights, abyssGate } from '@/lib/descent';
 import { journey, plungeElapsed } from '@/lib/journey';
-import { totalPageHeight } from '@/lib/activeSections';
+import { getScrollLimit } from '@/lib/scrollSystem';
 import { motionAllowed } from '@/lib/motion';
 
 // The whole world in one fullscreen fragment pass: altitude-continuous sky,
@@ -43,6 +43,7 @@ const FRAGMENT = /* glsl */ `
   uniform float uAbyss;    // 0 lit world → 1 the deep
   uniform float uRays;     // god-ray gate
   uniform vec2  uMouse;    // eased pointer, −1..1
+  uniform float uLite;     // medium tier (A2): single dim star layer, no nebulae
 
   varying vec2 vUv;
 
@@ -149,25 +150,31 @@ const FRAGMENT = /* glsl */ `
         vec2 sp = vec2(uv.x * uAspect, uv.y);
         sp += uMouse * vec2(0.0075, 0.005);
         vec2 spFar = sp + vec2(0.0, -uScroll * 1.35);
-        vec2 spMid = sp + vec2(0.0, -uScroll * 2.0);
 
         // milky way — a faint diagonal density band
         float bandD = dot(spFar - vec2(0.85, 0.35), normalize(vec2(-0.44, 0.90)));
         float band = exp(-bandD * bandD * 7.0);
 
         float dim = starsDim(spFar, 34.0) * (0.5 + 0.9 * band);
-        float dim2 = starsDim(spFar + 41.7, 58.0) * 0.55 * (0.4 + 0.8 * band);
-        vec3 bright = starsBright(spMid, 13.0);
-        col += (vec3(0.82, 0.88, 1.0) * (dim + dim2) * 0.85 + bright * 1.1) * starVis;
-        col += vec3(0.62, 0.68, 0.85) * band * fbm(spFar * 3.1) * 0.035 * starVis;
 
-        // FBM nebulae, very low contrast — no radial-gradient blobs
-        float nebGate = (1.0 - smoothstep(0.28, 0.50, wt)) * starVis;
-        vec2 np = spFar * 1.45;
-        float n1 = fbm(np + fbm(np * 0.7) * 0.9);
-        float n2 = fbm(np * 0.62 + vec2(43.1, 17.7));
-        col += vec3(0.075, 0.09, 0.20) * smoothstep(0.42, 0.9, n1) * 0.16 * nebGate;
-        col += vec3(0.14, 0.08, 0.16) * smoothstep(0.55, 0.95, n2) * 0.10 * nebGate;
+        if (uLite > 0.5) {
+          // medium tier — one dim layer carries the whole sky
+          col += vec3(0.82, 0.88, 1.0) * dim * 1.05 * starVis;
+        } else {
+          vec2 spMid = sp + vec2(0.0, -uScroll * 2.0);
+          float dim2 = starsDim(spFar + 41.7, 58.0) * 0.55 * (0.4 + 0.8 * band);
+          vec3 bright = starsBright(spMid, 13.0);
+          col += (vec3(0.82, 0.88, 1.0) * (dim + dim2) * 0.85 + bright * 1.1) * starVis;
+          col += vec3(0.62, 0.68, 0.85) * band * fbm(spFar * 3.1) * 0.035 * starVis;
+
+          // FBM nebulae, very low contrast — no radial-gradient blobs
+          float nebGate = (1.0 - smoothstep(0.28, 0.50, wt)) * starVis;
+          vec2 np = spFar * 1.45;
+          float n1 = fbm(np + fbm(np * 0.7) * 0.9);
+          float n2 = fbm(np * 0.62 + vec2(43.1, 17.7));
+          col += vec3(0.075, 0.09, 0.20) * smoothstep(0.42, 0.9, n1) * 0.16 * nebGate;
+          col += vec3(0.14, 0.08, 0.16) * smoothstep(0.55, 0.95, n2) * 0.10 * nebGate;
+        }
       }
 
       // golden hour hugging the surface
@@ -296,6 +303,7 @@ export function SkyOcean() {
         uAbyss: { value: 0 },
         uRays: { value: 0 },
         uMouse: { value: new Vector2(0, 0) },
+        uLite: { value: 0 },
       },
       depthTest: false,
       depthWrite: false,
@@ -314,8 +322,12 @@ export function SkyOcean() {
     if (allowMotion) u.uTime.value = state.clock.elapsedTime;
     u.uAspect.value = w / h;
     u.uResY.value = h * state.gl.getPixelRatio();
-    u.uSpanT.value = h / Math.max(1, totalPageHeight - h);
+    // one viewport in scroll-t — normalised against the live scrollable
+    // extent so the world's vertical scale is right on BOTH page heights
+    // (desktop px world, mobile svh world)
+    u.uSpanT.value = h / getScrollLimit();
     u.uWaterVh.value = waterlineScreenVh(t);
+    u.uLite.value = useSiteStore.getState().quality === 'medium' ? 1 : 0;
     u.uAbyss.value = abyssGate(t);
     u.uRays.value = zoneWeights(t).rays;
     u.uComet.value.set(journey.cometX / w, 1 - journey.cometY / h);

@@ -6,10 +6,17 @@ import { motionAllowed } from '@/lib/motion';
 
 let lenis: Lenis | null = null;
 let rafId: number | null = null;
+let teardownExtras: (() => void) | null = null;
 
 // §3.5.2 — scroll has physics. Light and fast in orbit, heavy and damped
 // underwater; lerped every frame, never stepped, so the medium change is felt
 // in the hand before the eyes name it.
+//
+// A6 (touch): phones keep NATIVE touch scrolling — Lenis syncTouch fights the
+// iOS rubber-band and can't be tuned blind from here. Lenis still tracks the
+// native scroll every raf, so velocity/scrollT stay truthful; the medium
+// change on touch is delivered visually instead — the comet's screen position
+// drags underwater (MobileSpine) and the shader's wake response deepens.
 const DURATION_ORBIT = 1.1;
 const DURATION_ABYSS = 1.9;
 const WHEEL_ORBIT = 1.0;
@@ -19,7 +26,43 @@ const IDLE_AFTER_MS = 20000;   // §3.5.6 — idle life
 const IDLE_REPEAT_MS = 26000;
 const PLUNGE_THROTTLE_MS = 1500;
 
+function nativeLimit(): number {
+  return Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+}
+
+/** The scrollable extent every scroll-t consumer must normalise against —
+ *  Lenis's own limit while it runs, the native document extent otherwise
+ *  (reduced motion). Never raw scrollHeight−vh in Lenis mode: late-injected
+ *  overlays (dev tools) pad the body past the scrollable extent (B9). */
+export function getScrollLimit(): number {
+  if (lenis && lenis.limit) return lenis.limit;
+  return nativeLimit();
+}
+
 export function initScrollSystem(): void {
+  // B2 — reduced motion reduces the SCROLL itself: no Lenis, no smoothing,
+  // no plunge shock, no idle beats. Scrolling is native/instant; the world
+  // stays truthful through a passive scroll listener so telemetry, colour
+  // and geometry still belong to the place the visitor is at.
+  if (!motionAllowed()) {
+    const onScroll = () => {
+      const t = Math.min(1, Math.max(0, window.scrollY / nativeLimit()));
+      useSiteStore.getState().setScrollT(t);
+      if (journey.startedAt === null && t > 0.004) {
+        journey.startedAt = performance.now();
+      }
+      if (t > journey.maxT) journey.maxT = t;
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    teardownExtras = () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+    return;
+  }
+
   lenis = new Lenis({
     duration: DURATION_ORBIT,
     easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -27,7 +70,6 @@ export function initScrollSystem(): void {
     wheelMultiplier: WHEEL_ORBIT,
   });
 
-  const allowPhysics = motionAllowed();
   let prevT = 0;
   let duration = DURATION_ORBIT;
   let wheel = WHEEL_ORBIT;
@@ -58,13 +100,11 @@ export function initScrollSystem(): void {
     if (scrollT > journey.maxT) journey.maxT = scrollT;
 
     // water weight — lerp Lenis params toward the zone target
-    if (allowPhysics) {
-      const uw = smoothstep(0.7, 0.85, scrollT);
-      duration += (DURATION_ORBIT + (DURATION_ABYSS - DURATION_ORBIT) * uw - duration) * 0.08;
-      wheel += (WHEEL_ORBIT + (WHEEL_ABYSS - WHEEL_ORBIT) * uw - wheel) * 0.08;
-      lenis!.options.duration = duration;
-      lenis!.options.wheelMultiplier = wheel;
-    }
+    const uw = smoothstep(0.7, 0.85, scrollT);
+    duration += (DURATION_ORBIT + (DURATION_ABYSS - DURATION_ORBIT) * uw - duration) * 0.08;
+    wheel += (WHEEL_ORBIT + (WHEEL_ABYSS - WHEEL_ORBIT) * uw - wheel) * 0.08;
+    lenis!.options.duration = duration;
+    lenis!.options.wheelMultiplier = wheel;
 
     // the plunge — one-shot on downward crossing, re-armed above it
     if (!journey.plungeArmed && scrollT < CROSS_T - 0.02) {
@@ -92,14 +132,33 @@ export function initScrollSystem(): void {
     rafId = requestAnimationFrame(raf);
   }
 
+  // B4 — a hidden tab gets no scroll loop at all; on return, zero the
+  // velocity and idle clock so the away-time doesn't integrate into one
+  // spike or an instant idle beat.
+  const onVisibility = () => {
+    if (document.hidden) {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      rafId = null;
+    } else if (rafId === null) {
+      journey.velocity = 0;
+      journey.lastInputAt = performance.now();
+      rafId = requestAnimationFrame(raf);
+    }
+  };
+  document.addEventListener('visibilitychange', onVisibility);
+  teardownExtras = () =>
+    document.removeEventListener('visibilitychange', onVisibility);
+
   rafId = requestAnimationFrame(raf);
 }
 
 export function destroyScrollSystem(): void {
   if (rafId !== null) cancelAnimationFrame(rafId);
+  teardownExtras?.();
   if (lenis) lenis.destroy();
   lenis = null;
   rafId = null;
+  teardownExtras = null;
 }
 
 export function scrollToY(y: number): void {

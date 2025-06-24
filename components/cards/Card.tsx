@@ -5,16 +5,13 @@ import Link from 'next/link';
 import gsap from 'gsap';
 import { motionAllowed, EASE_ARRIVE, EASE_ARRIVE_CSS } from '@/lib/motion';
 import { useSiteStore } from '@/store/useSiteStore';
-import { CARD_OFFSET_PX } from '@/config/world';
-import type { ActiveSection, CardPosition } from '@/types';
+import type { ActiveSection } from '@/types';
 
 interface CardProps {
   section: ActiveSection;
-  position: CardPosition | null; // null on mobile
-  isMobile: boolean;
 }
 
-export function Card({ section, position, isMobile }: CardProps) {
+export function Card({ section }: CardProps) {
   const cardRef = useRef<HTMLElement | null>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -29,39 +26,65 @@ export function Card({ section, position, isMobile }: CardProps) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          if (motionAllowed()) {
-            gsap.fromTo(
-              el,
-              { opacity: 0, y: 26, scale: 0.985, filter: 'blur(6px)' },
-              {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                filter: 'blur(0px)',
-                duration: 0.7,
-                ease: EASE_ARRIVE,
-                // Small stagger for cards revealed together; capped so a
-                // deep-link or nav-dot jump to a late section isn't penalised
-                delay: Math.min(0.1 * section.index, 0.2),
-                // Hand transform/filter back to CSS so the hover lift works
-                clearProps: 'transform,filter',
-              }
-            );
-          } else {
-            gsap.set(el, { opacity: 1, y: 0 });
-          }
-          observer.unobserve(el);
-        });
-      },
-      { threshold: 0.3 }
-    );
+    let observer: IntersectionObserver | null = null;
+    let unsubLoading: (() => void) | null = null;
 
-    observer.observe(el);
-    return () => observer.disconnect();
+    const observe = () => {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            if (motionAllowed()) {
+              gsap.fromTo(
+                el,
+                { opacity: 0, y: 26, scale: 0.985, filter: 'blur(6px)' },
+                {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  filter: 'blur(0px)',
+                  duration: 0.7,
+                  ease: EASE_ARRIVE,
+                  // Small stagger for cards revealed together; capped so a
+                  // deep-link or nav-dot jump to a late section isn't penalised
+                  delay: Math.min(0.1 * section.index, 0.2),
+                  // Hand transform/filter back to CSS so the hover lift works
+                  clearProps: 'transform,filter',
+                }
+              );
+            } else {
+              gsap.set(el, { opacity: 1, y: 0 });
+            }
+            observer?.unobserve(el);
+          });
+        },
+        { threshold: 0.3 }
+      );
+      observer.observe(el);
+    };
+
+    // B7 — IntersectionObserver can't see the boot veil (z-100, opaque), so
+    // a first-screen card used to play its entrance underneath it. Observe
+    // only once the veil is gone.
+    if (useSiteStore.getState().isLoading) {
+      unsubLoading = useSiteStore.subscribe(
+        (s) => s.isLoading,
+        (loading) => {
+          if (!loading) {
+            unsubLoading?.();
+            unsubLoading = null;
+            observe();
+          }
+        }
+      );
+    } else {
+      observe();
+    }
+
+    return () => {
+      unsubLoading?.();
+      observer?.disconnect();
+    };
   }, [section.index]);
 
   const visualStyle: React.CSSProperties = {
@@ -160,52 +183,30 @@ export function Card({ section, position, isMobile }: CardProps) {
     onMouseLeave: () => setHovered(false),
   };
 
-  const interactive =
-    section.type === 'route' && section.href ? (
-      <Link
-        href={section.href}
-        ref={(el) => {
-          cardRef.current = el;
-        }}
-        style={visualStyle}
-        {...interactionProps}
-      >
-        {inner}
-      </Link>
-    ) : (
-      <button
-        type="button"
-        ref={(el) => {
-          cardRef.current = el;
-        }}
-        style={visualStyle}
-        onClick={() => useSiteStore.getState().openPanel(section.id)}
-        {...interactionProps}
-      >
-        {inner}
-      </button>
-    );
-
-  if (isMobile) {
-    return <div style={{ position: 'relative', width: '100%' }}>{interactive}</div>;
-  }
-
-  // Positioning lives on this wrapper so GSAP's transform tweens on the inner
-  // element can never clobber the translateY(-50%) centring (B.1 geometry:
-  // the card starts 20px beyond the spine anchor, keeping the node visible).
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: position ? `${position.yCenter}px` : 0,
-        transform: 'translateY(-50%)',
-        width: 'var(--card-width)',
-        ...(section.side === 'left'
-          ? { right: `calc(50% + ${CARD_OFFSET_PX + 20}px)` }
-          : { left: `calc(50% + ${CARD_OFFSET_PX + 20}px)` }),
+  // Positioning lives on the CardGrid slot (.card-slot) so GSAP's transform
+  // tweens on this element can never clobber the translateY(-50%) centring.
+  return section.type === 'route' && section.href ? (
+    <Link
+      href={section.href}
+      ref={(el) => {
+        cardRef.current = el;
       }}
+      style={visualStyle}
+      {...interactionProps}
     >
-      {interactive}
-    </div>
+      {inner}
+    </Link>
+  ) : (
+    <button
+      type="button"
+      ref={(el) => {
+        cardRef.current = el;
+      }}
+      style={visualStyle}
+      onClick={() => useSiteStore.getState().openPanel(section.id)}
+      {...interactionProps}
+    >
+      {inner}
+    </button>
   );
 }

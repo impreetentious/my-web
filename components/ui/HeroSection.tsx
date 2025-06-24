@@ -112,23 +112,11 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '800px', // matches HEADER_HEIGHT_PX — hardcoded to avoid coupling
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '16px',
-        pointerEvents: 'none',
-        willChange: 'opacity, transform',
-      }}
-    >
+    // Height is CSS-resolved (.hero-section): HEADER_HEIGHT_PX on desktop via
+    // the world container's --hero-h-desktop, one full small-viewport on
+    // mobile (A1/B10 — the old hardcoded 800px claimed decoupling but was
+    // silently coupled).
+    <div ref={containerRef} className="hero-section">
       {/* width:100% (not fit-content) so long lines wrap inside narrow viewports */}
       <div
         style={{

@@ -1,45 +1,46 @@
 'use client';
-import { activeSections } from '@/lib/activeSections';
-import { getCardPositions } from '@/lib/cardPositioner';
-import { useMobile } from '@/lib/useMobile';
-import { HEADER_HEIGHT_PX, FOOTER_HEIGHT_PX } from '@/config/world';
+
+import {
+  activeSections,
+  sectionCenterFractionDesktop,
+  sectionCenterFractionMobile,
+} from '@/lib/activeSections';
 import { Card } from '@/components/cards/Card';
 
+// One DOM for both breakpoints (A8): every card lives in an absolutely
+// positioned slot whose geometry is resolved in CSS (.card-slot) from the
+// custom properties below — beside the spine on desktop, indented off the
+// gutter wake on mobile. Server HTML, phone paint and desktop paint all
+// agree, so there is nothing left to shift (CLS ≈ 0). Slot ids double as
+// skip-link/anchor targets.
 export default function CardGrid() {
-  const isMobile = useMobile();
-  const positions = getCardPositions();
-
-  if (isMobile) {
-    return (
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        // Top padding clears the absolutely-positioned hero zone; bottom padding
-        // reserves the strip the absolutely-anchored footer renders into.
-        padding: `${HEADER_HEIGHT_PX}px 24px ${FOOTER_HEIGHT_PX}px`,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px',
-        pointerEvents: 'auto',
-      }}>
-        {activeSections.map((section) => (
-          <Card key={section.id} section={section} position={null} isMobile={true} />
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-      {activeSections.map((section) => {
-        const position = positions.find((p) => p.id === section.id);
-        if (!position) return null;
-        return (
-          <div key={section.id} style={{ pointerEvents: 'auto' }}>
-            <Card section={section} position={position} isMobile={false} />
-          </div>
-        );
-      })}
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+      }}
+    >
+      {activeSections.map((section) => (
+        <div
+          key={section.id}
+          id={`card-${section.id}`}
+          className="card-slot"
+          data-side={section.side}
+          style={
+            {
+              '--slot-top': `${(sectionCenterFractionDesktop(section.index) * 100).toFixed(4)}%`,
+              '--slot-top-m': `${(sectionCenterFractionMobile(section.index) * 100).toFixed(4)}%`,
+            } as React.CSSProperties
+          }
+        >
+          <Card section={section} />
+        </div>
+      ))}
     </div>
   );
 }

@@ -41,3 +41,24 @@ export const ZONE_THRESHOLDS = {
 // styles/globals.css as `@media (max-width: 767px)` (CSS cannot read TS);
 // if this number changes, change those media queries in the same edit.
 export const MOBILE_BREAKPOINT_PX = 768;
+
+// ─── The mobile world (A1) ──────────────────────────────────────────────────
+// On phones the journey is a designed world of ~7.8 small viewports, not a
+// stack of cards. Units are svh (stable while browser chrome collapses);
+// the CSS in globals.css turns these numbers into real heights via custom
+// properties set on the world container in app/page.tsx.
+
+/** Hero landing zone height, in svh. */
+export const MOBILE_HERO_SVH = 100;
+
+/** Height of each section slot, in svh — room for the world to move between
+ *  transmissions. */
+export const MOBILE_SECTION_SVH = 140;
+
+/** Seafloor/footer zone height, in svh. */
+export const MOBILE_FOOTER_SVH = 120;
+
+/** Horizontal position of the mobile wake gutter (A3), in vw. Cards indent
+ *  off it: their slots start at calc(gutter + 22px) — see .card-slot in
+ *  globals.css and MobileSpine's connector geometry. */
+export const MOBILE_GUTTER_VW = 11;

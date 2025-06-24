@@ -28,12 +28,6 @@ export interface SpineAnchor {
   side: SectionSide;
 }
 
-export interface CardPosition {
-  id: string;
-  side: SectionSide;
-  yCenter: number;     // pixel y from top of scroll container (vertical center of card)
-}
-
 // ─── Store Types ───────────────────────────────────────────────────────────
 
 export interface SiteStore {
@@ -50,7 +44,11 @@ export interface SiteStore {
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
 
-  quality: QualityLevel;              // set once on mount based on device detection
+  quality: QualityLevel;              // render tier (B3): high = full shader,
+                                      // medium = dpr-1 lite shader (mobile
+                                      // default), low = animated CSS world.
+                                      // Set by lib/quality.ts on mount;
+                                      // demoted by fps probe / context loss.
   setQuality: (q: QualityLevel) => void;
 }
 

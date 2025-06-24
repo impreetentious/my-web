@@ -161,6 +161,15 @@ export function cometScreenVh(t: number): number {
   return 100 * (t - (CROSS_T - 0.5) * rise * fall);
 }
 
+export function cometScreenVhMobile(t: number): number {
+  return (
+    12 +
+    26 * smoothstep(0.0, 0.3, t) +
+    12 * smoothstep(0.52, CROSS_T, t) +
+    22 * smoothstep(CROSS_T, 1.0, t)
+  );
+}
+
 // ─── Zone weights (t-space) ─────────────────────────────────────────────────
 
 /** Opacity of each background/particle layer at scroll t. Weights are

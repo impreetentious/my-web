@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Space_Mono } from 'next/font/google';
-import { ScrollProvider } from '@/components/providers/ScrollProvider';
 import { Analytics } from '@vercel/analytics/react';
 import '@/styles/globals.css';
 
@@ -55,9 +54,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${spaceMono.variable}`}>
       <body>
-        <ScrollProvider>
-          {children}
-        </ScrollProvider>
+        {/* B4 — the Lenis scroll system is scoped to the home experience
+            (app/page.tsx wraps itself in ScrollProvider); blog routes scroll
+            natively and run no rAF loop. */}
+        {children}
         <Analytics />
       </body>
     </html>

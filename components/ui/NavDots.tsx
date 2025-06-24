@@ -3,36 +3,29 @@
 import { useState } from 'react';
 import { useSiteStore } from '@/store/useSiteStore';
 import { activeSections } from '@/lib/activeSections';
-import { useMobile } from '@/lib/useMobile';
-import { scrollToY } from '@/lib/scrollSystem';
-import {
-  SECTION_HEIGHT_PX,
-  HEADER_HEIGHT_PX,
-  FOOTER_HEIGHT_PX,
-} from '@/config/world';
-
-const totalHeight =
-  HEADER_HEIGHT_PX + activeSections.length * SECTION_HEIGHT_PX + FOOTER_HEIGHT_PX;
+import { scrollToY, getScrollLimit } from '@/lib/scrollSystem';
+import { SECTION_HEIGHT_PX, HEADER_HEIGHT_PX } from '@/config/world';
 
 export default function NavDots() {
-  const isMobile = useMobile();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // Derived selector: re-renders only when the active index changes, not every
-  // scroll frame. Converts scrollT back to pixels because the header/footer
-  // zones would otherwise drift the index away from real section boundaries.
+  // scroll frame. Converts scrollT back to pixels via the SAME limit scrollT
+  // was normalised with (B9) — the old totalHeight−innerHeight denominator
+  // drifted the index near section boundaries.
   const activeSectionIndex = useSiteStore((s) => {
     if (typeof window === 'undefined') return 0;
-    const scrollPx = s.scrollT * Math.max(0, totalHeight - window.innerHeight);
+    const scrollPx = s.scrollT * getScrollLimit();
     const viewportCenter = scrollPx + window.innerHeight / 2;
     const raw = Math.floor((viewportCenter - HEADER_HEIGHT_PX) / SECTION_HEIGHT_PX);
     return Math.min(Math.max(raw, 0), activeSections.length - 1);
   });
 
-  if (isMobile) return null;
-
+  // Desktop-only chrome — phones get the ticker instead (A4); the CSS media
+  // query hides this whole rail below the breakpoint.
   return (
     <nav
+      className="nav-dots"
       aria-label="Section navigation"
       style={{
         position: 'fixed',
@@ -40,7 +33,6 @@ export default function NavDots() {
         top: '50%',
         transform: 'translateY(-50%)',
         zIndex: 10,
-        display: 'flex',
         flexDirection: 'column',
         gap: '4px',
       }}

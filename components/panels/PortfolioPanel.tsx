@@ -1,7 +1,7 @@
 'use client';
 
 import portfolioData from '@/content/portfolio.json';
-import { DossierBlock, DossierRow } from '@/components/panels/dossier';
+import { DossierBlock, DossierRow, DossierFigure, CaseFile } from '@/components/panels/dossier';
 import type { PortfolioItem } from '@/types';
 
 const items = portfolioData as PortfolioItem[];
@@ -23,7 +23,7 @@ export function PortfolioPanel() {
         </p>
       </DossierBlock>
 
-      {items.map((item) => (
+      {items.map((item, i) => (
         <DossierRow
           key={item.id}
           href={item.href}
@@ -31,7 +31,18 @@ export function PortfolioPanel() {
           title={item.title}
           description={item.description}
           chips={item.tags}
-        />
+          figure={
+            item.figure && (
+              <DossierFigure
+                kind={item.figure}
+                seed={item.id}
+                serial={`FIG.${String(i + 1).padStart(2, '0')} · ${item.id.slice(0, 6).toUpperCase()}`}
+              />
+            )
+          }
+        >
+          {item.caseStudy && <CaseFile index={i} id={item.id} study={item.caseStudy} />}
+        </DossierRow>
       ))}
     </div>
   );

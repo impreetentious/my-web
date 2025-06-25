@@ -62,6 +62,20 @@ export interface BlogPost {
   content?: string;    // full MDX content, only present on individual post pages
 }
 
+// C4 — every dossier row carries an artifact: an abstract schematic drawn
+// deterministically from the row's id, in one of these archetypes.
+export type FigureKind = 'network' | 'bars' | 'stack' | 'flow' | 'orbit' | 'pulse';
+
+// C5 — an anonymised case study rendered as a declassified extract inside
+// the dossier row. All narrative fields are owner-approved content.
+export interface CaseStudy {
+  context: string;
+  decision: string;
+  move: string;    // the analytical move
+  model: string;   // the operating model
+  outcome: string;
+}
+
 export interface PortfolioItem {
   id: string;
   title: string;
@@ -72,6 +86,8 @@ export interface PortfolioItem {
                          // sets this explicitly on every item, matching the
                          // pattern used across all content JSON in this plan
   year: string;
+  figure?: FigureKind;
+  caseStudy?: CaseStudy | null;
 }
 
 export interface ProjectItem {
@@ -82,4 +98,5 @@ export interface ProjectItem {
   href?: string | null; // GitHub or live link; null means "no link" — see
                          // PortfolioItem.href above, same reasoning
   status: 'live' | 'wip' | 'archived';
+  figure?: FigureKind;
 }

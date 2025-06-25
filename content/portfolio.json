@@ -5,7 +5,15 @@
     "year": "2024–25",
     "description": "Built the full GTM motion from scratch for a new SaaS product entering the Indian market. Developed the ICP and account segmentation across 75+ targets, generated ~$4M in qualified pipeline, and activated 20+ SI relationships producing ~$2.5M in net-new partner pipeline. Established positioning, outreach playbooks, and SI onboarding frameworks.",
     "tags": ["GTM Strategy", "Product GTM", "Partner Activation", "Pipeline Development"],
-    "href": null
+    "href": null,
+    "figure": "network",
+    "caseStudy": {
+      "context": "A global vendor's aftermarket SaaS product had no India motion — no ICP, no pipeline, no partner coverage.",
+      "decision": "Enter through a focused 0-to-1 build rather than a broad launch: define the ICP first, then sequence accounts by propensity.",
+      "move": "Segmented 75+ target accounts on fit and intent signals, with an outreach playbook per segment instead of a single script.",
+      "model": "Direct outreach and SI partnerships run as one motion — 20+ integrator relationships activated to multiply coverage.",
+      "outcome": "~$4M qualified pipeline in the product's first India year, ~$2.5M of it net-new through partners."
+    }
   },
   {
     "id": "voltmx-growth-markets",
@@ -13,7 +21,15 @@
     "year": "2024",
     "description": "Led product strategy and requirements definition for the VoltMX low-code platform across growth markets. Authored 55+ structured feature definitions, mapped 10+ distinct buyer personas, and developed 15+ sector-specific use cases spanning BFSI, healthcare, and the India public sector.",
     "tags": ["Product Strategy", "Low-Code", "Feature Definition", "Persona Research"],
-    "href": null
+    "href": null,
+    "figure": "stack",
+    "caseStudy": {
+      "context": "A low-code platform entering growth markets, with feature demands arriving faster than strategy could vet them.",
+      "decision": "Anchor the roadmap in buyer personas and sector use cases — not in the loudest deal in the room.",
+      "move": "Authored 55+ structured feature definitions mapped to 10+ personas and 15+ sector use cases across BFSI, healthcare and public sector.",
+      "model": "One definition pipeline from field signal → persona fit → structured spec, keeping product and GTM in a single loop.",
+      "outcome": "A defensible growth-market roadmap: every shipped definition traceable to a named persona and a sector case."
+    }
   },
   {
     "id": "india-public-sector",
@@ -21,7 +37,15 @@
     "year": "2023–24",
     "description": "Stood up the sales strategy function for the India public sector vertical — the founding year of the practice. Built a $8M pipeline across 60+ accounts and closed >$1.5M in ACV. Developed account intelligence frameworks, competitive battle cards, and the full sector engagement playbook.",
     "tags": ["Sales Strategy", "Public Sector", "Revenue Generation", "Account Planning"],
-    "href": null
+    "href": null,
+    "figure": "bars",
+    "caseStudy": {
+      "context": "The public sector vertical was founded with no playbook: no account intelligence, no competitive assets, no strategy function.",
+      "decision": "Stand strategy up as a founding function — build the intelligence layer before chasing the quarter.",
+      "move": "Account intelligence frameworks and competitive battle cards across 60+ accounts; the full sector engagement playbook codified.",
+      "model": "Long-cycle government pursuit discipline paired with quarterly pipeline reviews the sales team actually used.",
+      "outcome": "$8M pipeline and >$1.5M closed ACV in year one — the function's founding year."
+    }
   },
   {
     "id": "bain-summer-associate",
@@ -29,7 +53,9 @@
     "year": "Apr–Jun 2023",
     "description": "Worked on client engagements applying hypothesis-driven problem structuring, data-driven insight generation, and executive-ready communication under senior guidance.",
     "tags": ["Strategy Consulting", "Problem Structuring", "Client Engagement"],
-    "href": null
+    "href": null,
+    "figure": "flow",
+    "caseStudy": null
   },
   {
     "id": "national-consulting-olympiad",
@@ -37,6 +63,8 @@
     "year": "2022",
     "description": "Competed in the National Consulting Olympiad out of IIM Indore. Ranked 4th nationally across 300+ teams through multiple elimination rounds solving business strategy cases under strict time constraints.",
     "tags": ["Case Competition", "Strategy", "IIM Indore"],
-    "href": null
+    "href": null,
+    "figure": "orbit",
+    "caseStudy": null
   }
 ]

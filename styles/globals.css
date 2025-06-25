@@ -539,6 +539,120 @@ body {
   transform: translateX(0);
 }
 
+/* ─── Dossier artifacts + case files (C4/C5) ────────────────────────────── */
+
+.dossier-figure {
+  margin-top: 16px;
+  width: 84px;
+  color: rgba(196, 212, 230, 0.5);
+}
+.dossier-figure svg { display: block; width: 100%; height: auto; }
+.dossier-figure-serial {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+  opacity: 0.75;
+  margin-top: 6px;
+  white-space: nowrap;
+}
+
+.dossier-row-extra {
+  padding: 0 12px 26px 4px;
+  display: grid;
+  grid-template-columns: minmax(72px, 96px) 1fr;
+  gap: 20px;
+}
+.dossier-row-extra > * { grid-column: 2; }
+
+.case-file-toggle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  background: transparent;
+  border: 1px solid rgba(224, 178, 110, 0.22);
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(224, 178, 110, 0.85);
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.case-file-toggle:hover {
+  border-color: rgba(224, 178, 110, 0.55);
+  background: rgba(224, 178, 110, 0.05);
+}
+.case-file-sign { font-size: 12px; }
+
+.case-file-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.55s cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+.case-file[data-open='true'] .case-file-body { grid-template-rows: 1fr; }
+.case-file-inner { overflow: hidden; min-height: 0; }
+
+.case-file-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 148px;
+  gap: 28px;
+  padding: 22px 2px 8px;
+  border-left: 1px solid rgba(224, 178, 110, 0.18);
+  padding-left: 18px;
+  margin-top: 14px;
+}
+
+.case-beat { margin-bottom: 14px; }
+.case-beat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  color: var(--color-text-muted);
+  margin-bottom: 5px;
+}
+.case-beat-text {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+  max-width: 480px;
+}
+
+.case-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  align-self: start;
+}
+.case-doc-line {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.13);
+}
+.case-doc-redact {
+  height: 9px;
+  background: rgba(2, 3, 6, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+.case-doc-metric {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  line-height: 1.6;
+  color: rgba(224, 178, 110, 0.9);
+  margin-top: 4px;
+}
+
+@media (max-width: 767px) {
+  .case-file-grid { grid-template-columns: 1fr; gap: 18px; }
+  .case-doc { max-width: 210px; }
+  .dossier-row-extra { grid-template-columns: 1fr; padding-left: 4px; }
+  .dossier-row-extra > * { grid-column: 1; }
+  .dossier-figure { width: 72px; margin-top: 12px; }
+}
+
 /* Scrollbar — tuned to the world (B14): dim teal thumb over the abyss track,
    brightening toward the wake's aqua on hover. Firefox gets the same voice. */
 html {

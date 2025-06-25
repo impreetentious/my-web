@@ -1,7 +1,7 @@
 'use client';
 
 import projectsData from '@/content/projects.json';
-import { DossierBlock, DossierRow } from '@/components/panels/dossier';
+import { DossierBlock, DossierRow, DossierFigure } from '@/components/panels/dossier';
 import type { ProjectItem } from '@/types';
 
 const items = projectsData as ProjectItem[];
@@ -35,10 +35,19 @@ export function ProjectsPanel() {
         </p>
       </DossierBlock>
 
-      {items.map((item) => (
+      {items.map((item, i) => (
         <DossierRow
           key={item.id}
           href={item.href}
+          figure={
+            item.figure && (
+              <DossierFigure
+                kind={item.figure}
+                seed={item.id}
+                serial={`FIG.${String(i + 1).padStart(2, '0')} · ${item.id.slice(0, 6).toUpperCase()}`}
+              />
+            )
+          }
           meta={
             <span style={{ display: 'inline-flex', flexDirection: 'column', gap: '6px' }}>
               <span

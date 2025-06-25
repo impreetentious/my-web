@@ -672,6 +672,170 @@ body {
   .dossier-annot { text-align: left; padding-top: 0; }
 }
 
+/* ─── Transmission log — the blog joins the fiction (C8) ─────────────────────
+   Server-rendered, native scroll, no Lenis: fast stays fast. Film grain is a
+   self-contained data URI (no request), gold accents, mono meta, serif titles. */
+
+.log-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.log-return {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(224, 178, 110, 0.8);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.log-return:hover { color: rgba(238, 203, 148, 1); }
+
+.log-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(224, 178, 110, 0.65);
+  margin-top: 46px;
+}
+
+.log-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(38px, 6vw, 52px);
+  color: var(--color-text-primary);
+  margin-top: 12px;
+  letter-spacing: 0.005em;
+}
+
+.log-sub {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  margin-top: 8px;
+}
+
+.log-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+  margin-top: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.log-rule {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(224, 178, 110, 0.45), rgba(255, 255, 255, 0.10) 40%, rgba(255, 255, 255, 0.06));
+  margin: 26px 0 6px;
+}
+
+.log-series-strip {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 12px 14px;
+  margin-top: 22px;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+.log-series-strip:hover {
+  border-color: rgba(224, 178, 110, 0.4);
+  color: rgba(224, 178, 110, 0.85);
+}
+
+.log-row {
+  display: block;
+  text-decoration: none;
+  padding: 30px 4px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.log-row-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.log-row-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 25px;
+  color: var(--color-text-primary);
+  margin-top: 9px;
+  line-height: 1.2;
+  transition: color 0.25s ease;
+}
+.log-row-arrow {
+  display: inline-block;
+  margin-left: 10px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: rgba(224, 178, 110, 0.9);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+.log-row:hover .log-row-arrow,
+.log-part:hover .log-row-arrow { opacity: 1; transform: translateX(0); }
+.log-row-excerpt {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-top: 8px;
+  line-height: 1.7;
+  max-width: 60ch;
+}
+
+.log-next {
+  display: block;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 18px 20px;
+  flex: 1 1 240px;
+  transition: border-color 0.25s ease;
+}
+.log-next:hover { border-color: rgba(224, 178, 110, 0.4); }
+.log-next-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  color: var(--color-text-muted);
+}
+.log-next-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 19px;
+  color: var(--color-text-primary);
+  margin-top: 8px;
+  line-height: 1.25;
+}
+
+/* series page part slots */
+.log-part {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 18px;
+  padding: 22px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  text-decoration: none;
+}
+.log-part-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+  padding-top: 5px;
+}
+.log-part-pending .log-part-title { color: var(--color-text-muted); }
+
 /* Scrollbar — tuned to the world (B14): dim teal thumb over the abyss track,
    brightening toward the wake's aqua on hover. Firefox gets the same voice. */
 html {

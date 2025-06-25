@@ -60,6 +60,10 @@ export interface BlogPost {
   date: string;        // ISO date string, e.g. "2025-05-11"
   excerpt: string;
   content?: string;    // full MDX content, only present on individual post pages
+  readingTime: number; // minutes, computed from the source (C8)
+  entry: number;       // 1-based chronological log number (oldest = 1)
+  series?: string;     // series id from frontmatter — see SERIES in lib/blog.ts
+  seriesIndex?: number; // 1-based part number within the series
 }
 
 // C4 — every dossier row carries an artifact: an abstract schematic drawn

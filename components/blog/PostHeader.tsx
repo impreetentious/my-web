@@ -1,57 +1,39 @@
 import Link from 'next/link';
+import { SERIES } from '@/lib/blog';
 import type { BlogPost } from '@/types';
 
-function formatDate(iso: string): string {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
 export function PostHeader({ post }: { post: BlogPost }) {
+  const series = post.series ? SERIES[post.series] : null;
+
   return (
     <header>
-      <Link
-        href="/blog"
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          color: 'var(--color-accent)',
-          textDecoration: 'none',
-        }}
-      >
-        ← Writing
+      <Link href="/blog" className="log-return">
+        ← TRANSMISSION LOG
       </Link>
+
+      <p className="log-kicker" style={{ marginTop: '42px' }}>
+        LOG {post.date} · ENTRY {String(post.entry).padStart(2, '0')} · {post.readingTime} MIN
+      </p>
+
       <h1
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 300,
-          fontSize: '36px',
-          color: 'var(--color-text-primary)',
-          marginTop: '40px',
-        }}
+        className="log-title"
+        style={{ fontSize: 'clamp(34px, 5.4vw, 46px)', lineHeight: 1.12 }}
       >
         {post.title}
       </h1>
-      <p
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          color: 'var(--color-text-muted)',
-          marginTop: '12px',
-        }}
-      >
-        {formatDate(post.date)}
-      </p>
-      <hr
-        style={{
-          border: 'none',
-          borderTop: '1px solid var(--color-border-visible)',
-          margin: '32px 0',
-        }}
-      />
+
+      {series && post.seriesIndex && (
+        <Link
+          href={`/blog/series/${post.series}`}
+          className="log-series-strip"
+          style={{ marginTop: '18px' }}
+        >
+          PART {post.seriesIndex} OF {series.planned} · {series.title.toUpperCase()}{' '}
+          <span aria-hidden="true">→</span>
+        </Link>
+      )}
+
+      <div className="log-rule" style={{ margin: '28px 0 36px' }} />
     </header>
   );
 }

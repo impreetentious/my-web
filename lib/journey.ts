@@ -26,6 +26,9 @@ export const journey = {
   plungeAt: -1e12,
   /** Re-arms when the visitor scrolls back above the crossing. */
   plungeArmed: true,
+  /** Buoyancy amplitude (C2), vh — captured from scroll velocity at the
+   *  plunge so a crawl barely dips and a dive visibly overshoots. */
+  plungeKickVh: 0,
 
   /** Idle beats (§3.5.6): last input + last fired beat. */
   lastInputAt: 0,
@@ -50,6 +53,7 @@ export const IDLE_EVENT = 'descent:idle';
 export function firePlunge(now: number): void {
   journey.plungeAt = now;
   journey.plungeArmed = false;
+  journey.plungeKickVh = Math.min(3.2, Math.abs(journey.velocity) * 0.055);
   window.dispatchEvent(new CustomEvent(PLUNGE_EVENT));
 }
 
@@ -62,4 +66,27 @@ export function fireIdleBeat(now: number): void {
  *  flash/wobble/dip/spray envelopes from this single number. */
 export function plungeElapsed(nowMs: number): number {
   return Math.min(30, (nowMs - journey.plungeAt) / 1000);
+}
+
+// ─── Buoyancy spring (C2) ───────────────────────────────────────────────────
+// Surface tension made physical: a fast crossing carries the probe/world a
+// few vh deeper than scroll says, then one damped rebound settles it. The
+// offset is analytic — a critically-under-damped sine of plungeElapsed — so
+// every consumer (shader sampling, both spines) reads the same curve with no
+// per-frame integration state. Never applied to raw scroll position; under
+// reduced motion the plunge never fires, so this stays 0 there.
+
+const BUOY_ZETA = 0.34;  // one visible rebound (~31 % of the overshoot), then done
+const BUOY_OMEGA = 7.2;  // rad/s — overshoot peaks ~0.18 s in, settled by ~1.4 s
+const BUOY_OMEGA_D = BUOY_OMEGA * Math.sqrt(1 - BUOY_ZETA * BUOY_ZETA);
+
+/** Screen-space buoyancy offset in vh, `e` seconds after the plunge.
+ *  Positive = deeper than scroll says. Zero before any plunge. */
+export function buoyancyVh(e: number): number {
+  if (e <= 0 || e > 2.5) return 0;
+  return (
+    journey.plungeKickVh *
+    Math.exp(-BUOY_ZETA * BUOY_OMEGA * e) *
+    Math.sin(BUOY_OMEGA_D * e)
+  );
 }

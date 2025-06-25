@@ -9,7 +9,7 @@ import {
   cometScreenVh,
   waterlineScreenVh,
 } from '@/lib/descent';
-import { journey, PLUNGE_EVENT, IDLE_EVENT } from '@/lib/journey';
+import { journey, PLUNGE_EVENT, IDLE_EVENT, plungeElapsed, buoyancyVh } from '@/lib/journey';
 import { motionAllowed, EASE_ARRIVE_CSS } from '@/lib/motion';
 import type { SpineAnchor } from '@/types';
 
@@ -277,11 +277,14 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
 
       const t = useSiteStore.getState().scrollT;
       const vh = window.innerHeight;
+      // C2 — the probe overshoots the crossing with its momentum and one
+      // damped rebound settles it; same curve the shader's world offset rides
+      const buoy = allowMotion ? buoyancyVh(plungeElapsed(now)) : 0;
       // screen-curve + live scrollY: exact at any window size, immune to the
       // dev overlay padding body height beyond the world container
       const targetY = Math.min(
         totalHeight,
-        Math.max(0, window.scrollY + (cometScreenVh(t) / 100) * vh)
+        Math.max(0, window.scrollY + ((cometScreenVh(t) + buoy) / 100) * vh)
       );
       const s = arcAtPageY(targetY);
       const head = pointAtArc(s);
@@ -312,8 +315,9 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           );
 
         // warm above the surface, cool below — judged against the actual
-        // on-screen waterline, so the flip lands exactly at the plunge
-        const waterY = (waterlineScreenVh(t) / 100) * vh;
+        // on-screen waterline (buoyed like the shader's), so the flip lands
+        // exactly at the plunge
+        const waterY = ((waterlineScreenVh(t) - buoy) / 100) * vh;
         const cool = Math.min(1, Math.max(0, (screenY - waterY + 30) / 60));
         if (dotWarmRef.current) dotWarmRef.current.style.opacity = String(1 - cool);
         if (dotCoolRef.current) dotCoolRef.current.style.opacity = String(cool);

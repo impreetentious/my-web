@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
   BufferGeometry,
@@ -11,9 +11,13 @@ import {
 } from 'three';
 import { useSiteStore } from '@/store/useSiteStore';
 import { waterlineScreenVh, zoneWeights, abyssGate } from '@/lib/descent';
-import { journey, plungeElapsed } from '@/lib/journey';
+import { journey, plungeElapsed, buoyancyVh } from '@/lib/journey';
 import { getScrollLimit } from '@/lib/scrollSystem';
 import { motionAllowed } from '@/lib/motion';
+
+const BEAST_KEY = 'mw-abyss-beat';
+const BEAST_DURATION_S = 13;
+const BEAST_DELAY_S = 1.4;
 
 // The whole world in one fullscreen fragment pass: altitude-continuous sky,
 // procedural deep starfield, FBM nebulae, a living ocean surface, underwater
@@ -44,6 +48,7 @@ const FRAGMENT = /* glsl */ `
   uniform float uRays;     // god-ray gate
   uniform vec2  uMouse;    // eased pointer, −1..1
   uniform float uLite;     // medium tier (A2): single dim star layer, no nebulae
+  uniform float uBeast;    // C10: abyss passage progress ∈ (0,1); off outside it
 
   varying vec2 vUv;
 
@@ -121,12 +126,21 @@ const FRAGMENT = /* glsl */ `
     uv.x += sin(uvTop0 * 46.0 - e * 34.0) * 0.005 * wob;
     uv.y += sin(uvTop0 * 29.0 - e * 24.0) * 0.0032 * wob;
 
+    // C13 — the medium persists: while submerged the world keeps refracting
+    // at ~10% of the plunge wobble, world-only (the DOM above stays crisp)
+    float sub = smoothstep(0.78, 0.86, uScroll);
+    uv.x += sin(uvTop0 * 41.0 + uTime * 0.80) * 0.0006 * sub;
+    uv.y += sin(uvTop0 * 23.0 - uTime * 0.55) * 0.0004 * sub;
+
     float uvTop = 1.0 - uv.y;
     float wt = uScroll + (uvTop - 0.5) * uSpanT;   // world altitude at this pixel
 
-    // waterline, breathing via 1D noise displacement
+    // waterline, breathing via 1D noise displacement; a second, much longer
+    // swell rolls under the chop so the surface never reads uniform (C13)
     float wUvTop = uWaterVh / 100.0;
-    float disp = (vnoise(vec2(uv.x * 7.0 + uTime * 0.14, uTime * 0.05)) - 0.5) * 0.008;
+    float swell = vnoise(vec2(uv.x * 2.1 + uTime * 0.045, uTime * 0.028));
+    float disp = (vnoise(vec2(uv.x * 7.0 + uTime * 0.14, uTime * 0.05)) - 0.5) * 0.008
+               + (swell - 0.5) * 0.0045;
     float dy = uvTop - (wUvTop + disp);            // + below the line, − above
 
     float deep = smoothstep(0.78, 0.98, uScroll);
@@ -235,6 +249,8 @@ const FRAGMENT = /* glsl */ `
       float sp1 = vnoise(vec2(uv.x * 300.0 * uAspect, dy * 560.0 - uTime * 0.7));
       float sp2 = vnoise(vec2(uv.x * 133.0 * uAspect + 13.0, dy * 210.0 + uTime * 0.4));
       float sparkle = pow(sp1 * sp2, 6.0) * 4.0;
+      // the long swell owns the specular band — glints gather on its crests (C13)
+      sparkle *= 0.55 + 0.90 * swell;
       col += lineCol * sparkle * glintBand * (0.30 + 0.45 * goldGate) * lineAtten * 0.55;
     }
 
@@ -245,6 +261,33 @@ const FRAGMENT = /* glsl */ `
     float ambient = mix(1.0, 0.16 + 0.84 * min(1.0, halo * 1.6), uAbyss * uCometOn);
     col *= ambient;
     col += vec3(0.42, 0.55, 0.52) * halo * halo * uAbyss * uCometOn * 0.28;
+
+    // C10 — once per session, something vast passes at the edge of the
+    // probe's light: a shadow IN the light, never lit itself. Long low body,
+    // tapered tail, one dorsal hint, swimming on a slow spinal undulation.
+    if (uBeast > 0.0 && uBeast < 1.0) {
+      // crosses the open water just above the probe, right to left, inside
+      // the halo's rim — a shadow on the light, its belly barely rim-lit
+      vec2 bpos = uComet + vec2(
+        mix(0.70, -0.70, uBeast),
+        0.10 + 0.035 * sin(uBeast * 8.0 + 1.7)
+      );
+      vec2 bd = (uv - bpos) * vec2(uAspect, 1.0);
+      vec2 bb = vec2(bd.x, bd.y + sin(bd.x * 9.0 + uBeast * 30.0) * 0.012);
+      float body = 1.0 - smoothstep(0.35, 0.95, length(bb * vec2(3.2, 17.0)));
+      float tail = 1.0 - smoothstep(0.25, 0.95, length((bb + vec2(0.17, 0.0)) * vec2(2.1, 26.0)));
+      float fin  = 1.0 - smoothstep(0.30, 0.95, length((bb + vec2(-0.02, 0.045)) * vec2(16.0, 10.0)));
+      float shape = max(body, max(tail * 0.85, fin * 0.9));
+      // underside rim: the same body sampled a hair lower — the difference
+      // is the lower contour, where the probe's light grazes it
+      vec2 bbLow = bb + vec2(0.0, 0.014);
+      float bodyLow = 1.0 - smoothstep(0.35, 0.95, length(bbLow * vec2(3.2, 17.0)));
+      float rim = max(0.0, bodyLow - body);
+      float glimpse = smoothstep(0.04, 0.18, uBeast) * (1.0 - smoothstep(0.82, 0.97, uBeast));
+      float presence = uAbyss * uCometOn * glimpse;
+      col *= 1.0 - shape * min(1.0, halo * 3.6) * presence * 0.88;
+      col += vec3(0.16, 0.30, 0.28) * rim * min(1.0, halo * 2.4) * presence * 0.5;
+    }
 
     // ── the plunge: flash at impact, spray ring, palette dip ──
     col += vec3(1.0, 0.95, 0.82) * flash * exp(-cdist2 * 9.0) * 1.15;
@@ -279,6 +322,20 @@ export function SkyOcean() {
   const meshRef = useRef<Mesh>(null);
   const allowMotion = useMemo(() => motionAllowed(), []);
 
+  // C10 — the abyss passage is a once-per-session beat: armed the first time
+  // the visitor reaches the dark with motion allowed, then never again.
+  const beastRef = useRef<{ seen: boolean; start: number | null }>({
+    seen: true,
+    start: null,
+  });
+  useEffect(() => {
+    try {
+      beastRef.current.seen = sessionStorage.getItem(BEAST_KEY) === '1';
+    } catch {
+      beastRef.current.seen = false;
+    }
+  }, []);
+
   const { geometry, material } = useMemo(() => {
     // single oversized triangle — covers the frame without a seam
     const geo = new BufferGeometry();
@@ -304,6 +361,7 @@ export function SkyOcean() {
         uRays: { value: 0 },
         uMouse: { value: new Vector2(0, 0) },
         uLite: { value: 0 },
+        uBeast: { value: -1 },
       },
       depthTest: false,
       depthWrite: false,
@@ -318,22 +376,45 @@ export function SkyOcean() {
     const w = state.size.width;
     const h = state.size.height;
 
-    u.uScroll.value = t;
-    if (allowMotion) u.uTime.value = state.clock.elapsedTime;
-    u.uAspect.value = w / h;
-    u.uResY.value = h * state.gl.getPixelRatio();
     // one viewport in scroll-t — normalised against the live scrollable
     // extent so the world's vertical scale is right on BOTH page heights
     // (desktop px world, mobile svh world)
-    u.uSpanT.value = h / getScrollLimit();
-    u.uWaterVh.value = waterlineScreenVh(t);
+    const spanT = h / getScrollLimit();
+    const pe = allowMotion ? plungeElapsed(performance.now()) : 30;
+    // C2 — buoyancy: the world samples a touch deeper than scroll says
+    // through the crossing, and the line rides up by the same offset
+    const buoy = buoyancyVh(pe);
+
+    u.uScroll.value = t + (buoy / 100) * spanT;
+    if (allowMotion) u.uTime.value = state.clock.elapsedTime;
+    u.uAspect.value = w / h;
+    u.uResY.value = h * state.gl.getPixelRatio();
+    u.uSpanT.value = spanT;
+    u.uWaterVh.value = waterlineScreenVh(t) - buoy;
     u.uLite.value = useSiteStore.getState().quality === 'medium' ? 1 : 0;
     u.uAbyss.value = abyssGate(t);
     u.uRays.value = zoneWeights(t).rays;
     u.uComet.value.set(journey.cometX / w, 1 - journey.cometY / h);
     u.uCometOn.value = journey.cometOn ? 1 : 0;
-    u.uPlungeE.value = allowMotion ? plungeElapsed(performance.now()) : 30;
+    u.uPlungeE.value = pe;
     u.uMouse.value.set(journey.mouseX, journey.mouseY);
+
+    // C10 — arm the passage deep in the dark; play it exactly once
+    const beast = beastRef.current;
+    if (!beast.seen && beast.start === null && allowMotion && t > 0.9 && journey.cometOn) {
+      beast.start = state.clock.elapsedTime + BEAST_DELAY_S;
+      beast.seen = true;
+      try {
+        sessionStorage.setItem(BEAST_KEY, '1');
+      } catch {
+        // private mode — the beat simply plays again next visit
+      }
+    }
+    if (beast.start !== null) {
+      const p = (state.clock.elapsedTime - beast.start) / BEAST_DURATION_S;
+      u.uBeast.value = p >= 1 ? -1 : p; // p<0 during the delay; shader gates on (0,1)
+      if (p >= 1) beast.start = null;
+    }
   });
 
   return (

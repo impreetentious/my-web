@@ -9,7 +9,7 @@ import {
   waterlineScreenVh,
   smoothstep,
 } from '@/lib/descent';
-import { journey } from '@/lib/journey';
+import { journey, plungeElapsed, buoyancyVh } from '@/lib/journey';
 import { motionAllowed, EASE_ARRIVE_CSS } from '@/lib/motion';
 import {
   activeSections,
@@ -223,9 +223,13 @@ export default function MobileSpine() {
         easedVh += (targetVh - easedVh) * (0.42 - 0.3 * uw);
       }
 
+      // C2 — buoyancy rides on top of the eased position (not through it:
+      // the underwater lag would smear the rebound into mush)
+      const buoy = allowMotion ? buoyancyVh(plungeElapsed(performance.now())) : 0;
+
       const targetY = Math.min(
         H,
-        Math.max(0, window.scrollY + (easedVh / 100) * vh)
+        Math.max(0, window.scrollY + ((easedVh + buoy) / 100) * vh)
       );
       const s = arcAtPageY(targetY);
       const head = pointAtArc(s);
@@ -249,7 +253,8 @@ export default function MobileSpine() {
         );
 
       // warm above the surface, cool below — against the on-screen waterline
-      const waterY = (waterlineScreenVh(t) / 100) * vh;
+      // (buoyed like the shader's, so the flip lands on the beat)
+      const waterY = ((waterlineScreenVh(t) - buoy) / 100) * vh;
       const cool = Math.min(1, Math.max(0, (screenY - waterY + 30) / 60));
       if (dotWarmRef.current) dotWarmRef.current.style.opacity = String(1 - cool);
       if (dotCoolRef.current) dotCoolRef.current.style.opacity = String(cool);

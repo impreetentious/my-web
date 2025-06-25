@@ -17,6 +17,7 @@ import { journey } from '@/lib/journey';
 import { scrambleText } from '@/lib/scramble';
 import { useMobile } from '@/lib/useMobile';
 import { PANEL_REGISTRY } from '@/components/panels';
+import aboutData from '@/content/about.json';
 import type { ZoneName } from '@/types';
 
 // A panel is a decoded dossier, not a modal: the veil takes on the colour of
@@ -452,6 +453,38 @@ export default function PanelOverlay() {
                 <p style={railLabelStyle}>ZONE</p>
                 <p style={railValueStyle}>{ZONE_LABELS[openZone]}</p>
               </div>
+              {/* C6 — the About dossier's rail keeps the recruiter path in
+                  reach the whole scroll: full record + open channel */}
+              {renderedPanelId === 'about' && (
+                <div data-rail>
+                  <p style={railLabelStyle}>ACTIONS</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginTop: '2px' }}>
+                    <a
+                      href={aboutData.channels.resumeHref}
+                      download
+                      style={{
+                        ...railValueStyle,
+                        color: 'var(--color-gold)',
+                        textDecoration: 'none',
+                        fontSize: '10px',
+                      }}
+                    >
+                      FULL RECORD ↓
+                    </a>
+                    <a
+                      href={`mailto:${aboutData.channels.email}`}
+                      style={{
+                        ...railValueStyle,
+                        color: 'var(--color-gold)',
+                        textDecoration: 'none',
+                        fontSize: '10px',
+                      }}
+                    >
+                      OPEN CHANNEL →
+                    </a>
+                  </div>
+                </div>
+              )}
               <div data-rail style={{ marginTop: '18px' }}>
                 <p
                   style={{

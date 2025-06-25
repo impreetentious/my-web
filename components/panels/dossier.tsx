@@ -258,6 +258,42 @@ export function CaseFile({
   );
 }
 
+/** Display-serif pull-quote — a stat callout speaking the document voice (C4). */
+export function PullQuote({ quote, refLine }: { quote: string; refLine?: string }) {
+  return (
+    <div data-block style={{ margin: '34px 0 8px' }}>
+      <div data-hair style={{ height: '1px', background: 'rgba(224, 178, 110, 0.35)', transformOrigin: 'left' }} />
+      <blockquote
+        style={{
+          fontFamily: 'var(--font-display), Georgia, serif',
+          fontStyle: 'italic',
+          fontSize: 'clamp(22px, 2.6vw, 28px)',
+          lineHeight: 1.32,
+          color: 'var(--color-text-primary)',
+          padding: '18px 0 14px',
+          maxWidth: '540px',
+        }}
+      >
+        {quote}
+      </blockquote>
+      {refLine && (
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            letterSpacing: '0.24em',
+            color: 'var(--color-text-muted)',
+            paddingBottom: '16px',
+          }}
+        >
+          {refLine}
+        </p>
+      )}
+      <div data-hair style={{ height: '1px', background: 'rgba(255, 255, 255, 0.10)', transformOrigin: 'left' }} />
+    </div>
+  );
+}
+
 export function DossierBlock({
   children,
   style,

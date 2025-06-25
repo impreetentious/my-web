@@ -645,12 +645,31 @@ body {
   margin-top: 4px;
 }
 
+/* margin annotations (C4) — a note column beside the transcript on desktop */
+.dossier-annot-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 20px;
+}
+.dossier-annot {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  opacity: 0.75;
+  text-align: right;
+  padding-top: 5px;
+}
+
 @media (max-width: 767px) {
   .case-file-grid { grid-template-columns: 1fr; gap: 18px; }
   .case-doc { max-width: 210px; }
   .dossier-row-extra { grid-template-columns: 1fr; padding-left: 4px; }
   .dossier-row-extra > * { grid-column: 1; }
   .dossier-figure { width: 72px; margin-top: 12px; }
+  .dossier-annot-row { grid-template-columns: 1fr; gap: 4px; }
+  .dossier-annot { text-align: left; padding-top: 0; }
 }
 
 /* Scrollbar — tuned to the world (B14): dim teal thumb over the abyss track,

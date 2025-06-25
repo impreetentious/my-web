@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useSiteStore } from '@/store/useSiteStore';
 import { altitudeKm, depthMetres } from '@/lib/descent';
 import { journey } from '@/lib/journey';
+import aboutData from '@/content/about.json';
 
 // The seafloor: a faint ridge silhouette, settled motes, a slow sonar ping
 // behind the end tag — and the mission recap (§3.5.4), quiet live counters
@@ -125,6 +126,67 @@ export default function FooterSection() {
         <span aria-hidden="true">·</span>
         <span ref={clockRef}>T+00:00</span>
       </p>
+
+      {/* C6 — the recruiter path closes the mission: what he does, where he
+          is, and the two channels — quiet, mono, on-fiction */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '10px',
+          position: 'relative',
+          padding: '0 16px',
+          textAlign: 'center',
+        }}
+      >
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            letterSpacing: '0.22em',
+            color: 'rgba(140, 165, 175, 0.62)',
+            textTransform: 'uppercase',
+          }}
+        >
+          {aboutData.channels.proposition}
+        </p>
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            letterSpacing: '0.18em',
+            color: 'rgba(140, 165, 175, 0.42)',
+          }}
+        >
+          {aboutData.channels.availability} · {aboutData.channels.location}
+        </p>
+        <div style={{ display: 'flex', gap: '22px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '4px' }}>
+          {[
+            { href: aboutData.channels.resumeHref, label: 'EXTRACT FULL RECORD ↓', download: true },
+            { href: `mailto:${aboutData.channels.email}`, label: 'OPEN CHANNEL →', download: false },
+          ].map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              download={link.download || undefined}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                letterSpacing: '0.18em',
+                color: 'rgba(224, 178, 110, 0.75)',
+                textDecoration: 'none',
+                padding: '6px 2px', // ≥24px target with the line-height
+                transition: 'color 0.25s ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(238, 203, 148, 1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(224, 178, 110, 0.75)'; }}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
 
       {/* Social link row */}
       <div style={{ display: 'flex', gap: '20px', alignItems: 'center', position: 'relative' }}>

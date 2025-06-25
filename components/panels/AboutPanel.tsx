@@ -37,7 +37,7 @@ export function AboutPanel() {
       <DossierBlock
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
           gap: '2px',
         }}
       >
@@ -46,7 +46,8 @@ export function AboutPanel() {
             key={stat.label}
             style={{
               background: 'rgba(255, 255, 255, 0.025)',
-              padding: '18px 16px 16px',
+              padding: '18px 14px 16px',
+              minWidth: 0, // grid items must be allowed to shrink — labels wrap instead of clipping (A10)
             }}
           >
             <p
@@ -64,10 +65,12 @@ export function AboutPanel() {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '10px',
-                letterSpacing: '0.14em',
+                letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: 'var(--color-text-muted)',
                 marginTop: '8px',
+                overflowWrap: 'break-word',
+                lineHeight: 1.6,
               }}
             >
               {stat.label}

@@ -3,8 +3,12 @@
 import { Mail } from 'lucide-react';
 
 export default function EmailIcon() {
+  // A9 — hidden below the breakpoint (CSS .email-fab): fixed bottom-right
+  // overlapped full-width cards on phones; the contact affordance lives in
+  // the footer's social row there instead.
   return (
     <a
+      className="email-fab"
       href="mailto:sps.daemon@gmail.com"
       aria-label="Send me an email"
       style={{
@@ -12,7 +16,6 @@ export default function EmailIcon() {
         bottom: '28px',
         right: '28px',
         zIndex: 10,
-        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         width: '42px',

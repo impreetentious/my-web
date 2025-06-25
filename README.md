@@ -50,5 +50,5 @@ Every push to `main` auto-deploys via Vercel (~60 seconds).
 Before making any new commits, update the Version Control string in this file with the current IST time of commit (`Asia/Kolkata`).
 This IST timestamp rule is permanent for all future workflows, commits, and AI agents working in this repository.
 
-* **Base Format Version:** 0.7.1
-* **Portfolio Version:** v0.7.1_2025-06-25_02:14:23 (IST)
+* **Base Format Version:** 0.7.2
+* **Portfolio Version:** v0.7.2_2025-06-25_13:54:21 (IST)

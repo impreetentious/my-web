@@ -290,17 +290,18 @@ export default function PanelOverlay() {
         }}
       />
 
-      {/* Ghost numeral rising behind the content */}
+      {/* Ghost numeral rising behind the content — smaller and fully inside
+          the frame on mobile (A10: the old right:-6% crop read as a mistake) */}
       <div
         ref={ghostRef}
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: isMobile ? '2%' : '-2%',
-          right: isMobile ? '-6%' : '2%',
+          top: isMobile ? '3%' : '-2%',
+          right: isMobile ? '4%' : '2%',
           fontFamily: 'var(--font-sans)',
           fontWeight: 300,
-          fontSize: 'clamp(220px, 34vw, 420px)',
+          fontSize: isMobile ? 'clamp(130px, 38vw, 200px)' : 'clamp(220px, 34vw, 420px)',
           lineHeight: 1,
           color: 'rgba(255, 255, 255, 0.035)',
           pointerEvents: 'none',
@@ -353,32 +354,35 @@ export default function PanelOverlay() {
           style={{
             display: 'grid',
             gridTemplateColumns: isMobile ? '1fr' : '210px 1px minmax(0, 1fr)',
-            gap: isMobile ? '28px' : '44px',
+            gap: isMobile ? '18px' : '44px',
             maxWidth: '1060px',
             margin: '0 auto',
-            padding: isMobile ? '72px 22px 80px' : '96px 48px 120px',
+            padding: isMobile ? '68px 20px 80px' : '96px 48px 120px',
             minHeight: '100%',
             alignItems: 'start',
           }}
         >
-          {/* Meta rail — the decode header */}
-          <div
-            ref={railRef}
-            style={{
-              position: isMobile ? 'static' : 'sticky',
-              top: '96px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '22px',
-            }}
-          >
-            <div data-rail>
+          {/* Meta rail — the decode header. Mobile collapses it to a compact
+              strip (A10) so the title lands on the first screen; the [ESC]
+              hint is desktop-only — a keyboard promise means nothing under a
+              thumb, and the ✕ is in view. */}
+          {isMobile ? (
+            <div
+              ref={railRef}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'baseline',
+                gap: '4px 14px',
+              }}
+            >
               <p
+                data-rail
                 data-scramble
                 data-final={`TRANSMISSION ${indexLabel}`}
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '11px',
+                  fontSize: '10px',
                   letterSpacing: '0.3em',
                   color: 'var(--color-accent)',
                   opacity: 0.85,
@@ -386,44 +390,82 @@ export default function PanelOverlay() {
               >
                 {`TRANSMISSION ${indexLabel}`}
               </p>
-            </div>
-            <div data-rail>
-              <p style={railLabelStyle}>SIGNAL</p>
-              <p style={railValueStyle}>{section?.label.toUpperCase() ?? ''}</p>
-            </div>
-            <div data-rail>
-              <p style={railLabelStyle}>POSITION</p>
-              <p data-scramble data-final={depthReading(openT)} style={railValueStyle}>
+              <p
+                data-rail
+                data-scramble
+                data-final={depthReading(openT)}
+                style={{ ...railValueStyle, fontSize: '10px' }}
+              >
                 {depthReading(openT)}
               </p>
-            </div>
-            <div data-rail>
-              <p style={railLabelStyle}>STATUS</p>
-              <p
-                data-scramble
-                data-final={`DECODED ${missionClock()}`}
-                style={railValueStyle}
-              >
-                {`DECODED ${missionClock()}`}
+              <p data-rail style={{ ...railValueStyle, fontSize: '10px' }}>
+                {ZONE_LABELS[openZone]}
               </p>
             </div>
-            <div data-rail>
-              <p style={railLabelStyle}>ZONE</p>
-              <p style={railValueStyle}>{ZONE_LABELS[openZone]}</p>
+          ) : (
+            <div
+              ref={railRef}
+              style={{
+                position: 'sticky',
+                top: '96px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '22px',
+              }}
+            >
+              <div data-rail>
+                <p
+                  data-scramble
+                  data-final={`TRANSMISSION ${indexLabel}`}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    letterSpacing: '0.3em',
+                    color: 'var(--color-accent)',
+                    opacity: 0.85,
+                  }}
+                >
+                  {`TRANSMISSION ${indexLabel}`}
+                </p>
+              </div>
+              <div data-rail>
+                <p style={railLabelStyle}>SIGNAL</p>
+                <p style={railValueStyle}>{section?.label.toUpperCase() ?? ''}</p>
+              </div>
+              <div data-rail>
+                <p style={railLabelStyle}>POSITION</p>
+                <p data-scramble data-final={depthReading(openT)} style={railValueStyle}>
+                  {depthReading(openT)}
+                </p>
+              </div>
+              <div data-rail>
+                <p style={railLabelStyle}>STATUS</p>
+                <p
+                  data-scramble
+                  data-final={`DECODED ${missionClock()}`}
+                  style={railValueStyle}
+                >
+                  {`DECODED ${missionClock()}`}
+                </p>
+              </div>
+              <div data-rail>
+                <p style={railLabelStyle}>ZONE</p>
+                <p style={railValueStyle}>{ZONE_LABELS[openZone]}</p>
+              </div>
+              <div data-rail style={{ marginTop: '18px' }}>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '9px',
+                    letterSpacing: '0.22em',
+                    color: 'rgba(255, 255, 255, 0.22)',
+                  }}
+                >
+                  [ESC] CLOSE
+                </p>
+              </div>
             </div>
-            <div data-rail style={{ marginTop: isMobile ? 0 : '18px' }}>
-              <p
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '9px',
-                  letterSpacing: '0.22em',
-                  color: 'rgba(255, 255, 255, 0.22)',
-                }}
-              >
-                [ESC] CLOSE
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Accent rule — drawn top→down on open */}
           {!isMobile && (

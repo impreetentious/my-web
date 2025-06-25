@@ -299,8 +299,8 @@ export default function PanelOverlay() {
           position: 'absolute',
           top: isMobile ? '3%' : '-2%',
           right: isMobile ? '4%' : '2%',
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 300,
+          fontFamily: 'var(--font-display), Georgia, serif',
+          fontWeight: 400,
           fontSize: isMobile ? 'clamp(130px, 38vw, 200px)' : 'clamp(220px, 34vw, 420px)',
           lineHeight: 1,
           color: 'rgba(255, 255, 255, 0.035)',
@@ -487,12 +487,12 @@ export default function PanelOverlay() {
               <h2
                 ref={titleInnerRef}
                 style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 300,
-                  fontSize: 'clamp(38px, 5.4vw, 58px)',
-                  lineHeight: 1.05,
+                  fontFamily: 'var(--font-display), Georgia, serif',
+                  fontWeight: 400,
+                  fontSize: 'clamp(42px, 6vw, 66px)',
+                  lineHeight: 1.02,
                   color: 'var(--color-text-primary)',
-                  letterSpacing: '-0.01em',
+                  letterSpacing: '0.005em',
                 }}
               >
                 {section?.label ?? ''}

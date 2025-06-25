@@ -18,6 +18,7 @@ export default function HeroSection() {
   const roleWrapRef = useRef<HTMLDivElement>(null);
   const roleRef = useRef<HTMLParagraphElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
+  const sweepRef = useRef<HTMLSpanElement>(null);
 
   // Entrance — fires once when the loading screen releases isLoading. In the
   // handoff take, the boot line is already sitting on the tag's position, so
@@ -75,11 +76,19 @@ export default function HeroSection() {
               },
               `-=${0.75 - STAGGER * 2}`
             );
+            // C12 — the name catches one specular sweep on the ignition
+            // beat: a gradient mask pass over the glyphs, then gone
+            tl.fromTo(
+              sweepRef.current,
+              { backgroundPosition: '135% 0%' },
+              { backgroundPosition: '-35% 0%', duration: 1.05, ease: 'power2.inOut' },
+              handoff ? 0.55 : '-=0.45'
+            );
             tl.fromTo(
               cueRef.current,
               { opacity: 0 },
               { opacity: 1, duration: 0.5, ease: EASE_ARRIVE },
-              '-=0.2'
+              '-=0.7'
             );
           } else {
             gsap.set([tagRef.current, cueRef.current], { opacity: 1 });
@@ -162,12 +171,14 @@ export default function HeroSection() {
           — SIGNAL RECEIVED —
         </p>
         <div ref={nameWrapRef} style={{ overflow: 'hidden', marginTop: '16px' }}>
+          {/* C9 — the display voice: archival serif against the instrument mono */}
           <h1
             ref={nameRef}
             style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 300,
-              fontSize: 'clamp(36px, 5vw, 52px)',
+              fontFamily: 'var(--font-display), Georgia, serif',
+              fontWeight: 400,
+              fontSize: 'clamp(42px, 6vw, 62px)',
+              letterSpacing: '0.005em',
               color: 'var(--color-text-primary)',
               position: 'relative',
               transform: 'translateY(112%)',
@@ -175,6 +186,27 @@ export default function HeroSection() {
             }}
           >
             Sidakpreet Singh
+            {/* C12 — glyph-accurate specular overlay; invisible until (and
+                after) its one background-position pass */}
+            <span
+              ref={sweepRef}
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                color: 'transparent',
+                backgroundImage:
+                  'linear-gradient(100deg, transparent 42%, rgba(255, 241, 209, 0.9) 50%, rgba(224, 178, 110, 0.35) 55%, transparent 62%)',
+                backgroundSize: '250% 100%',
+                backgroundPosition: '135% 0%',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}
+            >
+              Sidakpreet Singh
+            </span>
           </h1>
         </div>
         <div ref={roleWrapRef} style={{ overflow: 'hidden', marginTop: '16px' }}>

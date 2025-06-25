@@ -129,7 +129,30 @@
   gap: 6px;
 }
 .depth-indicator .depth-value { font-size: 13px; }
+.depth-indicator .depth-rate { font-size: 10px; }
 .depth-indicator .depth-zone { font-size: 9px; }
+.depth-indicator .depth-warn { font-size: 10px; }
+
+/* C11 — the audio gauge: quiet mono chrome, gold when live */
+.audio-toggle {
+  margin-top: 6px;
+  padding: 5px 0; /* lifts the hit area toward the 24px floor */
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+  opacity: 0.6;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+.audio-toggle:hover { opacity: 1; }
+.audio-toggle[aria-pressed='true'] {
+  color: rgba(224, 178, 110, 0.85);
+  opacity: 0.9;
+}
 
 .milestone {
   position: absolute;
@@ -154,7 +177,9 @@
   /* telemetry returns, smaller (A4) */
   .depth-indicator { bottom: 14px; left: 14px; gap: 4px; }
   .depth-indicator .depth-value { font-size: 11px; }
+  .depth-indicator .depth-rate { font-size: 9px; }
   .depth-indicator .depth-zone { font-size: 8px; }
+  .depth-indicator .depth-warn { font-size: 9px; }
 
   /* only the landmark trio drifts past on phones */
   .milestone { right: 14px; font-size: 9px; letter-spacing: 0.16em; }
@@ -256,6 +281,19 @@ body {
   animation: comet-pulse 4.2s ease-out infinite;
 }
 
+/* Plunge warning burst (C3) — unstable signal, then reacquired */
+@keyframes hud-warn-flicker {
+  0%, 100% { opacity: 1; }
+  14%      { opacity: 0.15; }
+  28%      { opacity: 0.85; }
+  42%      { opacity: 0.3; }
+  60%      { opacity: 1; }
+  78%      { opacity: 0.55; }
+}
+.hud-warn {
+  animation: hud-warn-flicker 0.38s steps(2, end) 2;
+}
+
 /* Depth ticker hard-glitch on the plunge */
 @keyframes hud-glitch {
   0%   { transform: translateX(0);              clip-path: inset(0); }
@@ -294,6 +332,183 @@ body {
 }
 .god-rays {
   animation: rays-sway 16s ease-in-out infinite alternate;
+}
+
+/* ─── Transmission cards (C1) ────────────────────────────────────────────────
+   A card is an intercepted transmission: notched plate (no radius), corner
+   brackets, a spine-facing port, reception header + signal ticks in the
+   wake's colour at that depth (--tx-accent set per card), display-serif
+   title, decode scanline on entrance, world-lit specular sheen on hover. */
+
+.tx-card {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding: 20px 22px 19px;
+  background: rgba(8, 11, 16, 0.74);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 0;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    12px 100%,
+    0 calc(100% - 12px)
+  );
+  overflow: hidden;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  transition:
+    transform 0.5s cubic-bezier(0.16, 0.84, 0.24, 1),
+    border-color 0.3s ease,
+    box-shadow 0.35s ease;
+}
+.tx-card:hover {
+  border-color: rgba(255, 255, 255, 0.20);
+  box-shadow: 0 18px 50px -16px var(--tx-glow);
+}
+
+/* corner brackets on the two square corners; the notched pair stays open */
+.tx-brackets {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+  background:
+    linear-gradient(var(--tx-accent-dim), var(--tx-accent-dim)) top left / 14px 1px,
+    linear-gradient(var(--tx-accent-dim), var(--tx-accent-dim)) top left / 1px 14px,
+    linear-gradient(var(--tx-accent-dim), var(--tx-accent-dim)) bottom right / 14px 1px,
+    linear-gradient(var(--tx-accent-dim), var(--tx-accent-dim)) bottom right / 1px 14px;
+  background-repeat: no-repeat;
+}
+.tx-card:hover .tx-brackets { opacity: 1; }
+
+/* the port faces the spine — where the anchor's connector arrives */
+.tx-port {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 22px;
+  background: var(--tx-accent);
+  opacity: 0.5;
+  transition: opacity 0.3s ease, box-shadow 0.3s ease;
+  pointer-events: none;
+}
+.tx-card[data-side='left'] .tx-port { right: 0; }
+.tx-card[data-side='right'] .tx-port { left: 0; }
+.tx-card:hover .tx-port {
+  opacity: 0.95;
+  box-shadow: 0 0 10px var(--tx-glow);
+}
+
+.tx-scan {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: -36px;
+  height: 30px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--tx-glow) 38%,
+    var(--tx-accent-dim) 50%,
+    var(--tx-glow) 62%,
+    transparent 100%
+  );
+}
+
+.tx-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background-image: linear-gradient(
+    var(--sheen-angle),
+    transparent 34%,
+    var(--sheen-rgba) 50%,
+    transparent 66%
+  );
+  background-size: 230% 230%;
+  background-position: var(--shx, 50%) var(--shy, 50%);
+}
+.tx-card:hover .tx-sheen { opacity: 1; }
+
+.tx-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+.tx-rx {
+  color: var(--tx-accent);
+  opacity: 0.85;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tx-num { color: rgba(255, 255, 255, 0.25); }
+
+.tx-ticks { display: flex; gap: 3px; margin-top: 10px; }
+.tx-tick {
+  width: 3px;
+  height: 8px;
+  background: var(--tx-accent);
+  opacity: 0.22;
+  transition: opacity 0.45s ease;
+}
+
+.tx-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 25px;
+  letter-spacing: 0.005em;
+  line-height: 1.12;
+  color: var(--color-text-primary);
+  margin-top: 13px;
+}
+
+.tx-tagline {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-top: 7px;
+}
+
+.tx-cta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  margin-top: 17px;
+  color: var(--color-text-muted);
+  transition: color 0.25s ease;
+}
+.tx-cta-arrow {
+  display: inline-block;
+  margin-left: 7px;
+  transform: translateX(0);
+  transition: transform 0.3s cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+.tx-card:hover .tx-cta { color: var(--tx-accent); }
+.tx-card:hover .tx-cta-arrow { transform: translateX(4px); }
+
+@media (max-width: 767px) {
+  .tx-card { padding: 18px 18px 17px; }
+  .tx-title { font-size: 22px; }
 }
 
 /* Panel enter/exit animations are handled by GSAP, not CSS */

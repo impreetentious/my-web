@@ -1,60 +1,127 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
-import { motionAllowed, EASE_ARRIVE, EASE_ARRIVE_CSS } from '@/lib/motion';
+import { motionAllowed, EASE_ARRIVE } from '@/lib/motion';
 import { useSiteStore } from '@/store/useSiteStore';
+import { trailColorAt, U_SURFACE } from '@/lib/descent';
+import { journey } from '@/lib/journey';
+import { scrambleText } from '@/lib/scramble';
+import { sectionCenterFractionDesktop } from '@/lib/activeSections';
 import type { ActiveSection } from '@/types';
+
+// C1 — a card is an intercepted transmission, not a UI tile. The frame is
+// notched (no radius), the header is live reception telemetry (mission clock
+// + SNR derived from the depth it was decoded at), signal ticks echo the SNR,
+// the title speaks the display voice, and the entrance is a decode scanline
+// gated on viewport entry. A ≤2.2° pointer tilt + a specular sheen lit by the
+// WORLD (gold above the line, teal from the probe below) keep it physical.
+// The element stays real DOM — selection, a11y and SEO are non-negotiable.
 
 interface CardProps {
   section: ActiveSection;
 }
 
+const SNR_SURFACE = 12.4; // dB at the top of the descent…
+const SNR_FLOOR = 5.2;    // …attenuated to this at the seafloor
+const TICK_COUNT = 5;
+
+function missionClock(): string {
+  const startedAt = journey.startedAt;
+  const elapsed = startedAt === null ? 0 : Math.max(0, performance.now() - startedAt);
+  const mm = String(Math.floor(elapsed / 60000)).padStart(2, '0');
+  const ss = String(Math.floor((elapsed % 60000) / 1000)).padStart(2, '0');
+  return `T+${mm}:${ss}`;
+}
+
 export function Card({ section }: CardProps) {
   const cardRef = useRef<HTMLElement | null>(null);
-  const [hovered, setHovered] = useState(false);
+  const scanRef = useRef<HTMLDivElement>(null);
+  const rxRef = useRef<HTMLSpanElement>(null);
+  const tickRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Entrance animation — runs once when the card enters the viewport
+  // Where this transmission lives in the world — its wake colour and which
+  // side of the surface it sits on. Desktop fractions serve both breakpoints:
+  // the mobile world keeps every section in the same colour family.
+  const u = sectionCenterFractionDesktop(section.index);
+  const accent = trailColorAt(u);
+  const accentA = (alpha: number) => accent.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`);
+  const submerged = u > U_SURFACE;
+
+  // Reception telemetry is frozen at the moment of decode — real numbers
+  // from the mission clock and the depth the visitor actually intercepted
+  // this transmission at.
+  const decode = () => {
+    const t = useSiteStore.getState().scrollT;
+    const snr = SNR_SURFACE - (SNR_SURFACE - SNR_FLOOR) * t;
+    const rx = `RX ${missionClock()} · SNR ${snr.toFixed(1)} DB`;
+    const el = rxRef.current;
+    if (el) {
+      el.setAttribute('data-final', rx);
+      scrambleText(el, () => rx, 340);
+    }
+    const lit = Math.max(1, Math.min(TICK_COUNT, Math.round((snr / SNR_SURFACE) * TICK_COUNT)));
+    tickRefs.current.forEach((tick, i) => {
+      if (tick) tick.style.opacity = i < lit ? '0.9' : '0.22';
+    });
+  };
+
+  // Entrance — the decode: frame arrives, a scanline sweeps the plate,
+  // content resolves behind it. Runs once on viewport entry, after the veil.
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
 
     // R09 guard: without IntersectionObserver, cards must not stay invisible
     if (!('IntersectionObserver' in window)) {
-      gsap.set(el, { opacity: 1, y: 0 });
+      gsap.set(el, { opacity: 1 });
+      decode();
       return;
     }
 
     let observer: IntersectionObserver | null = null;
     let unsubLoading: (() => void) | null = null;
 
+    const play = () => {
+      decode();
+      if (motionAllowed()) {
+        const content = el.querySelectorAll('[data-tx-content]');
+        const tl = gsap.timeline({
+          delay: Math.min(0.1 * section.index, 0.2),
+        });
+        tl.fromTo(
+          el,
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 0.55, ease: EASE_ARRIVE, clearProps: 'transform' },
+          0
+        );
+        if (scanRef.current) {
+          tl.fromTo(
+            scanRef.current,
+            { top: -36, opacity: 0.9 },
+            { top: '104%', opacity: 0.55, duration: 0.62, ease: 'power1.inOut' },
+            0.04
+          );
+          tl.set(scanRef.current, { opacity: 0 });
+        }
+        tl.fromTo(
+          content,
+          { opacity: 0, y: 9 },
+          { opacity: 1, y: 0, duration: 0.5, ease: EASE_ARRIVE, stagger: 0.06 },
+          0.16
+        );
+      } else {
+        gsap.set(el, { opacity: 1 });
+      }
+    };
+
     const observe = () => {
       observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
-            if (motionAllowed()) {
-              gsap.fromTo(
-                el,
-                { opacity: 0, y: 26, scale: 0.985, filter: 'blur(6px)' },
-                {
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                  filter: 'blur(0px)',
-                  duration: 0.7,
-                  ease: EASE_ARRIVE,
-                  // Small stagger for cards revealed together; capped so a
-                  // deep-link or nav-dot jump to a late section isn't penalised
-                  delay: Math.min(0.1 * section.index, 0.2),
-                  // Hand transform/filter back to CSS so the hover lift works
-                  clearProps: 'transform,filter',
-                }
-              );
-            } else {
-              gsap.set(el, { opacity: 1, y: 0 });
-            }
+            play();
             observer?.unobserve(el);
           });
         },
@@ -87,111 +154,104 @@ export function Card({ section }: CardProps) {
     };
   }, [section.index]);
 
-  const visualStyle: React.CSSProperties = {
-    display: 'block',
-    width: '100%',
-    background: 'rgba(9, 13, 18, 0.72)',
-    backdropFilter: 'blur(12px)',
-    border: `1px solid ${hovered ? 'rgba(0, 255, 238, 0.45)' : 'rgba(0, 255, 238, 0.16)'}`,
-    borderRadius: '4px',
-    padding: '24px',
-    transform: hovered ? 'translateY(-3px)' : 'none',
-    boxShadow: hovered
-      ? '0 18px 50px -18px rgba(0, 255, 238, 0.20), 0 0 24px -6px rgba(0, 255, 238, 0.08)'
-      : '0 8px 30px -18px rgba(0, 0, 0, 0.8)',
-    transition:
-      `border-color 0.3s ease, transform 0.35s ${EASE_ARRIVE_CSS}, box-shadow 0.35s ease`,
-    textAlign: 'left',
-    cursor: 'pointer',
-    opacity: 0, // GSAP reveals the card on viewport entry
-    textDecoration: 'none',
-    font: 'inherit',
-    color: 'inherit',
-  };
+  // Pointer tilt (≤2.2°) + sheen tracking — direct style writes on mousemove,
+  // eased back by the CSS transition. The sheen's light belongs to the world:
+  // sun from above the line, probe from the spine side below it.
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || !motionAllowed()) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;  // −0.5..0.5
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transform =
+        `perspective(760px) rotateX(${(-py * 3.4).toFixed(2)}deg) rotateY(${(px * 4.4).toFixed(2)}deg) translateY(-2px)`;
+      el.style.setProperty('--shx', `${(50 + px * 46).toFixed(1)}%`);
+      el.style.setProperty('--shy', `${(50 + py * 46).toFixed(1)}%`);
+    };
+    const onLeave = () => {
+      el.style.transform = '';
+    };
+    el.addEventListener('mousemove', onMove);
+    el.addEventListener('mouseleave', onLeave);
+    return () => {
+      el.removeEventListener('mousemove', onMove);
+      el.removeEventListener('mouseleave', onLeave);
+    };
+  }, []);
 
   const inner = (
     <>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'baseline',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: 'var(--color-accent)',
-            opacity: 0.9,
-          }}
-        >
-          {section.label}
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            letterSpacing: '0.1em',
-            color: hovered ? 'rgba(0, 255, 238, 0.5)' : 'rgba(255, 255, 255, 0.22)',
-            transition: 'color 0.3s ease',
-          }}
-        >
-          {String(section.index + 1).padStart(2, '0')}
-        </div>
+      {/* Corner brackets + spine-facing port — the frame vocabulary */}
+      <span className="tx-brackets" aria-hidden="true" />
+      <span className="tx-port" aria-hidden="true" />
+
+      {/* Decode scanline — rides the entrance once */}
+      <div ref={scanRef} className="tx-scan" aria-hidden="true" />
+
+      {/* Specular sheen — world-lit, pointer-tracked */}
+      <span className="tx-sheen" aria-hidden="true" />
+
+      <div className="tx-head" data-tx-content>
+        <span ref={rxRef} className="tx-rx" data-final="">
+          RX --:-- · SNR --
+        </span>
+        <span className="tx-num">{String(section.index + 1).padStart(2, '0')}</span>
       </div>
-      <p
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '13px',
-          color: 'var(--color-text-secondary)',
-          marginTop: '8px',
-          lineHeight: 1.6,
-        }}
-      >
+
+      <div className="tx-ticks" data-tx-content aria-hidden="true">
+        {Array.from({ length: TICK_COUNT }, (_, i) => (
+          <span
+            key={i}
+            ref={(el) => { tickRefs.current[i] = el; }}
+            className="tx-tick"
+          />
+        ))}
+      </div>
+
+      <h3 className="tx-title" data-tx-content>
+        {section.label}
+      </h3>
+
+      <p className="tx-tagline" data-tx-content>
         {section.tagline}
       </p>
-      <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          marginTop: '16px',
-          color: hovered ? 'var(--color-accent)' : 'var(--color-text-muted)',
-          transition: 'color 0.25s ease',
-        }}
-      >
-        {section.type === 'panel' ? 'Decode' : 'Read'}
-        <span
-          style={{
-            display: 'inline-block',
-            marginLeft: '6px',
-            transform: hovered ? 'translateX(4px)' : 'translateX(0)',
-            transition: `transform 0.3s ${EASE_ARRIVE_CSS}`,
-          }}
-        >
-          →
-        </span>
+
+      <div className="tx-cta" data-tx-content>
+        {section.type === 'panel' ? 'DECODE' : 'READ'}
+        <span className="tx-cta-arrow" aria-hidden="true">→</span>
       </div>
     </>
   );
 
+  const styleVars = {
+    '--tx-accent': accent,
+    '--tx-accent-dim': accentA(0.5),
+    '--tx-glow': accentA(0.16),
+    '--sheen-rgba': submerged ? 'rgba(127, 196, 184, 0.10)' : 'rgba(224, 178, 110, 0.10)',
+    '--sheen-angle': submerged
+      ? (section.side === 'left' ? '250deg' : '110deg') // lit from the probe's side
+      : '160deg',                                        // lit from the sky
+    opacity: 0, // the decode reveals it on viewport entry
+  } as React.CSSProperties;
+
   const interactionProps = {
     'aria-label': `Open ${section.label}`,
-    onMouseEnter: () => setHovered(true),
-    onMouseLeave: () => setHovered(false),
+    className: 'tx-card',
+    'data-side': section.side,
+    style: styleVars,
   };
 
-  // Positioning lives on the CardGrid slot (.card-slot) so GSAP's transform
-  // tweens on this element can never clobber the translateY(-50%) centring.
+  // Positioning lives on the CardGrid slot (.card-slot) so transform tweens
+  // on this element can never clobber the translateY(-50%) centring.
   return section.type === 'route' && section.href ? (
     <Link
       href={section.href}
       ref={(el) => {
         cardRef.current = el;
       }}
-      style={visualStyle}
       {...interactionProps}
     >
       {inner}
@@ -202,7 +262,6 @@ export function Card({ section }: CardProps) {
       ref={(el) => {
         cardRef.current = el;
       }}
-      style={visualStyle}
       onClick={() => useSiteStore.getState().openPanel(section.id)}
       {...interactionProps}
     >

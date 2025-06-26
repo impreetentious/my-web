@@ -1,12 +1,14 @@
 'use client';
 
 import aboutData from '@/content/about.json';
+import site from '@/content/site.json';
 import { DossierBlock, DossierHead, Chip, ChipRow, PullQuote } from '@/components/panels/dossier';
 
 // C4 — About is an actual dossier now: a display-serif pull-quote carries the
 // strongest field record, the transcript gets margin annotations, and the
 // C6 channels block closes the file with the recruiter path — proposition,
-// availability, full record, open channel. All content lives in about.json.
+// availability, full record, open channel. Dossier copy lives in about.json;
+// identity facts (name, email, channels) come from site.json (E1, Rule B).
 
 const channelLinkStyle: React.CSSProperties = {
   display: 'inline-flex',
@@ -57,7 +59,7 @@ export function AboutPanel() {
             lineHeight: 1.5,
           }}
         >
-          {aboutData.name} — {aboutData.headline}
+          {site.name} — {aboutData.headline}
         </p>
         <p
           style={{
@@ -192,7 +194,7 @@ export function AboutPanel() {
             maxWidth: '540px',
           }}
         >
-          {aboutData.channels.proposition}
+          {site.proposition}
         </p>
         <p
           style={{
@@ -203,13 +205,13 @@ export function AboutPanel() {
             marginTop: '10px',
           }}
         >
-          {aboutData.channels.availability} · {aboutData.channels.location}
+          {site.availability} · {site.location}
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '22px' }}>
-          <ChannelLink href={aboutData.channels.resumeHref} download>
+          <ChannelLink href={site.resumeHref} download>
             EXTRACT FULL RECORD
           </ChannelLink>
-          <ChannelLink href={`mailto:${aboutData.channels.email}`}>
+          <ChannelLink href={`mailto:${site.email}`}>
             OPEN CHANNEL
           </ChannelLink>
         </div>

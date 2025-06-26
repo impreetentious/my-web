@@ -1,7 +1,8 @@
 import { ImageResponse } from 'next/og';
+import site from '@/content/site.json';
 
 export const runtime = 'edge';
-export const alt = 'Sidakpreet Singh — Strategy & GTM';
+export const alt = site.metaTitle;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -140,7 +141,7 @@ export default async function Image() {
               lineHeight: 1.02,
             }}
           >
-            Sidakpreet Singh
+            {site.name}
           </div>
           <div
             style={{
@@ -150,7 +151,7 @@ export default async function Image() {
               letterSpacing: 3,
             }}
           >
-            STRATEGY · GTM · PRODUCT — HCLSOFTWARE · IIM INDORE
+            {site.heroRoleLine.toUpperCase()}
           </div>
         </div>
 

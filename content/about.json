@@ -1,5 +1,4 @@
 {
-  "name": "Sidakpreet Singh",
   "headline": "Manager · Strategy & GTM · HCLSoftware",
   "tagline": "IIM Indore MBA · B.Pharm (DPSRU) · Bain & Company",
   "bio": [
@@ -15,13 +14,6 @@
   "pullQuote": "Eight million in pipeline and the first seven figures of ACV — in the function's founding year.",
   "pullQuoteRef": "FIELD RECORD · PUBLIC SECTOR · 2023–24",
   "currentFocus": "Active job search targeting Strategy Consulting (MBB, Deloitte S&O, EY-P), GTM/Commercial Strategy, Product Strategy, and BizOps roles at companies such as Mastercard, Visa, and select high-growth firms. Open to relocation.",
-  "channels": {
-    "proposition": "Strategy / GTM / Product Strategy",
-    "availability": "OPEN TO OPPORTUNITIES · 2026",
-    "location": "NEW DELHI · RELOCATION OPEN",
-    "resumeHref": "/resume.pdf",
-    "email": "sps.daemon@gmail.com"
-  },
   "stats": [
     { "value": "~$4M", "label": "Pipeline built (Aftermarket Cloud)" },
     { "value": ">$1.5M", "label": "ACV closed (Public Sector Yr 1)" },

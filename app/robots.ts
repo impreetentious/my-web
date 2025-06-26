@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
+import site from '@/content/site.json';
 
-const BASE_URL = 'https://sidakpreet.in'; // Replace with real domain
+const BASE_URL = site.domain;
 
 export default function robots(): MetadataRoute.Robots {
   return {

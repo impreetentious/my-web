@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useSiteStore } from '@/store/useSiteStore';
 import { altitudeKm, depthMetres } from '@/lib/descent';
 import { journey } from '@/lib/journey';
-import aboutData from '@/content/about.json';
+import site from '@/content/site.json';
 
 // The seafloor: a faint ridge silhouette, settled motes, a slow sonar ping
 // behind the end tag — and the mission recap (§3.5.4), quiet live counters
@@ -149,7 +149,7 @@ export default function FooterSection() {
             textTransform: 'uppercase',
           }}
         >
-          {aboutData.channels.proposition}
+          {site.proposition}
         </p>
         <p
           style={{
@@ -159,12 +159,12 @@ export default function FooterSection() {
             color: 'rgba(140, 165, 175, 0.42)',
           }}
         >
-          {aboutData.channels.availability} · {aboutData.channels.location}
+          {site.availability} · {site.location}
         </p>
         <div style={{ display: 'flex', gap: '22px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '4px' }}>
           {[
-            { href: aboutData.channels.resumeHref, label: 'EXTRACT FULL RECORD ↓', download: true },
-            { href: `mailto:${aboutData.channels.email}`, label: 'OPEN CHANNEL →', download: false },
+            { href: site.resumeHref, label: 'EXTRACT FULL RECORD ↓', download: true },
+            { href: `mailto:${site.email}`, label: 'OPEN CHANNEL →', download: false },
           ].map((link) => (
             <a
               key={link.label}
@@ -191,7 +191,7 @@ export default function FooterSection() {
       {/* Social link row */}
       <div style={{ display: 'flex', gap: '20px', alignItems: 'center', position: 'relative' }}>
         <a
-          href="https://www.linkedin.com/in/sidakpreet-singh/"
+          href={site.socials.linkedin}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="LinkedIn"
@@ -207,7 +207,7 @@ export default function FooterSection() {
           </svg>
         </a>
         <a
-          href="https://github.com/ItsMonarch04"
+          href={site.socials.github}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub"
@@ -223,7 +223,7 @@ export default function FooterSection() {
         {/* A9 — the contact channel docks here; on phones this row is the
             only email affordance (the fixed plate is hidden) */}
         <a
-          href="mailto:sps.daemon@gmail.com"
+          href={`mailto:${site.email}`}
           aria-label="Email"
           style={linkStyle}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}

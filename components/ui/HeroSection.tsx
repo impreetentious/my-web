@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { motionAllowed, EASE_ARRIVE, STAGGER } from '@/lib/motion';
 import { useSiteStore } from '@/store/useSiteStore';
 import { journey } from '@/lib/journey';
+import site from '@/content/site.json';
 
 // The hero lives in orbit, so its accent is the world gold of the space zone
 // (v2: desaturated #E0B26E) — interface chrome elsewhere stays cyan.
@@ -185,7 +186,7 @@ export default function HeroSection() {
               textShadow: '0 0 40px rgba(224, 178, 110, 0.14)',
             }}
           >
-            Sidakpreet Singh
+            {site.name}
             {/* C12 — glyph-accurate specular overlay; invisible until (and
                 after) its one background-position pass */}
             <span
@@ -205,7 +206,7 @@ export default function HeroSection() {
                 userSelect: 'none',
               }}
             >
-              Sidakpreet Singh
+              {site.name}
             </span>
           </h1>
         </div>
@@ -221,7 +222,7 @@ export default function HeroSection() {
               transform: 'translateY(120%)',
             }}
           >
-            Strategy & GTM · HCLSoftware · IIM Indore
+            {site.heroRoleLine}
           </p>
         </div>
 

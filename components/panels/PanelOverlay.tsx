@@ -17,7 +17,7 @@ import { journey } from '@/lib/journey';
 import { scrambleText } from '@/lib/scramble';
 import { useMobile } from '@/lib/useMobile';
 import { PANEL_REGISTRY } from '@/components/panels';
-import aboutData from '@/content/about.json';
+import site from '@/content/site.json';
 import type { ZoneName } from '@/types';
 
 // A panel is a decoded dossier, not a modal: the veil takes on the colour of
@@ -460,7 +460,7 @@ export default function PanelOverlay() {
                   <p style={railLabelStyle}>ACTIONS</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginTop: '2px' }}>
                     <a
-                      href={aboutData.channels.resumeHref}
+                      href={site.resumeHref}
                       download
                       style={{
                         ...railValueStyle,
@@ -472,7 +472,7 @@ export default function PanelOverlay() {
                       FULL RECORD ↓
                     </a>
                     <a
-                      href={`mailto:${aboutData.channels.email}`}
+                      href={`mailto:${site.email}`}
                       style={{
                         ...railValueStyle,
                         color: 'var(--color-gold)',

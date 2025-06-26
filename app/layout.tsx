@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Space_Mono, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
+import site from '@/content/site.json';
 import '@/styles/globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -33,31 +34,28 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+// E2 — every personal fact in the metadata comes from content/site.json;
+// this file owns only the metadata STRUCTURE (Rule A).
 export const metadata: Metadata = {
-  metadataBase: new URL('https://sidakpreet.in'),
+  metadataBase: new URL(site.domain),
   title: {
-    template: '%s · Sidakpreet Singh',
-    default: 'Sidakpreet Singh · Strategy & GTM',
+    template: `%s · ${site.name}`,
+    default: site.metaTitle,
   },
-  description:
-    'Strategy and GTM professional. Manager at HCLSoftware. MBA from IIM Indore (top 2%). ' +
-    'Building at the intersection of commercial strategy, product thinking, and analytical rigour.',
-  keywords: [
-    'strategy consulting', 'GTM strategy', 'product strategy', 'go-to-market',
-    'IIM Indore', 'Sidakpreet Singh', 'HCLSoftware', 'business strategy',
-  ],
-  authors: [{ name: 'Sidakpreet Singh' }],
+  description: site.metaDescription,
+  keywords: site.keywords,
+  authors: [{ name: site.name }],
   openGraph: {
     type: 'website',
-    url: 'https://sidakpreet.in',
-    title: 'Sidakpreet Singh · Strategy & GTM',
-    description: 'Strategy and GTM professional. Manager at HCLSoftware. MBA from IIM Indore.',
-    siteName: 'Sidakpreet Singh',
+    url: site.domain,
+    title: site.metaTitle,
+    description: site.metaDescription,
+    siteName: site.name,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sidakpreet Singh · Strategy & GTM',
-    description: 'Strategy and GTM professional. Manager at HCLSoftware. MBA from IIM Indore.',
+    title: site.metaTitle,
+    description: site.metaDescription,
   },
   robots: { index: true, follow: true },
 };

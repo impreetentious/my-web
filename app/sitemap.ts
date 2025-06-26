@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/blog';
+import site from '@/content/site.json';
 
-const BASE_URL = 'https://sidakpreet.in'; // Replace with real domain after setup
+const BASE_URL = site.domain;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();

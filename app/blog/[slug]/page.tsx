@@ -5,6 +5,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllPosts, getPostBySlug, getRelatedPosts } from '@/lib/blog';
 import { PostHeader } from '@/components/blog/PostHeader';
 import { PostBody } from '@/components/blog/PostBody';
+import site from '@/content/site.json';
 
 export async function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
@@ -31,7 +32,7 @@ export async function generateMetadata({
       description: post.excerpt,
       url: `/blog/${post.slug}`,
       publishedTime: post.date,
-      authors: ['Sidakpreet Singh'],
+      authors: [site.name],
     },
     twitter: {
       card: 'summary_large_image',

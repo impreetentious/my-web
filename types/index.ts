@@ -54,6 +54,24 @@ export interface SiteStore {
 
 // ─── Content Types ─────────────────────────────────────────────────────────
 
+// E1 — the identity document: every personal fact exists ONLY in
+// content/site.json (Rule B). Components import it; nothing about the owner
+// may live as a literal in app/, components/ or lib/.
+export interface SiteContent {
+  name: string;
+  heroRoleLine: string;
+  email: string;
+  socials: Record<'linkedin' | 'github', string>;
+  domain: string;        // canonical origin, "https://…" no trailing slash (L1 decides which host)
+  metaTitle: string;
+  metaDescription: string;
+  keywords: string[];
+  proposition: string;   // what he does, recruiter-facing
+  availability: string;  // e.g. "OPEN TO OPPORTUNITIES · 2026"
+  location: string;      // e.g. "NEW DELHI · RELOCATION OPEN"
+  resumeHref: string;    // "/resume.pdf" — becomes a Sanity asset at G3
+}
+
 export interface BlogPost {
   slug: string;
   title: string;

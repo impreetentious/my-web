@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import site from '@/content/site.json';
 
 // C15 — the contact plate carries a transmit mark, not a stock envelope: a
 // source point firing two arcs toward the sky. Hover completes the send —
@@ -14,7 +15,7 @@ export default function EmailIcon() {
   return (
     <a
       className="email-fab"
-      href="mailto:sps.daemon@gmail.com"
+      href={`mailto:${site.email}`}
       aria-label="Send me an email"
       style={{
         position: 'fixed',

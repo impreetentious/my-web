@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+// C15 — the lost-signal page keeps the fiction: film grain, one mote adrift
+// in the dark, the display voice. The mote's drift keyframes live in
+// globals.css (mote-drift) and collapse under prefers-reduced-motion.
 export default function NotFound() {
   return (
     <main style={{
@@ -11,7 +14,27 @@ export default function NotFound() {
       justifyContent: 'center',
       gap: '20px',
       padding: '24px',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
+      <div className="log-grain" aria-hidden="true" />
+
+      {/* one mote, adrift */}
+      <span
+        aria-hidden="true"
+        className="lost-mote"
+        style={{
+          position: 'absolute',
+          left: '38%',
+          top: '30%',
+          width: '3px',
+          height: '3px',
+          borderRadius: '50%',
+          background: 'rgba(127, 196, 184, 0.55)',
+          boxShadow: '0 0 8px rgba(127, 196, 184, 0.35)',
+        }}
+      />
+
       <p style={{
         fontSize: '10px', letterSpacing: '0.25em',
         color: '#444444', textTransform: 'uppercase',
@@ -20,9 +43,9 @@ export default function NotFound() {
         — 404 —
       </p>
       <h1 style={{
-        fontSize: '36px', color: '#F2F2F2',
-        fontFamily: 'var(--font-sans), sans-serif',
-        fontWeight: 300, margin: 0,
+        fontSize: '44px', color: '#F2F2F2',
+        fontFamily: 'var(--font-display), Georgia, serif',
+        fontWeight: 400, margin: 0,
       }}>
         Signal lost.
       </h1>
@@ -35,8 +58,8 @@ export default function NotFound() {
       </p>
       <Link href="/" style={{
         marginTop: '12px', padding: '10px 24px',
-        border: '1px solid rgba(0, 255, 238, 0.25)',
-        borderRadius: '4px', color: '#00FFEE',
+        border: '1px solid rgba(224, 178, 110, 0.35)',
+        color: '#E0B26E',
         fontSize: '11px', fontFamily: 'var(--font-mono), monospace',
         textDecoration: 'none', letterSpacing: '0.12em',
       }}>

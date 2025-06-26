@@ -306,6 +306,18 @@ body {
   animation: hud-glitch 0.36s steps(2, end) 1;
 }
 
+/* One mote adrift on the 404 (C15) */
+@keyframes mote-drift {
+  0%   { transform: translate(0, 0); }
+  30%  { transform: translate(38px, 26px); }
+  55%  { transform: translate(12px, 58px); }
+  80%  { transform: translate(-30px, 34px); }
+  100% { transform: translate(0, 0); }
+}
+.lost-mote {
+  animation: mote-drift 26s ease-in-out infinite;
+}
+
 /* Sonar ping behind END OF TRANSMISSION at the seafloor */
 @keyframes sonar-ping {
   0%   { transform: scale(0.25); opacity: 0; }
@@ -846,6 +858,68 @@ html {
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: rgba(63, 168, 152, 0.38); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(127, 196, 184, 0.62); }
+
+/* ─── Cursor ring (C14) — descent only, fine pointers only ──────────────── */
+
+/* the ring never replaces precision: a centre dot stays exactly on target */
+html.mw-cursor,
+html.mw-cursor * { cursor: none !important; }
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 95;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+.cursor-ring-circle {
+  position: absolute;
+  top: -13px;
+  left: -13px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(242, 242, 242, 0.45);
+  border-radius: 50%;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 0.84, 0.24, 1),
+    border-color 0.3s ease;
+}
+.cursor-ring[data-tight='true'] .cursor-ring-circle {
+  transform: scale(0.5);
+  border-color: rgba(224, 178, 110, 0.9);
+}
+.cursor-ring[data-underwater] .cursor-ring-circle {
+  border-color: rgba(127, 196, 184, 0.55);
+}
+.cursor-ring[data-underwater][data-tight='true'] .cursor-ring-circle {
+  border-color: rgba(127, 196, 184, 0.95);
+}
+.cursor-ring-dot {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(242, 242, 242, 0.9);
+}
+@keyframes cursor-sonar {
+  0%   { transform: scale(0.5); opacity: 0.5; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.cursor-ring-sonar {
+  position: absolute;
+  top: -13px;
+  left: -13px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(127, 196, 184, 0.6);
+  border-radius: 50%;
+  animation: cursor-sonar 3.2s cubic-bezier(0.16, 0.84, 0.24, 1) infinite;
+}
 
 /* ─── Accessibility: Respect system motion preferences ─────────────────── */
 

@@ -23,6 +23,7 @@ import LoadingScreen from '@/components/ui/LoadingScreen';
 import NavDots from '@/components/ui/NavDots';
 import EmailIcon from '@/components/ui/EmailIcon';
 import DepthIndicator from '@/components/ui/DepthIndicator';
+import CursorRing from '@/components/ui/CursorRing';
 import HeroSection from '@/components/ui/HeroSection';
 import FooterSection from '@/components/ui/FooterSection';
 import BackgroundGradient from '@/components/ui/BackgroundGradient';
@@ -125,6 +126,7 @@ export default function Home() {
       <NavDots />
       <EmailIcon />
       <DepthIndicator />
+      <CursorRing />
 
       {/* Layer 3: Panel Overlay */}
       <PanelOverlay />

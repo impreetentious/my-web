@@ -18,7 +18,7 @@
 
 import { useSiteStore } from '@/store/useSiteStore';
 import { journey, PLUNGE_EVENT } from '@/lib/journey';
-import { smoothstep, abyssGate } from '@/lib/descent';
+import { smoothstep, abyssGate, CROSS_T, K } from '@/lib/descent';
 
 const MASTER_ON = 0.16;
 const UPDATE_MS = 130;
@@ -152,9 +152,11 @@ class DescentAudio {
     const now = this.ctx.currentTime;
     const vel = Math.min(1, Math.abs(journey.velocity) * 0.02);
 
-    const space = 1 - smoothstep(0.5, 0.75, t);
-    const golden = smoothstep(0.45, 0.62, t) * (1 - smoothstep(0.72, 0.8, t));
-    const under = smoothstep(0.74, 0.82, t);
+    // F2 — same rewrite rule as the shader/descent tuning: early-sky voices
+    // K-scale, crossing-region voices anchor to CROSS_T.
+    const space = 1 - smoothstep(K * 0.5, CROSS_T - 0.01, t);
+    const golden = smoothstep(K * 0.45, K * 0.62, t) * (1 - smoothstep(CROSS_T - 0.04, CROSS_T + 0.04, t));
+    const under = smoothstep(CROSS_T - 0.02, CROSS_T + 0.06, t);
     const abyss = abyssGate(t);
 
     this.humGain.gain.setTargetAtTime(0.5 * space, now, 0.4);

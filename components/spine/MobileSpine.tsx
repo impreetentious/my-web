@@ -8,6 +8,7 @@ import {
   cometScreenVhMobile,
   waterlineScreenVh,
   smoothstep,
+  CROSS_T,
 } from '@/lib/descent';
 import { journey, plungeElapsed, buoyancyVh } from '@/lib/journey';
 import { motionAllowed, EASE_ARRIVE_CSS } from '@/lib/motion';
@@ -219,7 +220,7 @@ export default function MobileSpine() {
       if (easedVh === null || !allowMotion) {
         easedVh = targetVh;
       } else {
-        const uw = smoothstep(0.7, 0.85, t);
+        const uw = smoothstep(CROSS_T - 0.06, CROSS_T + 0.09, t);
         easedVh += (targetVh - easedVh) * (0.42 - 0.3 * uw);
       }
 

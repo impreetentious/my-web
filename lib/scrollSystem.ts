@@ -99,8 +99,10 @@ export function initScrollSystem(): void {
     if (journey.startedAt === null && scrollT > 0.004) journey.startedAt = now;
     if (scrollT > journey.maxT) journey.maxT = scrollT;
 
-    // water weight — lerp Lenis params toward the zone target
-    const uw = smoothstep(0.7, 0.85, scrollT);
+    // water weight — lerp Lenis params toward the zone target. F2: same
+    // crossing-anchored gate as MobileSpine's underwater drag (was 0.7/0.85,
+    // tied to the old 0.76 world).
+    const uw = smoothstep(CROSS_T - 0.06, CROSS_T + 0.09, scrollT);
     duration += (DURATION_ORBIT + (DURATION_ABYSS - DURATION_ORBIT) * uw - duration) * 0.08;
     wheel += (WHEEL_ORBIT + (WHEEL_ABYSS - WHEEL_ORBIT) * uw - wheel) * 0.08;
     lenis!.options.duration = duration;

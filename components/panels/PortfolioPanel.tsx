@@ -4,7 +4,9 @@ import portfolioData from '@/content/portfolio.json';
 import { DossierBlock, DossierRow, DossierFigure, CaseFile } from '@/components/panels/dossier';
 import type { PortfolioItem } from '@/types';
 
-const items = portfolioData as PortfolioItem[];
+// E3 — enabled: false hides a row without deleting its record; the counter
+// below counts the filtered list.
+const items = (portfolioData as PortfolioItem[]).filter((i) => i.enabled !== false);
 
 export function PortfolioPanel() {
   return (

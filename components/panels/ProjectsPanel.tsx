@@ -4,7 +4,9 @@ import projectsData from '@/content/projects.json';
 import { DossierBlock, DossierRow, DossierFigure } from '@/components/panels/dossier';
 import type { ProjectItem } from '@/types';
 
-const items = projectsData as ProjectItem[];
+// E3 — enabled: false hides a row without deleting its record; the counter
+// below counts the filtered list.
+const items = (projectsData as ProjectItem[]).filter((i) => i.enabled !== false);
 
 const STATUS_COLORS: Record<ProjectItem['status'], string> = {
   live: 'rgba(96, 200, 140, 0.9)',

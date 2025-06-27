@@ -100,6 +100,7 @@ export interface CaseStudy {
 
 export interface PortfolioItem {
   id: string;
+  enabled?: boolean;   // false hides the row; missing = shown (E3)
   title: string;
   description: string;
   tags: string[];
@@ -114,6 +115,7 @@ export interface PortfolioItem {
 
 export interface ProjectItem {
   id: string;
+  enabled?: boolean;   // false hides the row; missing = shown (E3)
   title: string;
   description: string;
   stack: string[];     // technology tags

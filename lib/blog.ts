@@ -1,23 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import SERIES_DATA from '@/content/series.json';
 import type { BlogPost } from '@/types';
 
 const BLOG_DIR = path.join(process.cwd(), 'content', 'blog');
 
-// C8 — series registry: one editable place for anything posts can belong to.
-// A post joins a series via `series: <id>` + `seriesIndex: <n>` frontmatter.
+// C8/E4 — series registry: one editable place for anything posts can belong
+// to, mastered in content/series.json (post-G: in Sanity). A post joins a
+// series via `series: <id>` + `seriesIndex: <n>` frontmatter.
 export const SERIES: Record<
   string,
   { title: string; planned: number; description: string }
-> = {
-  'second-order': {
-    title: 'The Second-Order Effects of AI',
-    planned: 6,
-    description:
-      'A six-part series on the second-order cognitive effects of AI on knowledge workers — not the replacement question, but what changes when thinking gets cheap.',
-  },
-};
+> = SERIES_DATA;
 
 const WPM = 200;
 

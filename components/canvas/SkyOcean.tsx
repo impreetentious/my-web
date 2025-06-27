@@ -10,7 +10,7 @@ import {
   Vector2,
 } from 'three';
 import { useSiteStore } from '@/store/useSiteStore';
-import { waterlineScreenVh, zoneWeights, abyssGate } from '@/lib/descent';
+import { waterlineScreenVh, zoneWeights, abyssGate, CROSS_T, U_SURFACE, K } from '@/lib/descent';
 import { journey, plungeElapsed, buoyancyVh } from '@/lib/journey';
 import { getScrollLimit } from '@/lib/scrollSystem';
 import { motionAllowed } from '@/lib/motion';
@@ -49,6 +49,9 @@ const FRAGMENT = /* glsl */ `
   uniform vec2  uMouse;    // eased pointer, −1..1
   uniform float uLite;     // medium tier (A2): single dim star layer, no nebulae
   uniform float uBeast;    // C10: abyss passage progress ∈ (0,1); off outside it
+  uniform float uCross;    // F2: derived crossing scroll-t (CROSS_T)
+  uniform float uSurfaceU; // F2: derived surface page-depth (U_SURFACE)
+  uniform float uK;        // F2: sky-stretch factor for early-sky gates
 
   varying vec2 vUv;
 
@@ -85,7 +88,7 @@ const FRAGMENT = /* glsl */ `
     c = mix(c, vec3(0.027, 0.055, 0.102), smoothstep(0.10, 0.34, wt));   // high blue
     c = mix(c, vec3(0.039, 0.102, 0.184), smoothstep(0.32, 0.55, wt));   // mesosphere
     c = mix(c, vec3(0.055, 0.141, 0.251), smoothstep(0.52, 0.68, wt));   // blue hour
-    c = mix(c, vec3(0.078, 0.212, 0.337), smoothstep(0.66, 0.80, wt));   // near sea
+    c = mix(c, vec3(0.078, 0.212, 0.337), smoothstep(uSurfaceU - 0.055, uSurfaceU + 0.085, wt));   // near sea
     return c;
   }
 
@@ -128,7 +131,7 @@ const FRAGMENT = /* glsl */ `
 
     // C13 — the medium persists: while submerged the world keeps refracting
     // at ~10% of the plunge wobble, world-only (the DOM above stays crisp)
-    float sub = smoothstep(0.78, 0.86, uScroll);
+    float sub = smoothstep(uCross + 0.02, uCross + 0.10, uScroll);
     uv.x += sin(uvTop0 * 41.0 + uTime * 0.80) * 0.0006 * sub;
     uv.y += sin(uvTop0 * 23.0 - uTime * 0.55) * 0.0004 * sub;
 
@@ -143,8 +146,8 @@ const FRAGMENT = /* glsl */ `
                + (swell - 0.5) * 0.0045;
     float dy = uvTop - (wUvTop + disp);            // + below the line, − above
 
-    float deep = smoothstep(0.78, 0.98, uScroll);
-    float goldGate = smoothstep(0.50, 0.66, uScroll) * (1.0 - smoothstep(0.80, 0.86, uScroll));
+    float deep = smoothstep(uCross + 0.02, 0.98, uScroll);
+    float goldGate = smoothstep(uK * 0.50, uK * 0.66, uScroll) * (1.0 - smoothstep(uCross + 0.04, uCross + 0.10, uScroll));
 
     vec3 col;
 
@@ -205,7 +208,7 @@ const FRAGMENT = /* glsl */ `
       col += vec3(0.35, 0.62, 0.66) * exp(-dy * 7.5) * 0.22 * (1.0 - deep * 0.85);
 
       // caustic shimmer just below the crossing
-      float causGate = smoothstep(0.70, 0.76, uScroll) * (1.0 - smoothstep(0.84, 0.92, uScroll));
+      float causGate = smoothstep(uCross - 0.06, uCross, uScroll) * (1.0 - smoothstep(uCross + 0.08, uCross + 0.16, uScroll));
       if (causGate > 0.003) {
         float caus = fbm(vec2(uv.x * 26.0 * uAspect, dy * 36.0) + uTime * vec2(0.22, 0.13));
         col += vec3(0.45, 0.75, 0.72) * pow(caus, 3.0) * exp(-dy * 10.0) * causGate * 0.42;
@@ -231,9 +234,9 @@ const FRAGMENT = /* glsl */ `
     }
 
     // ── the surface line itself — lit water, not a 2px rule ──
-    float lineAtten = 1.0 - 0.75 * smoothstep(0.80, 0.95, uScroll);
+    float lineAtten = 1.0 - 0.75 * smoothstep(uCross + 0.04, 0.95, uScroll);
     vec3 lineCol = mix(vec3(0.94, 0.83, 0.62), vec3(0.62, 0.84, 0.80),
-                       smoothstep(0.775, 0.82, uScroll));
+                       smoothstep(uCross + 0.015, uCross + 0.06, uScroll));
     float chroma = 0.0016 * wob;
     vec3 lineGlow = vec3(
       exp(-abs(dy - chroma) * 130.0),
@@ -362,6 +365,11 @@ export function SkyOcean() {
         uMouse: { value: new Vector2(0, 0) },
         uLite: { value: 0 },
         uBeast: { value: -1 },
+        // F2 — derived world tuning; constant at runtime (baked from the
+        // enabled section count), so never touched in the frame loop.
+        uCross: { value: CROSS_T },
+        uSurfaceU: { value: U_SURFACE },
+        uK: { value: K },
       },
       depthTest: false,
       depthWrite: false,

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { SiteStore, ZoneName } from '@/types';
-import { ZONE_THRESHOLDS } from '@/config/world';
+import { ZONE_THRESHOLDS } from '@/lib/descent';
 
 function deriveZone(t: number): ZoneName {
   if (t >= ZONE_THRESHOLDS.underwater) return 'underwater';

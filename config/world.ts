@@ -25,16 +25,9 @@ export const SPINE_CONTROL_DISTANCE_PX = 220;
 // Width of each content card in pixels.
 export const CARD_WIDTH_PX = 280;
 
-// Scroll T thresholds for zone changes.
-// v2 beats (sky = ~¾ of the journey): orbit + atmosphere to 0.5, golden-hour
-// approach to 0.72, the crossing itself to 0.80, then the deep. Keep in step
-// with lib/descent.ts (CROSS_T, zoneWeights) when retuning.
-export const ZONE_THRESHOLDS = {
-  sky: 0,           // always starts here
-  horizon: 0.50,    // golden-hour descent, sea visible below
-  sea: 0.72,        // breaking the surface
-  underwater: 0.80, // below it
-} as const;
+// ZONE_THRESHOLDS moved to lib/descent.ts in F2 — the boundaries now derive
+// from CROSS_T, and world.ts must not import descent (activeSections → world
+// would cycle). Import it from '@/lib/descent'.
 
 // Mobile breakpoint — THE single source (B10): lib/useMobile.ts builds its
 // matchMedia query from this constant. The CSS twin lives in

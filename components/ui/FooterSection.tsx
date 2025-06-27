@@ -127,66 +127,10 @@ export default function FooterSection() {
         <span ref={clockRef}>T+00:00</span>
       </p>
 
-      {/* C6 — the recruiter path closes the mission: what he does, where he
-          is, and the two channels — quiet, mono, on-fiction */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '10px',
-          position: 'relative',
-          padding: '0 16px',
-          textAlign: 'center',
-        }}
-      >
-        <p
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            letterSpacing: '0.22em',
-            color: 'rgba(140, 165, 175, 0.62)',
-            textTransform: 'uppercase',
-          }}
-        >
-          {site.proposition}
-        </p>
-        <p
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            letterSpacing: '0.18em',
-            color: 'rgba(140, 165, 175, 0.42)',
-          }}
-        >
-          {site.availability} · {site.location}
-        </p>
-        <div style={{ display: 'flex', gap: '22px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '4px' }}>
-          {[
-            { href: site.resumeHref, label: 'EXTRACT FULL RECORD ↓', download: true },
-            { href: `mailto:${site.email}`, label: 'OPEN CHANNEL →', download: false },
-          ].map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              download={link.download || undefined}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                letterSpacing: '0.18em',
-                color: 'rgba(224, 178, 110, 0.75)',
-                textDecoration: 'none',
-                padding: '6px 2px', // ≥24px target with the line-height
-                transition: 'color 0.25s ease',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(238, 203, 148, 1)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(224, 178, 110, 0.75)'; }}
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* F1 — the C6 recruiter-path channel block moved to the Contact
+          dossier (the deepest transmission owns it now). The footer keeps the
+          recap counters, the social row, and the end tag; the About rail +
+          EmailIcon fab still keep the path ≤10s. */}
 
       {/* Social link row */}
       <div style={{ display: 'flex', gap: '20px', alignItems: 'center', position: 'relative' }}>

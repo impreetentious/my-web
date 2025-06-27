@@ -1,23 +1,61 @@
 // The descent timing + colour system: one vertical journey from orbit to the
 // ocean floor. Every scroll-driven visual (sky shader, spine trail, comet,
 // depth ticker, waterline) samples this module so the world stays in one
-// story. v2 moves the waterline crossing to t = CROSS_T (≈ 0.76) so the sky
-// reads as ~¾ of the journey — a 400 km fall against a 4 km dive.
+// story. v2 moves the waterline crossing to t = CROSS_T (derived, ~0.84 at the
+// 5-card default) so the sky reads as ~¾+ of the journey — a 400 km fall
+// against a 4 km dive.
 //
 // "u" below is normalised page depth (y / totalHeight), NOT scrollT — colours
 // belong to places in the world, not to moments in time. scrollT-based helpers
 // are labelled with "t".
 
-// ─── The plunge moment ──────────────────────────────────────────────────────
+import { activeSections, totalPageHeight } from '@/lib/activeSections';
+import { SECTION_HEIGHT_PX, HEADER_HEIGHT_PX } from '@/config/world';
 
-/** Scroll moment the comet pierces the waterline, mid-viewport. */
-export const CROSS_T = 0.76;
+// ─── The plunge moment (derived — F2) ───────────────────────────────────────
+// CROSS_T is no longer hand-tuned to a 4-card page: it derives from the
+// enabled section count so both placeholder states (5 or 6 cards) land the
+// crossing in the GAP between the last two cards. Every scroll-t literal in
+// this file, the shader, the audio mix and the mobile spine is re-expressed
+// relative to CROSS_T / U_SURFACE / K so the whole world stretches with it.
 
-/** Approximate page depth (u) of the surface — where the comet meets the
- *  line. Exact value is viewport-dependent (see cometProgress); this static
- *  figure only positions the trail gradient's warm→cool handover, which
- *  blends over ±0.035 u and absorbs the error. */
-export const U_SURFACE = 0.715;
+/** Viewport height the tuning is normalised to. Real viewports (700–1100px)
+ *  drift the card/crossing alignment ±0.02 t — the same slop as the old
+ *  hand-tuned world. */
+const NOMINAL_VH = 900;
+
+const N = activeSections.length;
+const limit = totalPageHeight - NOMINAL_VH;
+
+/** scroll-t at which card i sits screen-centred (nominal viewport). */
+const tCard = (i: number): number =>
+  (HEADER_HEIGHT_PX + i * SECTION_HEIGHT_PX + SECTION_HEIGHT_PX / 2 - NOMINAL_VH / 2) /
+  limit;
+
+/** Scroll moment the comet pierces the waterline, mid-viewport. The crossing
+ *  lands between the last two cards — everything above the waterline except
+ *  the final (contact) transmission. */
+export const CROSS_T = Math.min(0.88, (tCard(N - 2) + tCard(N - 1)) / 2);
+
+/** Approximate page depth (u) of the surface — viewport-centre depth at the
+ *  crossing. Positions the trail gradient's warm→cool handover (which blends
+ *  over ±0.035 u and absorbs the viewport error) and the shader's u-space
+ *  gates. */
+export const U_SURFACE = (CROSS_T * limit + NOMINAL_VH / 2) / totalPageHeight;
+
+/** Sky-stretch factor: early-journey beats scale with the longer sky. The
+ *  0.76 anchor is the old hand-tuned crossing the literals were authored at. */
+export const K = CROSS_T / 0.76;
+
+/** Scroll-t zone boundaries (moved out of config/world.ts in F2 so they can
+ *  derive from CROSS_T — config/world must not import descent). Consumed by
+ *  store/useSiteStore to label the active zone. */
+export const ZONE_THRESHOLDS = {
+  sky: 0,                       // always starts here
+  horizon: CROSS_T - 0.26,      // golden-hour descent, sea visible below
+  sea: CROSS_T - 0.04,          // breaking the surface
+  underwater: CROSS_T + 0.04,   // below it
+} as const;
 
 // ─── Trail gradient (gold in space → amber at the surface → teal below) ────
 
@@ -121,8 +159,8 @@ function monotoneCurve(xs: number[], ys: number[]): (x: number) => number {
 /** Scroll span in which the line is anywhere near the frame — cheap gates for
  *  systems that only care whether the ocean is on screen at all. */
 export const WATERLINE = {
-  enterT: 0.60,  // still fully below the viewport before this
-  exitT:  0.84,  // fully above the viewport after this
+  enterT: CROSS_T - 0.16,  // still fully below the viewport before this
+  exitT:  CROSS_T + 0.08,  // fully above the viewport after this
 } as const;
 
 // The line's screen path: rises from far below, eases to a hover in the lower
@@ -130,8 +168,12 @@ export const WATERLINE = {
 // past the viewer. Pinned to exactly 50vh at CROSS_T so the comet — remapped
 // to mid-viewport at that moment (cometProgress) — pierces it on the beat.
 const waterlineCurve = monotoneCurve(
-  [0.50, 0.60, 0.645, 0.68, 0.72, 0.745, CROSS_T, 0.78, 0.80, 0.84],
-  [175,  118,  86,    70,   63,   57,    50,      18,   -25,  -85]
+  [
+    CROSS_T - 0.26, CROSS_T - 0.16, CROSS_T - 0.115, CROSS_T - 0.08,
+    CROSS_T - 0.04, CROSS_T - 0.015, CROSS_T, CROSS_T + 0.02,
+    CROSS_T + 0.04, CROSS_T + 0.08,
+  ],
+  [175, 118, 86, 70, 63, 57, 50, 18, -25, -85]
 );
 
 /** Waterline screen position at scroll t, in vh from the top of the viewport.
@@ -156,7 +198,7 @@ export function waterlineScreenVh(t: number): number {
  *  page-space projection assumes scrollY = t·(pageHeight − vh), which the
  *  dev overlay's extra body height quietly breaks. */
 export function cometScreenVh(t: number): number {
-  const rise = smoothstep(0.28, CROSS_T, t);
+  const rise = smoothstep(K * 0.28, CROSS_T, t);
   const fall = 1 - 0.4 * smoothstep(CROSS_T, 1.0, t);
   return 100 * (t - (CROSS_T - 0.5) * rise * fall);
 }
@@ -168,8 +210,8 @@ export function cometScreenVh(t: number): number {
 export function cometScreenVhMobile(t: number): number {
   return (
     12 +
-    26 * smoothstep(0.0, 0.3, t) +
-    12 * smoothstep(0.52, CROSS_T, t) +
+    26 * smoothstep(0.0, K * 0.3, t) +
+    12 * smoothstep(CROSS_T - 0.24, CROSS_T, t) +
     22 * smoothstep(CROSS_T, 1.0, t)
   );
 }
@@ -178,8 +220,9 @@ export function cometScreenVhMobile(t: number): number {
 
 /** Opacity of each background/particle layer at scroll t. Weights are
  *  independent (layers stack back-to-front), not a partition of unity.
- *  v2 beats: orbit 0→0.2, high atmosphere 0.2→0.5, golden hour 0.5→0.72,
- *  crossing 0.72→0.80, underwater 0.80→1. */
+ *  v2 beats (now parametric — F2): early-sky beats scale by K, the crossing
+ *  band and everything below anchor to CROSS_T; orbit/high-atmosphere occupy
+ *  the fixed upper sky, golden hour → crossing → underwater track the surface. */
 export function zoneWeights(t: number): {
   space: number;
   dusk: number;
@@ -190,13 +233,13 @@ export function zoneWeights(t: number): {
   underwater: number;
 } {
   return {
-    space: 1 - smoothstep(0.30, 0.55, t),
-    dusk: smoothstep(0.28, 0.52, t) * (1 - smoothstep(0.68, 0.78, t)),
-    sea: smoothstep(0.70, 0.78, t) * (1 - smoothstep(0.85, 0.97, t)),
-    abyss: smoothstep(0.84, 0.97, t),
-    rays: smoothstep(0.76, 0.84, t) * (1 - 0.75 * smoothstep(0.88, 0.985, t)),
-    stars: 1 - smoothstep(0.55, 0.70, t),
-    underwater: smoothstep(0.74, 0.82, t),
+    space: 1 - smoothstep(K * 0.30, K * 0.55, t),
+    dusk: smoothstep(K * 0.28, K * 0.52, t) * (1 - smoothstep(CROSS_T - 0.08, CROSS_T + 0.02, t)),
+    sea: smoothstep(CROSS_T - 0.06, CROSS_T + 0.02, t) * (1 - smoothstep(CROSS_T + 0.09, 0.97, t)),
+    abyss: smoothstep(CROSS_T + 0.08, 0.97, t),
+    rays: smoothstep(CROSS_T, CROSS_T + 0.08, t) * (1 - 0.75 * smoothstep(CROSS_T + 0.12, 0.985, t)),
+    stars: 1 - smoothstep(K * 0.55, K * 0.70, t),
+    underwater: smoothstep(CROSS_T - 0.02, CROSS_T + 0.06, t),
   };
 }
 
@@ -204,7 +247,7 @@ export function zoneWeights(t: number): {
  *  the only light). Shared by the sky shader and the underwater particles so
  *  the falloff around the probe matches everywhere. */
 export function abyssGate(t: number): number {
-  return smoothstep(0.84, 0.93, t);
+  return smoothstep(CROSS_T + 0.08, CROSS_T + 0.17, t);
 }
 
 // ─── Altitude / depth model ─────────────────────────────────────────────────
@@ -213,10 +256,10 @@ const ORBIT_KM = 400;   // start at ISS altitude
 const FLOOR_M = 3800;   // average ocean depth
 
 /** Altitude hits zero here… */
-export const SEA_T0 = 0.735;
+export const SEA_T0 = CROSS_T - 0.025;
 /** …and depth leaves zero here; between them the ticker reads SEA LEVEL
  *  until the plunge hard-flips it to DEPTH. */
-export const DEPTH_T0 = 0.765;
+export const DEPTH_T0 = CROSS_T + 0.005;
 
 const ALT_EXP = 3.2;   // log-ish: early kilometres fly past, low ones crawl
 const DEPTH_EXP = 1.6;
@@ -278,7 +321,7 @@ export const MILESTONES: Milestone[] = [
   { label: 'METEOR LAYER', reading: '80 KM', t: tAtAltitudeKm(80) },
   { label: 'CRUISING ALTITUDE', reading: '11 KM', t: tAtAltitudeKm(11) },
   { label: 'CLOUD DECK', reading: '2 KM', t: tAtAltitudeKm(2) },
-  { label: 'SEA LEVEL', reading: '0 M', t: 0.748, accent: true, bell: 0.03, core: true },
+  { label: 'SEA LEVEL', reading: '0 M', t: CROSS_T - 0.012, accent: true, bell: 0.03, core: true },
   { label: 'PHOTIC LIMIT', reading: '−200 M', t: tAtDepthM(200), bell: 0.03 },
   // Bell tightened so the caption marks the arrival then yields — at full
   // rest (t=1) it has faded instead of sitting lit over the footer recap.

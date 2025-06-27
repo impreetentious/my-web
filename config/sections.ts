@@ -34,10 +34,21 @@ export const SECTIONS: SectionConfig[] = [
     tagline: 'Things built, shipped, and iterated on.',
   },
   {
+    // F1 — the dormant sixth stage. Stays ABOVE contact so contact is always
+    // the deepest transmission; flipping this boolean must produce a correct
+    // world in BOTH states (the world tuning derives from the enabled count).
     id: 'placeholder',
     enabled: false,        // ← change to true when ready to activate
     label: 'TBD',
     type: 'panel',
-    tagline: 'Coming soon.',
+    tagline: 'Transmission pending.',
+  },
+  {
+    // F1 — Contact ("OPEN CHANNEL"): the deepest transmission, links only.
+    id: 'contact',
+    enabled: true,
+    label: 'Contact',
+    type: 'panel',
+    tagline: 'Establish an uplink. All channels monitored.',
   },
 ];

@@ -2,48 +2,15 @@
 
 import aboutData from '@/content/about.json';
 import site from '@/content/site.json';
-import { DossierBlock, DossierHead, Chip, ChipRow, PullQuote } from '@/components/panels/dossier';
+import { DossierBlock, DossierHead, Chip, ChipRow, PullQuote, ChannelLink } from '@/components/panels/dossier';
 
 // C4 — About is an actual dossier now: a display-serif pull-quote carries the
 // strongest field record, the transcript gets margin annotations, and the
 // C6 channels block closes the file with the recruiter path — proposition,
 // availability, full record, open channel. Dossier copy lives in about.json;
 // identity facts (name, email, channels) come from site.json (E1, Rule B).
-
-const channelLinkStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'baseline',
-  gap: '9px',
-  fontFamily: 'var(--font-mono)',
-  fontSize: '12px',
-  letterSpacing: '0.16em',
-  color: 'var(--color-gold)',
-  textDecoration: 'none',
-  border: '1px solid rgba(224, 178, 110, 0.28)',
-  padding: '11px 16px',
-  transition: 'border-color 0.25s ease, background 0.25s ease',
-};
-
-function ChannelLink({ href, children, download }: { href: string; children: React.ReactNode; download?: boolean }) {
-  return (
-    <a
-      href={href}
-      download={download}
-      style={channelLinkStyle}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(224, 178, 110, 0.6)';
-        e.currentTarget.style.background = 'rgba(224, 178, 110, 0.05)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(224, 178, 110, 0.28)';
-        e.currentTarget.style.background = 'transparent';
-      }}
-    >
-      {children}
-      <span aria-hidden="true">→</span>
-    </a>
-  );
-}
+// ChannelLink is the shared CTA — extracted to dossier.tsx so ContactPanel
+// (F1) speaks the same language.
 
 export function AboutPanel() {
   return (

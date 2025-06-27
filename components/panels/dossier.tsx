@@ -363,6 +363,54 @@ export function ChipRow({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ─── Channel CTA (C6/F1) ─────────────────────────────────────────────────────
+// The recruiter-path link, on-fiction: a bordered gold affordance with a
+// departing arrow. Shared by AboutPanel (channels block) and ContactPanel so
+// both speak the same language (F1 extracted it here).
+
+const channelLinkStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'baseline',
+  gap: '9px',
+  fontFamily: 'var(--font-mono)',
+  fontSize: '12px',
+  letterSpacing: '0.16em',
+  color: 'var(--color-gold)',
+  textDecoration: 'none',
+  border: '1px solid rgba(224, 178, 110, 0.28)',
+  padding: '11px 16px',
+  transition: 'border-color 0.25s ease, background 0.25s ease',
+};
+
+export function ChannelLink({
+  href,
+  children,
+  download,
+}: {
+  href: string;
+  children: React.ReactNode;
+  download?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      download={download}
+      style={channelLinkStyle}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(224, 178, 110, 0.6)';
+        e.currentTarget.style.background = 'rgba(224, 178, 110, 0.05)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(224, 178, 110, 0.28)';
+        e.currentTarget.style.background = 'transparent';
+      }}
+    >
+      {children}
+      <span aria-hidden="true">→</span>
+    </a>
+  );
+}
+
 /** Full-width interactive row — hover choreography lives in globals.css
  *  (.dossier-row): hairline brightens, title nudges, arrow slides. */
 export function DossierRow({

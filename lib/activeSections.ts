@@ -9,11 +9,15 @@ import {
 } from '@/config/world';
 import type { ActiveSection } from '@/types';
 
+// E5 — `side` alternates on the FILTERED list (left first), so toggling any
+// section can never strand two adjacent cards on the same side. A config
+// entry may still pin a side explicitly; omitted means auto.
 export const activeSections: ActiveSection[] = SECTIONS
   .filter((section) => section.enabled)
   .map((section, index) => ({
     ...section,
     index,
+    side: section.side ?? (index % 2 === 0 ? 'left' : 'right'),
   }));
 
 // One place for the world's height — the scroll container, spine geometry and

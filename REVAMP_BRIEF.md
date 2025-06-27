@@ -1,10 +1,10 @@
-# REVAMP BRIEF — "The Descent: DECOUPLE & DEEPEN" (updated 2025-06-26)
+# REVAMP BRIEF — "The Descent: DECOUPLE & DEEPEN" (updated 2025-06-28)
 
 This file is THE living record of this revamp: scope, status, decisions,
 rejections. Update it when a workstream's status changes; never delete
 history — supersede it.
 
-**Where things stand (2025-06-26):** Workstreams A–C are BUILT, VERIFIED
+**Where things stand (2025-06-28):** Workstreams A–C are BUILT, VERIFIED
 (§14 protocol run 2025-06-25: tsc/eslint clean, prod build 190 kB First
 Load JS on `/`, desktop journey + plunge replay + dossier focus discipline
 + mobile 320/375/430 + reduced-motion + tier-drop/restore + prod smoke on
@@ -13,7 +13,9 @@ finalization is committed as **v0.8.5**. On 2025-06-26 it was
 PUSHED to both remotes (`origin` = GitHub, `gitlab` =
 GitLab — see §16). Workstream D (launch gate) is POSTPONED: a 2025-06-26
 owner review found the site's data layer half-decoupled and the journey one
-section short. Workstreams **E → F → G (→ H optional)** now run BEFORE D.
+section short. Workstream **E is SHIPPED — committed locally as
+v0.8.6–v0.8.8 on 2025-06-26/28, NOT yet pushed**. Workstreams **F → G (→ H
+optional)** still run BEFORE D.
 Do not rebuild A–C. Contested calls and rejections live in §15 — do not
 relitigate without new evidence.
 
@@ -101,13 +103,18 @@ mission recap. Every string, number and animation belongs to this fiction.
 |---|---|---|
 | A/B (mobile revamp, audits) | — | SHIPPED (≤ v0.8.0) |
 | C (UI Rev v2: plunge, dossiers, transmissions, audio) | §2 map | SHIPPED, committed v0.8.0–v0.8.5 |
-| **E — one source of truth** | §6 | **NOT STARTED — next up** |
-| **F — six-stage journey (Contact + parametric world)** | §7 | NOT STARTED (needs E) |
+| **E — one source of truth** | §6 | **SHIPPED — committed v0.8.6–v0.8.8 (2025-06-26/28, local only; see E6a)** |
+| **F — six-stage journey (Contact + parametric world)** | §7 | **NEXT UP — E landed; build starting 2025-06-28** |
 | **G — Sanity backend (rebuild-on-publish)** | §8 | NOT STARTED (needs F; owner creates project) |
 | H — scroll-reveal polish | §9 | OPTIONAL, LAST, skippable |
 | D — launch gate L1–L8 | §10 | BLOCKED until E–G land |
 
-Commits: E=v0.8.6, F=v0.8.7, G=v0.8.8, H=v0.8.9 (if built), D=v0.9.0.
+**Versioning is the owner's call, decided at commit time** — the old fixed
+map (one preassigned version per workstream: E=v0.8.6 … D=v0.9.0) is VOID.
+The owner did not like squeezing a workstream into one commit: he decides
+the commit split and the numbers when he asks for commits, and a workstream
+may span several (E landed as three: v0.8.6/7/8). Do not preassign version
+numbers in this brief again; record them here only after they exist.
 (v0.8.5 = this brief + plan finalization, already committed.)
 Strict order E→F→G: the Contact panel consumes site.json (E), and Sanity
 schemas mirror the FINAL content shape (F) so there is no schema churn.
@@ -258,7 +265,7 @@ must return ZERO hits (only `content/` may match).
 
 ---
 
-## 6. WORKSTREAM E — One source of truth (no visual change) → v0.8.6
+## 6. WORKSTREAM E — One source of truth (no visual change) — SHIPPED v0.8.6–v0.8.8
 
 Goal: kill every hardcode. The page must render pixel-identical before/after.
 
@@ -346,9 +353,56 @@ required — consumers (`CardGrid`, `Card`, `MobileSpine`,
    pixel-identical to pre-E.
 4. Open all four dossiers; footer links; blog index + one post render.
 
+### E6a — E build record (2025-06-26/28 — committed v0.8.6–v0.8.8, local only)
+
+E1–E5 built exactly per spec. Verification run:
+- tsc + eslint clean. Rule B grep: ZERO hits across app/components/lib
+  (also checked config/store/types and the domain literal — clean).
+- Parity check ran as DOM fingerprints, not screenshots: text + href +
+  2px-rounded rects of every visible h*/p/a/button at t≈0 / 0.5 / 0.76 /
+  1.0, plus the About dossier (42 elements), blog index, one post, the
+  series page, /sitemap.xml, /robots.txt. All EXACT matches pre/post.
+  (Screenshot capture times out in the embedded preview pane whenever its
+  rAF loop is parked — see gotcha 11.)
+- Derived sides (E5) land about/blog LEFT, portfolio/projects RIGHT —
+  byte-identical to the old pinned assignment at N=4/5-off.
+
+Two deliberate metadata-only consolidations (no pixels, owner may veto):
+1. og/twitter description now = site.metaDescription (the long string).
+   The old SHORT variant ("…MBA from IIM Indore.") had no home in the E1
+   site.json schema; two description fields felt like schema churn against
+   G2. Restore by adding e.g. `metaDescriptionShort` if wanted.
+2. opengraph-image role line now = heroRoleLine.toUpperCase()
+   ("STRATEGY & GTM · HCLSOFTWARE · IIM INDORE"; was the one-off
+   "STRATEGY · GTM · PRODUCT — HCLSOFTWARE · IIM INDORE") and its alt =
+   site.metaTitle (· for the old —). One source per fact (Rule B).
+
+NOT exercised (deferred by design): a live `enabled:false` row toggle
+(G-verification owns it; the filter is 1 line + typed) and the
+placeholder-ON world (F3 runs §14 twice). Prod build not run (dev server
+was serving the parity session — gotcha 4).
+
+### Dev gotchas — addendum (found during E)
+
+11. **Embedded preview pane can park rAF entirely** (0 callbacks/2s,
+    typically after the pane sits backgrounded through a long shell task).
+    Symptoms: `computer screenshot` times out; GSAP timelines freeze at
+    their from-values (dossier decode stuck mid-entrance) while native
+    scroll, layout and event handlers stay fully functional. It is a
+    HARNESS artifact, not a site bug: state machines still run (Esc close
+    releases the scroll lock synchronously) — only tween-completion
+    callbacks pend. Verify with a `requestAnimationFrame` counter probe
+    before judging animations; prefer DOM-rect fingerprints over
+    screenshots for parity checks in this state.
+12. This machine's clone carries neither the `gitlab` remote (§16) nor the
+    untracked repo-level `.claude/launch.json`; the launch file was
+    recreated 2025-06-26 per §0 spec (dev 3007 / prod 3008). Re-add the
+    GitLab remote before the next publish: `git remote add gitlab
+    https://gitlab.com/ItsMonarch04/my-web.git`.
+
 ---
 
-## 7. WORKSTREAM F — Six-stage journey (Contact + placeholder + parametric world) → v0.8.7
+## 7. WORKSTREAM F — Six-stage journey (Contact + placeholder + parametric world)
 
 ### F1 — Contact section ("OPEN CHANNEL")
 
@@ -494,7 +548,7 @@ tiers, Lenis config, boot sequence, `getScrollLimit` normalisation
 
 ---
 
-## 8. WORKSTREAM G — Sanity backend (rebuild-on-publish) → v0.8.8
+## 8. WORKSTREAM G — Sanity backend (rebuild-on-publish)
 
 Site stays static; Sanity is the editing surface. NO runtime dependency,
 NO new npm deps in the Next app.
@@ -589,7 +643,7 @@ only whitespace/ordering-stable noise (ideally nothing).
 
 ---
 
-## 9. WORKSTREAM H — Scroll-linked reveal polish (LAST, cosmetic, skippable) → v0.8.9
+## 9. WORKSTREAM H — Scroll-linked reveal polish (LAST, cosmetic, skippable)
 
 Cards already decode on viewport entry (C1). Add depth, don't replace:
 - Per-card parallax drift: in `Card.tsx`'s existing scroll subscription
@@ -603,7 +657,7 @@ Cards already decode on viewport entry (C1). Add depth, don't replace:
 - Milestones/spine already move — do not double-animate them.
 - Budget: zero new deps, ≤1 day, delete-on-taste-veto like the tilt (§2a).
 
-## 10. WORKSTREAM D — Launch checklist (pre-deploy gate) — runs LAST → v0.9.0
+## 10. WORKSTREAM D — Launch checklist (pre-deploy gate) — runs LAST
 
 - **L1 — Canonical domain decision (BLOCKER):** README says `.com`-family,
   metadata/sitemap/robots say `sidakpreet.in`. Owner decides ONE host; set
@@ -630,11 +684,17 @@ Cards already decode on viewport entry (C1). Add depth, don't replace:
 
 ## 11. Version arc
 
-v0.8.0–v0.8.5 = Workstream C (committed 2025-06-25/26). **v0.8.5 = this brief
-+ plan finalization** (committed 2025-06-26, pushed
-to both remotes). Then **v0.8.6 = E** → **v0.8.7 = F** → **v0.8.8 = G** →
-(optional v0.8.9 = H) → **v0.9.0 = D (launch gate, deploy, domain live)**.
-Each commit bumps README Version Control block + package.json together (§0).
+Shipped: **v0.8.0–v0.8.5 = C** (committed 2025-06-25/26). **v0.8.5 = this
+brief + plan finalization** (committed 2025-06-26,
+pushed to both remotes). **v0.8.6–v0.8.8 = E** (committed 2025-06-26/28,
+LOCAL ONLY — push on owner's ask): v0.8.6 identity schema + consumer
+rewire, v0.8.7 item toggles + series registry, v0.8.8 auto-alternating
+sides + this brief update.
+
+Ahead (in order, NO version numbers preassigned — see §1: the owner assigns
+versions and the commit split at commit time): **F** (next) → **G** →
+optional **H** → **D** (launch gate, deploy, domain live). Each commit
+bumps README Version Control block + package.json together (§0).
 
 ## 12. Acceptance criteria (whole round) — status
 

@@ -10,13 +10,15 @@ export interface SectionConfig {
   enabled: boolean;    // THE toggle — false means section does not exist anywhere
   label: string;       // display name shown on card and in panel header
   type: SectionType;   // 'panel' = opens overlay, 'route' = navigates to href
-  side: SectionSide;   // which side of the spine the card sits on
+  side?: SectionSide;  // omitted = auto-alternate on the enabled list (E5);
+                       // set it only to pin a card to one side
   href?: string;       // only required when type === 'route'
   tagline: string;     // one sentence shown on the card below the label
 }
 
 export interface ActiveSection extends SectionConfig {
   index: number;       // position in the enabled-only list (0-based)
+  side: SectionSide;   // resolved — derived in lib/activeSections when unpinned
 }
 
 // ─── Layout Types ──────────────────────────────────────────────────────────

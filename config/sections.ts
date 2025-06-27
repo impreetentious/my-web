@@ -1,12 +1,14 @@
 import type { SectionConfig } from '@/types';
 
+// `side` is omitted everywhere on purpose (E5): lib/activeSections derives it
+// by alternating over the ENABLED list, so any toggle state stays correct.
+// Set `side` on an entry only to pin it.
 export const SECTIONS: SectionConfig[] = [
   {
     id: 'about',
     enabled: true,
     label: 'About Me',
     type: 'panel',
-    side: 'left',
     tagline: 'Background, skills, and what I am working on.',
   },
   {
@@ -14,7 +16,6 @@ export const SECTIONS: SectionConfig[] = [
     enabled: true,
     label: 'Portfolio',
     type: 'panel',
-    side: 'right',
     tagline: 'Selected work across strategy, GTM, and product.',
   },
   {
@@ -22,7 +23,6 @@ export const SECTIONS: SectionConfig[] = [
     enabled: true,
     label: 'Blog',
     type: 'route',
-    side: 'left',
     href: '/blog',
     tagline: 'Writing on strategy, systems, and everything else.',
   },
@@ -31,7 +31,6 @@ export const SECTIONS: SectionConfig[] = [
     enabled: true,
     label: 'Projects',
     type: 'panel',
-    side: 'right',
     tagline: 'Things built, shipped, and iterated on.',
   },
   {
@@ -39,7 +38,6 @@ export const SECTIONS: SectionConfig[] = [
     enabled: false,        // ← change to true when ready to activate
     label: 'TBD',
     type: 'panel',
-    side: 'left',
     tagline: 'Coming soon.',
   },
 ];

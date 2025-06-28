@@ -10,6 +10,7 @@ import {
   HEADER_HEIGHT_PX,
   FOOTER_HEIGHT_PX,
   CARD_OFFSET_PX,
+  CARD_WIDTH_PX,
   MOBILE_GUTTER_VW,
   MOBILE_FOOTER_SVH,
 } from '@/config/world';
@@ -101,6 +102,7 @@ export default function Home() {
             '--footer-h-desktop': `${FOOTER_HEIGHT_PX}px`,
             '--footer-svh-mobile': String(MOBILE_FOOTER_SVH),
             '--card-side-offset': `calc(50% + ${CARD_OFFSET_PX + 20}px)`,
+            '--card-width': `${CARD_WIDTH_PX}px`,
             '--m-gutter': `${MOBILE_GUTTER_VW}vw`,
           } as React.CSSProperties
         }

@@ -13,8 +13,9 @@ export const FOOTER_HEIGHT_PX = 300;
 // Horizontal distance from viewport centre to each spine anchor point.
 // Cards start 20px beyond the anchor (see B.1), so a card occupies from
 // ±(CARD_OFFSET_PX + 20) to ±(CARD_OFFSET_PX + 20 + CARD_WIDTH_PX) from centre —
-// 500px per side at the defaults. Below ~1100px-wide viewports cards approach the
-// screen edge; lower this value if small laptops are a target.
+// 500px per side at the defaults, so the two-column layout needs a ≥1000px
+// viewport. MOBILE_BREAKPOINT_PX must stay at or above that floor; at exactly
+// 1024px wide the outer card edges sit 12px from the screen edge.
 export const CARD_OFFSET_PX = 200;
 
 // Controls how smoothly the spine curves between anchors.
@@ -22,18 +23,23 @@ export const CARD_OFFSET_PX = 200;
 // Higher = gentler S-curves. Lower = sharper turns.
 export const SPINE_CONTROL_DISTANCE_PX = 220;
 
-// Width of each content card in pixels.
+// Width of each content card in pixels. app/page.tsx feeds this to CSS as
+// --card-width (consumed by .card-slot) — change it here, not in globals.css.
 export const CARD_WIDTH_PX = 280;
 
 // ZONE_THRESHOLDS moved to lib/descent.ts in F2 — the boundaries now derive
 // from CROSS_T, and world.ts must not import descent (activeSections → world
 // would cycle). Import it from '@/lib/descent'.
 
-// Mobile breakpoint — THE single source (B10): lib/useMobile.ts builds its
-// matchMedia query from this constant. The CSS twin lives in
-// styles/globals.css as `@media (max-width: 767px)` (CSS cannot read TS);
+// Single-column breakpoint — THE single source (B10): lib/useMobile.ts builds
+// its matchMedia query from this constant. The CSS twin lives in
+// styles/globals.css as `@media (max-width: 1023px)` (CSS cannot read TS);
 // if this number changes, change those media queries in the same edit.
-export const MOBILE_BREAKPOINT_PX = 768;
+// 1024 (was 768): the desktop card geometry needs a ≥1000px viewport (see
+// CARD_OFFSET_PX above) — at 768–999px the two-column layout clipped both
+// cards with horizontal overflow suppressed, so tablets/portrait iPads get
+// the single-column world.
+export const MOBILE_BREAKPOINT_PX = 1024;
 
 // ─── The mobile world (A1) ──────────────────────────────────────────────────
 // On phones the journey is a designed world of ~7.8 small viewports, not a

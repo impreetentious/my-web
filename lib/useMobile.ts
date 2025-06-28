@@ -4,7 +4,7 @@ import { useSyncExternalStore } from 'react';
 import { MOBILE_BREAKPOINT_PX } from '@/config/world';
 
 // One breakpoint, one source: config/world.ts (B10). The CSS side of the same
-// split lives in styles/globals.css as `@media (max-width: 767px)` — if the
+// split lives in styles/globals.css as `@media (max-width: 1023px)` — if the
 // constant moves, move those media queries with it.
 const QUERY = `(max-width: ${MOBILE_BREAKPOINT_PX - 1}px)`;
 

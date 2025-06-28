@@ -26,7 +26,9 @@
      and risks silently overriding the self-hosted font with a plain CDN-style string
      that has no @font-face backing it. Do not add font-family variables to this file. */
 
-  --card-width:             280px;
+  /* --card-width is NOT defined here. It comes from CARD_WIDTH_PX in
+     config/world.ts, set as a custom property on .world-container in
+     app/page.tsx — one source for the card geometry. */
   --card-radius:            4px;
   --panel-radius:           6px;
 }
@@ -41,7 +43,9 @@
    Geometry lives in CSS behind media queries so the FIRST paint is right on
    every device — no JS breakpoint flip, no CLS. All values come through
    custom properties set from config/world.ts constants in app/page.tsx.
-   The 767px max-width is the CSS twin of MOBILE_BREAKPOINT_PX. */
+   The 1023px max-width is the CSS twin of MOBILE_BREAKPOINT_PX: the desktop
+   two-column card geometry needs ≥1000px of viewport, so everything below
+   1024px runs the single-column world. */
 
 .world-container {
   position: relative;
@@ -93,7 +97,7 @@
   pointer-events: auto;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .world-container {
     height: calc(var(--world-svh-mobile) * 1vh);
     height: calc(var(--world-svh-mobile) * 1svh);
@@ -173,7 +177,7 @@
 .email-fab { display: flex; }
 .nav-dots { display: flex; }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   /* telemetry returns, smaller (A4) */
   .depth-indicator { bottom: 14px; left: 14px; gap: 4px; }
   .depth-indicator .depth-value { font-size: 11px; }
@@ -518,7 +522,7 @@ body {
 .tx-card:hover .tx-cta { color: var(--tx-accent); }
 .tx-card:hover .tx-cta-arrow { transform: translateX(4px); }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .tx-card { padding: 18px 18px 17px; }
   .tx-title { font-size: 22px; }
 }
@@ -674,7 +678,7 @@ body {
   padding-top: 5px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .case-file-grid { grid-template-columns: 1fr; gap: 18px; }
   .case-doc { max-width: 210px; }
   .dossier-row-extra { grid-template-columns: 1fr; padding-left: 4px; }

@@ -211,9 +211,11 @@ export function Card({ section }: CardProps) {
         ))}
       </div>
 
-      <h3 className="tx-title" data-tx-content>
+      {/* h2: the document outline steps h1 (hero) → h2 (transmissions);
+          .tx-title carries the styling, so the level is free to be right */}
+      <h2 className="tx-title" data-tx-content>
         {section.label}
-      </h3>
+      </h2>
 
       <p className="tx-tagline" data-tx-content>
         {section.tagline}

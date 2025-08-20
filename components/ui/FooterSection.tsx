@@ -53,12 +53,17 @@ export default function FooterSection() {
     };
   }, []);
 
+  // 32×32 hit targets around the 16px icons (the ≥24px floor, §0): 8px pad
+  // grows the box, the negative vertical margin keeps the row's layout height,
+  // and the social row's 4px gap keeps icon-to-icon spacing at the old 20px.
   const linkStyle: React.CSSProperties = {
     color: '#44505A',
     transition: 'color 0.25s ease',
     textDecoration: 'none',
     display: 'flex',
     alignItems: 'center',
+    padding: '8px',
+    margin: '-8px 0',
   };
 
   return (
@@ -133,7 +138,7 @@ export default function FooterSection() {
           EmailIcon fab still keep the path ≤10s. */}
 
       {/* Social link row */}
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'center', position: 'relative' }}>
+      <div style={{ display: 'flex', gap: '4px', alignItems: 'center', position: 'relative' }}>
         <a
           href={site.socials.linkedin}
           target="_blank"

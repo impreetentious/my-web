@@ -18,7 +18,7 @@ Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · G
 ---
 
 title: "Post Title"
-date: "2025-05-11"
+date: "2025-05-25"
 excerpt: "One sentence description."
 slug: "your-slug"
 
@@ -51,5 +51,5 @@ Before making any new commits, update the Version Control string in this file wi
 Also update `package.json` and `package-lock.json` to the same release version in that commit.
 This IST timestamp rule is permanent for all future workflows, commits, and AI agents working in this repository.
 
-* **Base Format Version:** 0.9.1
-* **Portfolio Version:** v0.9.1_2025-06-29_00:59:26 (IST)
+* **Base Format Version:** 0.9.2
+* **Portfolio Version:** v0.9.2_2025-08-20_23:19:32 (IST)

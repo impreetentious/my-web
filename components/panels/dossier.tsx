@@ -225,11 +225,13 @@ export function CaseFile({
 }) {
   const [open, setOpen] = useState(false);
   const regionId = useId();
+  const toggleId = `${regionId}-toggle`;
   // the one legible line on the redacted artefact: the outcome's own figure
   const metric = study.outcome.split(/[,—]/)[0].trim().toUpperCase();
   return (
     <div className="case-file" data-open={open}>
       <button
+        id={toggleId}
         type="button"
         className="case-file-toggle"
         aria-expanded={open}
@@ -239,7 +241,17 @@ export function CaseFile({
         <span>{`CASE FILE ${String(index + 1).padStart(2, '0')} · DECLASSIFIED EXTRACT`}</span>
         <span className="case-file-sign" aria-hidden="true">{open ? '−' : '+'}</span>
       </button>
-      <div className="case-file-body" id={regionId} role="region">
+      {/* The collapse is a CSS grid-rows clip — the content stays mounted, so
+          assistive tech must be told it's gone: inert + aria-hidden track the
+          toggle, or browse mode reads "collapsed" case files anyway. */}
+      <div
+        className="case-file-body"
+        id={regionId}
+        role="region"
+        aria-labelledby={toggleId}
+        aria-hidden={!open}
+        inert={!open}
+      >
         <div className="case-file-inner">
           <div className="case-file-grid">
             <div>
@@ -308,21 +320,24 @@ export function DossierBlock({
   );
 }
 
-/** Mono section head with a drawn hairline underneath. */
+/** Mono section head with a drawn hairline underneath. Rendered as a real h3
+ *  (panel title is the h2) so the dossier outline is navigable by heading —
+ *  fontWeight 400 keeps it pixel-identical to the old <p>. */
 export function DossierHead({ children }: { children: React.ReactNode }) {
   return (
     <div data-block style={{ marginTop: '52px', marginBottom: '20px' }}>
-      <p
+      <h3
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: '10px',
+          fontWeight: 400,
           letterSpacing: '0.28em',
           textTransform: 'uppercase',
           color: 'var(--color-text-muted)',
         }}
       >
         {children}
-      </p>
+      </h3>
       <div
         data-hair
         style={{

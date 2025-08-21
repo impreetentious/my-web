@@ -28,6 +28,24 @@ const BOOT_LINES = [
 const REVEAL_INTERVAL_S = 0.28;
 const HANDOFF_TEXT = '— SIGNAL RECEIVED —';
 
+// sessionStorage can THROW in storage-restricted contexts (sandboxed iframes,
+// hardened privacy modes). The boot must never strand on it: a failed read
+// means "not booted" (full theatre), a failed write means it replays.
+function readBooted(): boolean {
+  try {
+    return sessionStorage.getItem('mw-booted') === '1';
+  } catch {
+    return false;
+  }
+}
+function writeBooted(): void {
+  try {
+    sessionStorage.setItem('mw-booted', '1');
+  } catch {
+    // restricted storage — the theatre replays next load, nothing breaks
+  }
+}
+
 export default function LoadingScreen() {
   const [visible, setVisible] = useState(true);
   const screenRef = useRef<HTMLDivElement>(null);
@@ -46,7 +64,7 @@ export default function LoadingScreen() {
 
     // Returning visitors in the same tab session skip the boot theatre —
     // a quick fade instead of the full sequence
-    if (sessionStorage.getItem('mw-booted') === '1') {
+    if (readBooted()) {
       const fade = gsap.to(screenRef.current, {
         opacity: 0,
         duration: 0.35,
@@ -73,8 +91,9 @@ export default function LoadingScreen() {
       const target = document.querySelector('[data-hero-tag]') as HTMLElement | null;
 
       const release = () => {
-        sessionStorage.setItem('mw-booted', '1');
+        // release first — the storage write must never gate the veil lift
         useSiteStore.getState().setIsLoading(false);
+        writeBooted();
       };
 
       // Fallback: no measurable hero → plain veil lift
@@ -165,6 +184,9 @@ export default function LoadingScreen() {
   return (
     <div
       ref={screenRef}
+      // the <noscript> rule in app/layout.tsx hides the veil when no client
+      // JS will ever lift it — the server HTML underneath stays reachable
+      data-boot-veil=""
       style={{
         position: 'fixed',
         inset: 0,

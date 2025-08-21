@@ -95,12 +95,14 @@ export default function PanelOverlay() {
   const ghostRef = useRef<HTMLDivElement>(null);
   const ruleRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const titleInnerRef = useRef<HTMLHeadingElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const closingRef = useRef(false);
 
   // Open/close state machine — mount + scroll lock on open, cut + unmount on close
   useEffect(() => {
@@ -108,6 +110,13 @@ export default function PanelOverlay() {
     if (!overlay) return;
 
     if (activePanelId) {
+      // A reopen can land while the close cut is still running: kill it NOW,
+      // or its onComplete fires later and hides an active dossier.
+      const interruptedClose = closingRef.current;
+      closingRef.current = false;
+      tlRef.current?.kill();
+      tlRef.current = null;
+
       lastFocusedRef.current = document.activeElement as HTMLElement | null;
       renderedRef.current = activePanelId;
       setRenderedPanelId(activePanelId);
@@ -115,6 +124,18 @@ export default function PanelOverlay() {
       // Lenis.stop() only swallows wheel/touch — without this, arrow keys and
       // space still scroll the page behind the dossier
       document.body.style.overflow = 'hidden';
+
+      if (interruptedClose) {
+        // Reopening the SAME dossier mid-close leaves renderedPanelId
+        // unchanged, so the decode effect below never re-runs — restore
+        // everything the close cut had already faded, synchronously.
+        gsap.set(overlay, { autoAlpha: 1 });
+        overlay.style.pointerEvents = 'auto';
+        gsap.set(frameRef.current, { opacity: 1, y: 0 });
+        gsap.set(ghostRef.current, { opacity: 1 });
+        gsap.set(veilRef.current, { opacity: 1 });
+        closeButtonRef.current?.focus();
+      }
     } else if (renderedRef.current) {
       renderedRef.current = null;
       startScroll();
@@ -122,8 +143,10 @@ export default function PanelOverlay() {
 
       tlRef.current?.kill();
       if (motionAllowed()) {
+        closingRef.current = true;
         const tl = gsap.timeline({
           onComplete: () => {
+            closingRef.current = false;
             overlay.style.pointerEvents = 'none';
             setRenderedPanelId(null);
           },
@@ -268,6 +291,7 @@ export default function PanelOverlay() {
       ref={overlayRef}
       role="dialog"
       aria-modal="true"
+      aria-labelledby="dossier-title"
       aria-hidden={!renderedPanelId}
       style={{
         position: 'fixed',
@@ -339,10 +363,18 @@ export default function PanelOverlay() {
       </button>
 
       {/* Frame — the scrollable dossier; data-lenis-prevent stops Lenis
-          swallowing wheel events inside it (R16) */}
+          swallowing wheel events inside it (R16). The frame covers the veil
+          (z-index 1), so IT must own backdrop dismissal: close only when the
+          click lands on the frame or the grid's own padding — never on
+          content that merely bubbled up. */}
       <div
         ref={frameRef}
         data-lenis-prevent
+        onClick={(e) => {
+          if (e.target === frameRef.current || e.target === gridRef.current) {
+            useSiteStore.getState().closePanel();
+          }
+        }}
         style={{
           position: 'absolute',
           inset: 0,
@@ -352,6 +384,7 @@ export default function PanelOverlay() {
         }}
       >
         <div
+          ref={gridRef}
           style={{
             display: 'grid',
             gridTemplateColumns: isMobile ? '1fr' : '210px 1px minmax(0, 1fr)',
@@ -518,6 +551,7 @@ export default function PanelOverlay() {
           <div ref={contentRef} style={{ minWidth: 0 }}>
             <div style={{ overflow: 'hidden', marginBottom: '40px' }}>
               <h2
+                id="dossier-title"
                 ref={titleInnerRef}
                 style={{
                   fontFamily: 'var(--font-display), Georgia, serif',

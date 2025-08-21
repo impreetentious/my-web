@@ -67,6 +67,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${spaceGrotesk.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
     >
       <body>
+        {/* No-JS fail-open: the boot veil and the cards' decode entrance are
+            client-released — without JS the server HTML must not sit behind
+            an opaque loader or at opacity 0. */}
+        <noscript>
+          <style>{`
+            [data-boot-veil] { display: none !important; }
+            .tx-card { opacity: 1 !important; }
+          `}</style>
+        </noscript>
         {/* B4 — the Lenis scroll system is scoped to the home experience
             (app/page.tsx wraps itself in ScrollProvider); blog routes scroll
             natively and run no rAF loop. */}

@@ -51,5 +51,5 @@ Before making any new commits, update the Version Control string in this file wi
 Also update `package.json` and `package-lock.json` to the same release version in that commit.
 This IST timestamp rule is permanent for all future workflows, commits, and AI agents working in this repository.
 
-* **Base Format Version:** 0.9.2
-* **Portfolio Version:** v0.9.2_2025-08-20_23:19:32 (IST)
+* **Base Format Version:** 0.9.3
+* **Portfolio Version:** v0.9.3_2025-08-21_23:25:51 (IST)

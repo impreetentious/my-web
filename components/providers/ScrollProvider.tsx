@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { initScrollSystem, destroyScrollSystem } from '@/lib/scrollSystem';
+import { setAudioEnabled } from '@/lib/audio';
 import { journey } from '@/lib/journey';
 
 export function ScrollProvider({ children }: { children: React.ReactNode }) {
@@ -31,6 +32,11 @@ export function ScrollProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('keydown', onInput);
       window.removeEventListener('touchstart', onInput);
       destroyScrollSystem();
+      // The score must not outlive the descent: leaving home (e.g. → /blog,
+      // which has no mute control) silences and parks the engine. Idempotent —
+      // a no-op when audio was never enabled. Mute stays the default on
+      // return (gotcha 9: never auto-restore).
+      setAudioEnabled(false);
     };
   }, []);
 

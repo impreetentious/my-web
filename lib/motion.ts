@@ -32,17 +32,8 @@ export const EASE_ARRIVE = CustomEase.create(
 /** Signature exit: gathers speed and leaves — no lingering tail. */
 export const EASE_CUT = CustomEase.create('descent-cut', 'M0,0 C0.5,0 0.74,0.22 1,1');
 
-/** CSS twins for plain transitions (hover states etc.). */
+/** CSS twin of ARRIVE for plain transitions (hover states etc.). */
 export const EASE_ARRIVE_CSS = 'cubic-bezier(0.16, 0.84, 0.24, 1)';
-export const EASE_CUT_CSS = 'cubic-bezier(0.5, 0, 0.74, 0.22)';
 
 /** The house stagger rhythm, seconds. */
 export const STAGGER = 0.06;
-
-/** Duration vocabulary, seconds. */
-export const DUR = {
-  open: 0.7,    // panel/dossier opens
-  close: 0.3,   // exits
-  reveal: 0.65, // content entrances
-  micro: 0.28,  // small state changes
-} as const;

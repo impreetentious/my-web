@@ -72,6 +72,9 @@ export interface SiteContent {
   availability: string;  // e.g. "OPEN TO OPPORTUNITIES · 2026"
   location: string;      // e.g. "NEW DELHI · RELOCATION OPEN"
   resumeHref: string;    // "/resume.pdf" — becomes a Sanity asset at G3
+  // Keep the approved future path without rendering a broken download CTA.
+  // This flips only once the owner has supplied the actual document.
+  resumeAvailable: boolean;
 }
 
 export interface BlogPost {

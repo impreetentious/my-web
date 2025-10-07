@@ -13,6 +13,8 @@ import { DossierBlock, DossierHead, Chip, ChipRow, PullQuote, ChannelLink } from
 // (F1) speaks the same language.
 
 export function AboutPanel() {
+  const hasResume = site.resumeAvailable && Boolean(site.resumeHref);
+
   return (
     <div>
       {/* Lede */}
@@ -175,9 +177,11 @@ export function AboutPanel() {
           {site.availability} · {site.location}
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '22px' }}>
-          <ChannelLink href={site.resumeHref} download>
-            EXTRACT FULL RECORD
-          </ChannelLink>
+          {hasResume && (
+            <ChannelLink href={site.resumeHref} download>
+              EXTRACT FULL RECORD
+            </ChannelLink>
+          )}
           <ChannelLink href={`mailto:${site.email}`}>
             OPEN CHANNEL
           </ChannelLink>

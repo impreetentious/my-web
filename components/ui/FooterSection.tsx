@@ -57,7 +57,7 @@ export default function FooterSection() {
   // grows the box, the negative vertical margin keeps the row's layout height,
   // and the social row's 4px gap keeps icon-to-icon spacing at the old 20px.
   const linkStyle: React.CSSProperties = {
-    color: '#44505A',
+    color: 'var(--color-text-muted)',
     transition: 'color 0.25s ease',
     textDecoration: 'none',
     display: 'flex',
@@ -115,7 +115,7 @@ export default function FooterSection() {
           fontFamily: 'var(--font-mono)',
           fontSize: '10px',
           letterSpacing: '0.2em',
-          color: 'rgba(140, 165, 175, 0.5)',
+          color: 'var(--color-text-muted)',
           display: 'flex',
           gap: '12px',
           flexWrap: 'wrap',
@@ -146,7 +146,7 @@ export default function FooterSection() {
           aria-label="LinkedIn"
           style={linkStyle}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#44505A'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
         >
           {/* LinkedIn SVG */}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -162,7 +162,7 @@ export default function FooterSection() {
           aria-label="GitHub"
           style={linkStyle}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#44505A'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
         >
           {/* GitHub SVG */}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -176,7 +176,7 @@ export default function FooterSection() {
           aria-label="Email"
           style={linkStyle}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#44505A'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
         >
           {/* Envelope SVG */}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -204,7 +204,7 @@ export default function FooterSection() {
           fontFamily: 'var(--font-mono)',
           fontSize: '10px',
           letterSpacing: '0.2em',
-          color: '#3A464E',
+          color: 'var(--color-text-muted)',
           textTransform: 'uppercase',
           position: 'relative',
         }}>

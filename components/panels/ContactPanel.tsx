@@ -24,6 +24,8 @@ function host(url: string): string {
 }
 
 export function ContactPanel() {
+  const hasResume = site.resumeAvailable && Boolean(site.resumeHref);
+
   return (
     <div>
       {/* Lede — the proposition in the sans voice, mirroring the About lede */}
@@ -62,9 +64,11 @@ export function ContactPanel() {
       <DossierBlock>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
           <ChannelLink href={`mailto:${site.email}`}>OPEN CHANNEL</ChannelLink>
-          <ChannelLink href={site.resumeHref} download>
-            EXTRACT FULL RECORD
-          </ChannelLink>
+          {hasResume && (
+            <ChannelLink href={site.resumeHref} download>
+              EXTRACT FULL RECORD
+            </ChannelLink>
+          )}
         </div>
       </DossierBlock>
 

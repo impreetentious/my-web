@@ -12,6 +12,7 @@ import {
 import { stopScroll, startScroll } from '@/lib/scrollSystem';
 import { useSiteStore } from '@/store/useSiteStore';
 import { activeSections } from '@/lib/activeSections';
+import { isAddressableDossierId } from '@/lib/dossiers';
 import { depthReading } from '@/lib/descent';
 import { journey } from '@/lib/journey';
 import { scrambleText } from '@/lib/scramble';
@@ -71,9 +72,23 @@ const railLabelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: '9px',
   letterSpacing: '0.26em',
-  color: 'rgba(255, 255, 255, 0.30)',
+  color: 'var(--color-text-muted)',
   marginBottom: '5px',
 };
+
+// Dossiers keep the cinematic overlay on the home route, but their state is
+// addressable: a copied URL restores the same dossier and Back closes it.
+const DOSSIER_PARAM = 'dossier';
+const DOSSIER_HISTORY_KEY = '__myWebDossierOverlay';
+
+function historyPath(url: URL): string {
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
+function currentHistoryState(): Record<string, unknown> {
+  const state = window.history.state;
+  return state && typeof state === 'object' ? { ...state } : {};
+}
 
 const railValueStyle: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
@@ -103,6 +118,83 @@ export default function PanelOverlay() {
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const closingRef = useRef(false);
+  const historyReadyRef = useRef(false);
+  const applyingLocationRef = useRef(false);
+  const openedHistoryEntryRef = useRef(false);
+
+  // Read the initial query and browser Back/Forward changes into the store.
+  // Invalid or disabled dossier ids are removed rather than leaving a URL that
+  // promises a panel the current build cannot render.
+  useEffect(() => {
+    const syncFromLocation = () => {
+      const url = new URL(window.location.href);
+      const requestedId = url.searchParams.get(DOSSIER_PARAM);
+      const validId = isAddressableDossierId(requestedId) ? requestedId : null;
+
+      if (requestedId && !validId) {
+        url.searchParams.delete(DOSSIER_PARAM);
+        window.history.replaceState(currentHistoryState(), '', historyPath(url));
+      }
+
+      openedHistoryEntryRef.current = Boolean(
+        validId && currentHistoryState()[DOSSIER_HISTORY_KEY] === true
+      );
+
+      if (useSiteStore.getState().activePanelId === validId) return;
+      applyingLocationRef.current = true;
+      if (validId) {
+        useSiteStore.getState().openPanel(validId);
+      } else {
+        useSiteStore.getState().closePanel();
+      }
+    };
+
+    syncFromLocation();
+    historyReadyRef.current = true;
+    window.addEventListener('popstate', syncFromLocation);
+    return () => window.removeEventListener('popstate', syncFromLocation);
+  }, []);
+
+  // Write user-initiated dossier opens to history. A close unwinds only the
+  // entry this overlay created; a directly visited query is cleaned in place.
+  useEffect(() => {
+    if (!historyReadyRef.current) return;
+
+    if (applyingLocationRef.current) {
+      applyingLocationRef.current = false;
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    const requestedId = url.searchParams.get(DOSSIER_PARAM);
+
+    if (activePanelId && !isAddressableDossierId(activePanelId)) {
+      useSiteStore.getState().closePanel();
+      return;
+    }
+
+    if (activePanelId && requestedId !== activePanelId) {
+      url.searchParams.set(DOSSIER_PARAM, activePanelId);
+      window.history.pushState(
+        { ...currentHistoryState(), [DOSSIER_HISTORY_KEY]: true },
+        '',
+        historyPath(url)
+      );
+      openedHistoryEntryRef.current = true;
+      return;
+    }
+
+    if (!activePanelId && requestedId) {
+      if (openedHistoryEntryRef.current && currentHistoryState()[DOSSIER_HISTORY_KEY] === true) {
+        openedHistoryEntryRef.current = false;
+        window.history.back();
+      } else {
+        url.searchParams.delete(DOSSIER_PARAM);
+        window.history.replaceState(currentHistoryState(), '', historyPath(url));
+        openedHistoryEntryRef.current = false;
+      }
+    }
+  }, [activePanelId]);
 
   // Open/close state machine — mount + scroll lock on open, cut + unmount on close
   useEffect(() => {
@@ -492,18 +584,20 @@ export default function PanelOverlay() {
                 <div data-rail>
                   <p style={railLabelStyle}>ACTIONS</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginTop: '2px' }}>
-                    <a
-                      href={site.resumeHref}
-                      download
-                      style={{
-                        ...railValueStyle,
-                        color: 'var(--color-gold)',
-                        textDecoration: 'none',
-                        fontSize: '10px',
-                      }}
-                    >
-                      FULL RECORD ↓
-                    </a>
+                    {site.resumeAvailable && site.resumeHref && (
+                      <a
+                        href={site.resumeHref}
+                        download
+                        style={{
+                          ...railValueStyle,
+                          color: 'var(--color-gold)',
+                          textDecoration: 'none',
+                          fontSize: '10px',
+                        }}
+                      >
+                        FULL RECORD ↓
+                      </a>
+                    )}
                     <a
                       href={`mailto:${site.email}`}
                       style={{
@@ -524,7 +618,7 @@ export default function PanelOverlay() {
                     fontFamily: 'var(--font-mono)',
                     fontSize: '9px',
                     letterSpacing: '0.22em',
-                    color: 'rgba(255, 255, 255, 0.22)',
+                    color: 'var(--color-text-muted)',
                   }}
                 >
                   [ESC] CLOSE

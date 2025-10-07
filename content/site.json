@@ -22,5 +22,6 @@
   "proposition": "Strategy / GTM / Product Strategy",
   "availability": "OPEN TO OPPORTUNITIES · 2026",
   "location": "NEW DELHI · RELOCATION OPEN",
-  "resumeHref": "/resume.pdf"
+  "resumeHref": "/resume.pdf",
+  "resumeAvailable": false
 }

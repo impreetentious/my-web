@@ -2,7 +2,10 @@
 
 Personal website with an animated SVG spine, WebGL atmospheric effects, GSAP-driven panel overlays, and an MDX blog system.
 
-Soon live at sidakpreetsingh.com
+Public launch is pending a canonical-domain decision. The code currently uses
+`https://sidakpreet.in` as a provisional canonical, but that host does not yet
+resolve; `sidakpreetsingh.com` currently serves the older placeholder site, not
+this Next.js build.
 
 ## Stack
 
@@ -10,19 +13,21 @@ Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · G
 
 ## Updating Content
 
-**About Me:** Edit `content/about.json`
-**Portfolio items:** Edit `content/portfolio.json`
-**Projects:** Edit `content/projects.json`
-**New blog post:** Create `content/blog/your-slug.mdx`:
+- **About Me:** Edit `content/about.json`.
+- **Portfolio items:** Edit `content/portfolio.json`.
+- **Projects:** Edit `content/projects.json`.
+- **New blog post:** Create `content/blog/your-slug.mdx`:
 
+```mdx
 ---
-
 title: "Post Title"
 date: "2025-05-25"
 excerpt: "One sentence description."
 slug: "your-slug"
-
 ---
+
+Post content goes here.
+```
 
 
 ## Adding a Section
@@ -41,15 +46,20 @@ Set back to `true` to restore it.
 
 ## Deploy
 
-Every push to `main` auto-deploys via Vercel (~60 seconds).
+The intended production path is GitHub `main` → Vercel. Before treating a push
+as a public deployment, verify the Vercel integration and the custom-domain
+assignment — the repository alone does not prove that platform state.
 
 ---
 
 ## AI Agent Instructions
 
-Before making any new commits, update the Version Control string in this file with the current IST time of commit (`Asia/Kolkata`).
-Also update `package.json` and `package-lock.json` to the same release version in that commit.
-This IST timestamp rule is permanent for all future workflows, commits, and AI agents working in this repository.
+Never commit or push unless the owner explicitly asks. Before any authorized
+commit, use the owner-assigned release version and update the Version Control
+string below with the real current commit time in IST (`Asia/Kolkata`). Align
+that version in `package.json` and both root version fields in
+`package-lock.json` in the same commit. Historical v0.8.9–v0.10.0 timestamps
+were owner-directed exceptions; do not rewrite pushed history.
 
-* **Base Format Version:** 0.9.4
-* **Portfolio Version:** v0.9.4_2025-10-07_00:36:22 (IST)
+* **Base Format Version:** 0.10.0
+* **Portfolio Version:** v0.10.0_2025-10-07_23:00:48 (IST)

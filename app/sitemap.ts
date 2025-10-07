@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getAllPosts, getSeriesPosts } from '@/lib/blog';
+import { addressableDossiers } from '@/lib/dossiers';
 import site from '@/content/site.json';
 
 const BASE_URL = site.domain;
@@ -30,6 +31,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
+  const dossierRoutes: MetadataRoute.Sitemap = addressableDossiers.map((section) => ({
+    url: `${BASE_URL}/dossiers/${section.id}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   return [
     {
       url: BASE_URL,
@@ -45,5 +53,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...blogRoutes,
     ...seriesRoutes,
+    ...dossierRoutes,
   ];
 }

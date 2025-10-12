@@ -57,7 +57,7 @@ function audioGauge(on: boolean, intensity: number): string {
 export default function DepthIndicator() {
   const activeZone = useSiteStore((s) => s.activeZone);
   const [displayZone, setDisplayZone] = useState<ZoneName>('sky');
-  const [labelOpacity, setLabelOpacity] = useState(0.45);
+  const [labelOpacity, setLabelOpacity] = useState(0.78);
   const [audioOn, setAudioOn] = useState(false);
   const valueRef = useRef<HTMLDivElement>(null);
   const rateRef = useRef<HTMLDivElement>(null);
@@ -146,7 +146,7 @@ export default function DepthIndicator() {
     setLabelOpacity(0);
     const timeout = setTimeout(() => {
       setDisplayZone(activeZone);
-      setLabelOpacity(0.45);
+      setLabelOpacity(0.78);
     }, 250);
     return () => clearTimeout(timeout);
   }, [activeZone, displayZone]);
@@ -205,7 +205,7 @@ export default function DepthIndicator() {
         style={{
           letterSpacing: '0.14em',
           color: 'var(--color-text-muted)',
-          opacity: 0.7,
+          opacity: 0.88,
           fontVariantNumeric: 'tabular-nums',
         }}
       >

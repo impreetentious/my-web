@@ -14,8 +14,9 @@
   --color-elevated:         #1A1A1A;
 
   --color-text-primary:     #F2F2F2;
-  --color-text-secondary:   #888888;
-  --color-text-muted:       #808080;
+  /* Both quiet text tokens clear AA against the darkest descent backdrop. */
+  --color-text-secondary:   #B8C3D0;
+  --color-text-muted:       #A5B2C0;
 
   --color-border-subtle:    rgba(255, 255, 255, 0.08);
   --color-border-visible:   rgba(255, 255, 255, 0.15);
@@ -97,6 +98,77 @@
   pointer-events: auto;
 }
 
+/* ─── Shareable dossier documents ──────────────────────────────────────── */
+
+.dossier-route {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(0, 255, 238, 0.08), transparent 30%),
+    var(--color-bg);
+  color: var(--color-text-primary);
+}
+.dossier-route__grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.24) 0.55px, transparent 0.55px);
+  background-size: 5px 5px;
+}
+.dossier-route__inner {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 76px 24px 108px;
+}
+.dossier-route__eyebrow,
+.dossier-route__tagline,
+.dossier-route__nav {
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+}
+.dossier-route__eyebrow {
+  font-size: 11px;
+  color: var(--color-accent);
+}
+.dossier-route__title {
+  margin-top: 16px;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(46px, 8vw, 76px);
+  font-weight: 400;
+  line-height: 0.98;
+}
+.dossier-route__tagline {
+  max-width: 590px;
+  margin-top: 17px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.dossier-route__rule {
+  width: 100%;
+  height: 1px;
+  margin: 34px 0 40px;
+  background: linear-gradient(90deg, rgba(224, 178, 110, 0.7), rgba(0, 255, 238, 0.26), transparent);
+}
+.dossier-route__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  margin-top: 64px;
+  font-size: 11px;
+}
+.dossier-route__nav a {
+  color: var(--color-gold);
+  text-decoration: none;
+}
+.dossier-route__nav a:hover,
+.dossier-route__nav a:focus-visible {
+  color: var(--color-accent);
+}
+
 @media (max-width: 1023px) {
   .world-container {
     height: calc(var(--world-svh-mobile) * 1vh);
@@ -147,7 +219,7 @@
   font-size: 9px;
   letter-spacing: 0.18em;
   color: var(--color-text-muted);
-  opacity: 0.6;
+  opacity: 0.82;
   cursor: pointer;
   text-align: left;
   transition: opacity 0.25s ease, color 0.25s ease;

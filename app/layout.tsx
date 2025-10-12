@@ -32,6 +32,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  themeColor: '#05060D',
 };
 
 // E2 — every personal fact in the metadata comes from content/site.json;
@@ -60,12 +61,35 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+// L2 — Person JSON-LD, built from content/site.json (Rule B: one source per
+// fact). Emitted site-wide via layout so every route inherits the identity
+// entity; per-route entities (Article on posts) are additive.
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: site.domain,
+  email: `mailto:${site.email}`,
+  jobTitle: site.proposition,
+  description: site.metaDescription,
+  sameAs: [site.socials.linkedin, site.socials.github],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`${spaceGrotesk.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
     >
+      <head>
+        {/* L3 — iOS status bar sits over the descent's night sky. */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
+        />
+      </head>
       <body>
         {/* No-JS fail-open: the boot veil and the cards' decode entrance are
             client-released — without JS the server HTML must not sit behind

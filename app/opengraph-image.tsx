@@ -1,7 +1,9 @@
 import { ImageResponse } from 'next/og';
 import site from '@/content/site.json';
 
-export const runtime = 'edge';
+// L7 — default nodejs runtime lets Next pre-render this route at build,
+// so the deployment is literally static. The scene uses no external assets
+// (satori CSS only), so edge offered no advantage.
 export const alt = site.metaTitle;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';

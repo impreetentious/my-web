@@ -54,8 +54,27 @@ export default async function BlogPostPage({
 
   const { next, prev } = getRelatedPosts(post);
 
+  // L2 — Article JSON-LD. Author reuses the Person emitted in the root
+  // layout via URL identity, so the entities join without duplication.
+  const articleLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    dateModified: post.date,
+    url: `${site.domain}/blog/${post.slug}`,
+    mainEntityOfPage: `${site.domain}/blog/${post.slug}`,
+    author: { '@type': 'Person', name: site.name, url: site.domain },
+    publisher: { '@type': 'Person', name: site.name, url: site.domain },
+  };
+
   return (
     <main style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
+      />
       <div className="log-grain" aria-hidden="true" />
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '72px 24px 110px' }}>
         <PostHeader post={post} />

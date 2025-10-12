@@ -28,7 +28,7 @@ const N = activeSections.length;
 const limit = totalPageHeight - NOMINAL_VH;
 
 /** scroll-t at which card i sits screen-centred (nominal viewport). */
-const tCard = (i: number): number =>
+export const tCard = (i: number): number =>
   (HEADER_HEIGHT_PX + i * SECTION_HEIGHT_PX + SECTION_HEIGHT_PX / 2 - NOMINAL_VH / 2) /
   limit;
 

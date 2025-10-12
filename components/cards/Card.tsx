@@ -5,7 +5,7 @@ import Link from 'next/link';
 import gsap from 'gsap';
 import { motionAllowed, EASE_ARRIVE } from '@/lib/motion';
 import { useSiteStore } from '@/store/useSiteStore';
-import { trailColorAt, U_SURFACE } from '@/lib/descent';
+import { trailColorAt, tCard, U_SURFACE } from '@/lib/descent';
 import { journey } from '@/lib/journey';
 import { scrambleText } from '@/lib/scramble';
 import { sectionCenterFractionDesktop } from '@/lib/activeSections';
@@ -40,6 +40,9 @@ export function Card({ section }: CardProps) {
   const scanRef = useRef<HTMLDivElement>(null);
   const rxRef = useRef<HTMLSpanElement>(null);
   const tickRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  // H — parallax drift lives on its own inner wrapper so the transform never
+  // collides with .tx-card (tilt) or .card-slot (translateY(-50%) centring).
+  const driftRef = useRef<HTMLDivElement>(null);
 
   // Where this transmission lives in the world — its wake colour and which
   // side of the surface it sits on. Desktop fractions serve both breakpoints:
@@ -154,6 +157,45 @@ export function Card({ section }: CardProps) {
     };
   }, [section.index]);
 
+  // H — Scroll-linked parallax drift. Content rides ±14px as the world scrolls
+  // through the card's centre-t. Desktop, motion-allowed, quality ≠ 'low' only:
+  // low tier is the CSS-gradient world where micro-motion adds no depth cue and
+  // costs paints. Delete-on-taste-veto — remove this useEffect + the driftRef
+  // wrapper below and the tilt/decode stay intact (§9 note).
+  useEffect(() => {
+    if (!motionAllowed()) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    if (useSiteStore.getState().quality === 'low') return;
+
+    const el = driftRef.current;
+    if (!el) return;
+
+    const centre = tCard(section.index);
+    const RANGE = 0.18; // ~1 section on either side is the useful window
+    const MAX_PX = 14;
+
+    const apply = (scrollT: number) => {
+      const d = Math.max(-1, Math.min(1, (scrollT - centre) / RANGE));
+      el.style.transform = `translate3d(0, ${(d * MAX_PX).toFixed(2)}px, 0)`;
+    };
+    apply(useSiteStore.getState().scrollT);
+    const unsubT = useSiteStore.subscribe((s) => s.scrollT, apply);
+    // If the tier drops mid-session (WebGL loss → low), stop driving parallax.
+    const unsubQ = useSiteStore.subscribe(
+      (s) => s.quality,
+      (q) => {
+        if (q === 'low') {
+          el.style.transform = '';
+          unsubT();
+        }
+      }
+    );
+    return () => {
+      unsubT();
+      unsubQ();
+    };
+  }, [section.index]);
+
   // Pointer tilt (≤2.2°) + sheen tracking — direct style writes on mousemove,
   // eased back by the CSS transition. The sheen's light belongs to the world:
   // sun from above the line, probe from the spine side below it.
@@ -184,7 +226,9 @@ export function Card({ section }: CardProps) {
 
   const inner = (
     <>
-      {/* Corner brackets + spine-facing port — the frame vocabulary */}
+      {/* Corner brackets + spine-facing port — the frame vocabulary. The
+          frame chrome (brackets, port, scanline, sheen) is anchored to the
+          card and does NOT drift; the parallax lives on tx-drift below. */}
       <span className="tx-brackets" aria-hidden="true" />
       <span className="tx-port" aria-hidden="true" />
 
@@ -194,36 +238,38 @@ export function Card({ section }: CardProps) {
       {/* Specular sheen — world-lit, pointer-tracked */}
       <span className="tx-sheen" aria-hidden="true" />
 
-      <div className="tx-head" data-tx-content>
-        <span ref={rxRef} className="tx-rx" data-final="">
-          RX --:-- · SNR --
-        </span>
-        <span className="tx-num">{String(section.index + 1).padStart(2, '0')}</span>
-      </div>
+      <div ref={driftRef} className="tx-drift">
+        <div className="tx-head" data-tx-content>
+          <span ref={rxRef} className="tx-rx" data-final="">
+            RX --:-- · SNR --
+          </span>
+          <span className="tx-num">{String(section.index + 1).padStart(2, '0')}</span>
+        </div>
 
-      <div className="tx-ticks" data-tx-content aria-hidden="true">
-        {Array.from({ length: TICK_COUNT }, (_, i) => (
-          <span
-            key={i}
-            ref={(el) => { tickRefs.current[i] = el; }}
-            className="tx-tick"
-          />
-        ))}
-      </div>
+        <div className="tx-ticks" data-tx-content aria-hidden="true">
+          {Array.from({ length: TICK_COUNT }, (_, i) => (
+            <span
+              key={i}
+              ref={(el) => { tickRefs.current[i] = el; }}
+              className="tx-tick"
+            />
+          ))}
+        </div>
 
-      {/* h2: the document outline steps h1 (hero) → h2 (transmissions);
-          .tx-title carries the styling, so the level is free to be right */}
-      <h2 className="tx-title" data-tx-content>
-        {section.label}
-      </h2>
+        {/* h2: the document outline steps h1 (hero) → h2 (transmissions);
+            .tx-title carries the styling, so the level is free to be right */}
+        <h2 className="tx-title" data-tx-content>
+          {section.label}
+        </h2>
 
-      <p className="tx-tagline" data-tx-content>
-        {section.tagline}
-      </p>
+        <p className="tx-tagline" data-tx-content>
+          {section.tagline}
+        </p>
 
-      <div className="tx-cta" data-tx-content>
-        {section.type === 'panel' ? 'DECODE' : 'READ'}
-        <span className="tx-cta-arrow" aria-hidden="true">→</span>
+        <div className="tx-cta" data-tx-content>
+          {section.type === 'panel' ? 'DECODE' : 'READ'}
+          <span className="tx-cta-arrow" aria-hidden="true">→</span>
+        </div>
       </div>
     </>
   );

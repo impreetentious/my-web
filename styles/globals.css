@@ -533,6 +533,14 @@ body {
 }
 .tx-card:hover .tx-sheen { opacity: 1; }
 
+/* H — parallax wrapper. Composited transform hint only; the JS writes
+   translate3d each scroll frame. Untransformed by default so the card is
+   pixel-identical when the effect is disabled (mobile / reduced-motion /
+   low tier / taste-vetoed by removing the useEffect in Card.tsx). */
+.tx-drift {
+  will-change: transform;
+}
+
 .tx-head {
   display: flex;
   justify-content: space-between;

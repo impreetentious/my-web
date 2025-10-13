@@ -1,6 +1,6 @@
 {
   "name": "my-web",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -39,5 +39,16 @@
     "next": {
       "postcss": "8.5.6"
     }
-  }
+  },
+  "license": "MIT",
+  "author": "Sidakpreet Singh",
+  "description": "Personal website for Sidakpreet Singh.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItsMonarch04/my-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ItsMonarch04/my-web/issues"
+  },
+  "homepage": "https://github.com/ItsMonarch04/my-web#"
 }

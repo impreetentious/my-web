@@ -5,11 +5,26 @@ Personal website with an animated SVG spine, WebGL atmospheric effects, GSAP-dri
 Public launch is pending a canonical-domain decision. The code currently uses
 `https://sidakpreet.in` as a provisional canonical, but that host does not yet
 resolve; `sidakpreetsingh.com` currently serves the older placeholder site, not
-this Next.js build.
+this Next.js build. Search indexing is disabled until launch (`robots` /
+metadata `noindex`).
 
 ## Stack
 
 Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · GSAP · Lenis · Zustand · MDX (next-mdx-remote v5) · Vercel
+
+## Run locally
+
+```bash
+npm ci
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+```bash
+npm run lint
+npm run build
+```
 
 ## Updating Content
 
@@ -29,7 +44,6 @@ slug: "your-slug"
 Post content goes here.
 ```
 
-
 ## Adding a Section
 
 1. Create the panel in `components/panels/YourPanel.tsx`
@@ -43,23 +57,13 @@ The spine, nav dots, and scroll system update automatically.
 Set `enabled: false` for that section in `config/sections.ts`.
 Set back to `true` to restore it.
 
-
 ## Deploy
 
 The intended production path is GitHub `main` → Vercel. Before treating a push
 as a public deployment, verify the Vercel integration and the custom-domain
-assignment — the repository alone does not prove that platform state.
+assignment — the repository alone does not prove that platform state. Flip
+indexing on only after the canonical domain serves this build.
 
----
+## License
 
-## AI Agent Instructions
-
-Never commit or push unless the owner explicitly asks. Before any authorized
-commit, use the owner-assigned release version and update the Version Control
-string below with the real current commit time in IST (`Asia/Kolkata`). Align
-that version in `package.json` and both root version fields in
-`package-lock.json` in the same commit. Historical v0.8.9–v0.10.0 timestamps
-were owner-directed exceptions; do not rewrite pushed history.
-
-* **Base Format Version:** 0.11.0
-* **Portfolio Version:** v0.11.0_2025-10-13_02:52:31 (IST)
+MIT © Sidakpreet Singh — see [LICENSE](LICENSE).

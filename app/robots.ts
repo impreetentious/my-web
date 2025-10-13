@@ -5,7 +5,8 @@ const BASE_URL = site.domain;
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: '*', allow: '/' },
+    // Pre-launch: disallow crawlers until the canonical domain is live.
+    rules: { userAgent: '*', disallow: '/' },
     sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

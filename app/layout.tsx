@@ -58,7 +58,8 @@ export const metadata: Metadata = {
     title: site.metaTitle,
     description: site.metaDescription,
   },
-  robots: { index: true, follow: true },
+  // Keep noindex until the canonical domain serves this build publicly.
+  robots: { index: false, follow: false },
 };
 
 // L2 — Person JSON-LD, built from content/site.json (Rule B: one source per

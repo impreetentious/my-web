@@ -67,3 +67,17 @@ indexing on only after the canonical domain serves this build.
 ## License
 
 MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
+
+---
+
+## AI Agent Instructions
+
+Never commit or push unless the owner explicitly asks. Before any authorized
+commit, use the owner-assigned release version and update the Version Control
+string below with the real current commit time in IST (`Asia/Kolkata`). Align
+that version in `package.json` and both root version fields in
+`package-lock.json` in the same commit. Historical v0.8.9–v0.12.0 timestamps
+were owner-directed exceptions; do not rewrite pushed history.
+
+* **Base Format Version:** 0.12.1
+* **Portfolio Version:** v0.12.1_2025-10-14_02:08:51 (IST)

@@ -28,7 +28,11 @@ npm run build
 
 ## Updating Content
 
-- **About Me:** Edit `content/about.json`.
+Content JSON and MDX under `content/` are the committed fallback. With Sanity
+wired (`SANITY_PROJECT_ID`), `npm run content` / `prebuild` pull published
+docs into those files.
+
+- **About Me:** Edit `content/about.json` (or the About singleton in Studio).
 - **Portfolio items:** Edit `content/portfolio.json`.
 - **Projects:** Edit `content/projects.json`.
 - **New blog post:** Create `content/blog/your-slug.mdx`:
@@ -43,6 +47,25 @@ slug: "your-slug"
 
 Post content goes here.
 ```
+
+### Sanity Studio (separate package)
+
+```bash
+cd studio
+cp .env.example .env   # set SANITY_STUDIO_PROJECT_ID
+npm install
+npm run dev            # local studio
+npm run deploy         # → <name>.sanity.studio
+```
+
+One-time seed from the repo root (needs a write token — never commit it):
+
+```bash
+# .env.local: SANITY_PROJECT_ID + SANITY_WRITE_TOKEN
+npm run content:seed
+npm run content
+```
+
 
 ## Adding a Section
 
@@ -79,5 +102,5 @@ that version in `package.json` and both root version fields in
 `package-lock.json` in the same commit. Historical v0.8.9–v0.12.0 timestamps
 were owner-directed exceptions; do not rewrite pushed history.
 
-* **Base Format Version:** 0.12.2
-* **Portfolio Version:** v0.12.2_2025-10-15_00:48:47 (IST)
+* **Base Format Version:** 0.12.3
+* **Portfolio Version:** v0.12.3_2025-10-15_02:45:13 (IST)

@@ -4,13 +4,9 @@
 
 :root {
   --color-accent:           #00FFEE;
-  --color-accent-dim:       rgba(0, 255, 238, 0.3);
-  --color-accent-border:    rgba(0, 255, 238, 0.2);
-  --color-accent-hover:     rgba(0, 255, 238, 0.7);
 
   --color-bg:               #05060D; /* near-black indigo — matches the top of the descent gradient */
   --color-gold:             #E0B26E; /* desaturated world gold (v2) */
-  --color-surface:          #111111;
   --color-elevated:         #1A1A1A;
 
   --color-text-primary:     #F2F2F2;
@@ -19,7 +15,6 @@
   --color-text-muted:       #A5B2C0;
 
   --color-border-subtle:    rgba(255, 255, 255, 0.08);
-  --color-border-visible:   rgba(255, 255, 255, 0.15);
 
   /* --font-sans and --font-mono are NOT defined here. They come from next/font/google
      in app/layout.tsx (I.2), applied via className on <html>. Defining them again here
@@ -30,8 +25,6 @@
   /* --card-width is NOT defined here. It comes from CARD_WIDTH_PX in
      config/world.ts, set as a custom property on .world-container in
      app/page.tsx — one source for the card geometry. */
-  --card-radius:            4px;
-  --panel-radius:           6px;
 }
 
 *, *::before, *::after {
@@ -267,12 +260,24 @@
   .nav-dots { display: none; }
 }
 
-/* ─── B11: one keyboard voice — a thin world-gold outline ────────────────── */
+/* ─── B11: one keyboard voice — gold outline + soft world halo ───────────── */
 
 :where(a, button, [tabindex]:not([tabindex='-1'])):focus-visible {
-  outline: 1px solid rgba(224, 178, 110, 0.9);
+  outline: 1px solid rgba(224, 178, 110, 0.95);
   outline-offset: 3px;
   border-radius: 2px;
+  box-shadow:
+    0 0 0 1px rgba(5, 6, 13, 0.85),
+    0 0 0 4px rgba(224, 178, 110, 0.22),
+    0 0 18px rgba(0, 255, 238, 0.12);
+}
+
+.tx-card:focus-visible {
+  border-color: rgba(224, 178, 110, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(224, 178, 110, 0.35),
+    0 0 0 5px rgba(224, 178, 110, 0.12),
+    0 18px 50px -16px var(--tx-glow);
 }
 
 /* ─── B12: skip link — the first tab stop, hidden until focused ──────────── */
@@ -296,6 +301,7 @@
 }
 .skip-link:focus-visible {
   transform: translateY(0);
+  box-shadow: 0 0 0 4px rgba(224, 178, 110, 0.28);
 }
 
 html {
@@ -310,11 +316,8 @@ body {
   overflow-x: hidden;
 }
 
-/* Energy motes flowing along the traced spine (dasharray 10 110 → period 120) */
-@keyframes spine-flow {
-  0%   { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -120; }
-}
+/* Energy motes flowing along the traced spine — removed (unused; wake is
+   attributed in SpineSVG). Hero scroll prompt uses pulse-opacity below. */
 
 /* Hero scroll prompt animation — used by the HeroSection component */
 @keyframes pulse-opacity {
@@ -931,6 +934,125 @@ body {
   padding-top: 5px;
 }
 .log-part-pending .log-part-title { color: var(--color-text-muted); }
+
+/* End-of-post uplink */
+.log-uplink {
+  margin-top: 64px;
+  padding: 22px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.log-uplink__kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: rgba(224, 178, 110, 0.75);
+}
+.log-uplink__name {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  margin-top: 10px;
+  color: var(--color-text-primary);
+}
+.log-uplink__role {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--color-text-muted);
+  margin-top: 6px;
+}
+.log-uplink__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 18px;
+}
+.log-uplink__links a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+  text-decoration: none;
+}
+.log-uplink__links a:hover,
+.log-uplink__links a:focus-visible {
+  color: var(--color-accent);
+}
+
+/* Compact mobile section navigator */
+.m-sec-nav {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .m-sec-nav {
+    display: block;
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    z-index: 12;
+    pointer-events: none;
+  }
+  .m-sec-nav__toggle,
+  .m-sec-nav__item {
+    pointer-events: auto;
+  }
+  .m-sec-nav__toggle {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 14px;
+    background: rgba(5, 6, 13, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    cursor: pointer;
+  }
+  .m-sec-nav__eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: rgba(224, 178, 110, 0.8);
+  }
+  .m-sec-nav__current {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+  .m-sec-nav__list {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 6px;
+    background: rgba(5, 6, 13, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    max-height: 42vh;
+    overflow: auto;
+    pointer-events: auto;
+  }
+  .m-sec-nav__item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+  }
+  .m-sec-nav__item[aria-current='true'] {
+    color: var(--color-gold);
+  }
+  .m-sec-nav__item:hover,
+  .m-sec-nav__item:focus-visible {
+    color: var(--color-accent);
+  }
+  /* Keep the depth HUD clear of the navigator */
+  .depth-indicator { bottom: 68px; }
+}
 
 /* Scrollbar — tuned to the world (B14): dim teal thumb over the abyss track,
    brightening toward the wake's aqua on hover. Firefox gets the same voice. */

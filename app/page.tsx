@@ -28,6 +28,7 @@ import CursorRing from '@/components/ui/CursorRing';
 import HeroSection from '@/components/ui/HeroSection';
 import FooterSection from '@/components/ui/FooterSection';
 import BackgroundGradient from '@/components/ui/BackgroundGradient';
+import MobileSectionNav from '@/components/ui/MobileSectionNav';
 
 const ExperienceCanvas = dynamic(
   () => import('@/components/canvas/ExperienceCanvas'),
@@ -126,6 +127,7 @@ export default function Home() {
 
       {/* Layer 2: Fixed UI */}
       <NavDots />
+      <MobileSectionNav />
       <EmailIcon />
       <DepthIndicator />
       <CursorRing />

@@ -1,5 +1,8 @@
 import type { Config } from 'tailwindcss';
 
+// Color tokens live as CSS variables in styles/globals.css (consumed via
+// var(--color-*)). Tailwind utilities for accent/surface/text-* were unused
+// and removed in the dead-CSS pass — keep only the font aliases next/font sets.
 const config: Config = {
   content: [
     './app/**/*.{ts,tsx}',
@@ -8,15 +11,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        accent: '#00FFEE',
-        bg: '#080808',
-        surface: '#111111',
-        elevated: '#1A1A1A',
-        'text-primary': '#F2F2F2',
-        'text-secondary': '#888888',
-        'text-muted': '#808080',
-      },
       fontFamily: {
         mono: ['var(--font-mono)', 'monospace'],
         sans: ['var(--font-sans)', 'sans-serif'],

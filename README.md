@@ -102,5 +102,5 @@ that version in `package.json` and both root version fields in
 `package-lock.json` in the same commit. Historical v0.8.9–v0.12.0 timestamps
 were owner-directed exceptions; do not rewrite pushed history.
 
-* **Base Format Version:** 0.12.5
-* **Portfolio Version:** v0.12.5_2025-10-15_21:54:54 (IST)
+* **Base Format Version:** 0.12.6
+* **Portfolio Version:** v0.12.6_2025-10-15_23:01:47 (IST)

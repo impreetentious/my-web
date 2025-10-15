@@ -61,6 +61,11 @@ export const metadata: Metadata = {
   },
   // Keep noindex until the canonical domain serves this build publicly.
   robots: { index: false, follow: false },
+  alternates: {
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
+  },
 };
 
 // L2 — Person JSON-LD, built from content/site.json (Rule B: one source per

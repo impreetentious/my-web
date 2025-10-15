@@ -107,6 +107,23 @@ export default async function BlogPostPage({
           </nav>
         )}
 
+        {/* End-of-post uplink — facts from site.json only (Rule B). */}
+        <aside className="log-uplink" aria-label="Author channel">
+          <p className="log-uplink__kicker">END OF TRANSMISSION · OPEN CHANNEL</p>
+          <p className="log-uplink__name">{site.name}</p>
+          <p className="log-uplink__role">{site.proposition}</p>
+          <div className="log-uplink__links">
+            <a href={`mailto:${site.email}`}>EMAIL</a>
+            <a href={site.socials.linkedin} target="_blank" rel="noopener noreferrer">
+              LINKEDIN
+            </a>
+            <a href={site.socials.github} target="_blank" rel="noopener noreferrer">
+              GITHUB
+            </a>
+            <Link href="/?dossier=contact">CONTACT DOSSIER</Link>
+          </div>
+        </aside>
+
         <p style={{ marginTop: '56px' }}>
           <Link href="/" className="log-return">
             ← RETURN TO DESCENT

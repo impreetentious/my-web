@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Space_Mono, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import site from '@/content/site.json';
+import HydrationMarker from '@/components/ui/HydrationMarker';
 import '@/styles/globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -90,6 +91,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
         />
+        {/* Hydration fail-open: JS loaded but React never mounts → same
+            reveal as <noscript>. Cleared by HydrationMarker on mount. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var d=document.documentElement;d.setAttribute('data-js','1');setTimeout(function(){if(d.getAttribute('data-hydrated'))return;d.setAttribute('data-hydrate-failed','1');var s=document.createElement('style');s.setAttribute('data-hydrate-failopen','');s.textContent='[data-boot-veil]{display:none!important}.tx-card{opacity:1!important}';document.head.appendChild(s);},6000);})();`,
+          }}
+        />
       </head>
       <body>
         {/* No-JS fail-open: the boot veil and the cards' decode entrance are
@@ -101,6 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             .tx-card { opacity: 1 !important; }
           `}</style>
         </noscript>
+        <HydrationMarker />
         {/* B4 — the Lenis scroll system is scoped to the home experience
             (app/page.tsx wraps itself in ScrollProvider); blog routes scroll
             natively and run no rAF loop. */}

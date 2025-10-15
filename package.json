@@ -1,6 +1,6 @@
 {
   "name": "my-web",
-  "version": "0.12.6",
+  "version": "0.12.7",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -10,7 +10,8 @@
     "content:seed": "node scripts/seed-sanity.mjs",
     "content:validate": "node scripts/validate-content.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node scripts/verify-placeholder-states.mjs && SANITY_PROJECT_ID= node scripts/pull-content.mjs && npm run build && playwright test"
   },
   "dependencies": {
     "@react-three/fiber": "^9.3.0",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.55.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

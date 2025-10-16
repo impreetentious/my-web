@@ -5,6 +5,7 @@ import { useSiteStore } from '@/store/useSiteStore';
 import { altitudeKm, depthMetres } from '@/lib/descent';
 import { journey } from '@/lib/journey';
 import site from '@/content/site.json';
+import { trackConversion } from '@/lib/analytics';
 
 // The seafloor: a faint ridge silhouette, settled motes, a slow sonar ping
 // behind the end tag — and the mission recap (§3.5.4), quiet live counters
@@ -144,6 +145,7 @@ export default function FooterSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="LinkedIn"
+          onClick={() => trackConversion('social_link', { platform: 'linkedin', surface: 'footer' })}
           style={linkStyle}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
@@ -160,6 +162,7 @@ export default function FooterSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub"
+          onClick={() => trackConversion('social_link', { platform: 'github', surface: 'footer' })}
           style={linkStyle}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
@@ -174,6 +177,7 @@ export default function FooterSection() {
         <a
           href={`mailto:${site.email}`}
           aria-label="Email"
+          onClick={() => trackConversion('contact_email', { surface: 'footer' })}
           style={linkStyle}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}

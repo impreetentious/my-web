@@ -401,15 +401,19 @@ export function ChannelLink({
   href,
   children,
   download,
+  onSelect,
 }: {
   href: string;
   children: React.ReactNode;
   download?: boolean;
+  /** Fired on activation — the call site names the conversion (analytics). */
+  onSelect?: () => void;
 }) {
   return (
     <a
       href={href}
       download={download}
+      onClick={onSelect}
       style={channelLinkStyle}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'rgba(224, 178, 110, 0.6)';
@@ -436,6 +440,7 @@ export function DossierRow({
   chips,
   arrowLabel,
   figure,
+  onSelect,
   children,
 }: {
   href?: string | null;
@@ -446,6 +451,9 @@ export function DossierRow({
   arrowLabel?: string;
   /** Row artifact (C4) — rendered in the meta column under the meta text. */
   figure?: React.ReactNode;
+  /** Fired when the row link is activated — the call site names the
+   *  conversion (analytics). Only meaningful when `href` is set. */
+  onSelect?: () => void;
   /** Extras below the row (C5 case files) — rendered OUTSIDE the link so an
    *  interactive extract never nests inside an <a>. */
   children?: React.ReactNode;
@@ -540,6 +548,7 @@ export function DossierRow({
           href={href}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={onSelect}
           style={rowStyle}
         >
           {inner}

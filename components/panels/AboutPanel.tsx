@@ -3,6 +3,7 @@
 import aboutData from '@/content/about.json';
 import site from '@/content/site.json';
 import { DossierBlock, DossierHead, Chip, ChipRow, PullQuote, ChannelLink } from '@/components/panels/dossier';
+import { trackConversion } from '@/lib/analytics';
 
 // C4 — About is an actual dossier now: a display-serif pull-quote carries the
 // strongest field record, the transcript gets margin annotations, and the
@@ -178,11 +179,18 @@ export function AboutPanel() {
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '22px' }}>
           {hasResume && (
-            <ChannelLink href={site.resumeHref} download>
+            <ChannelLink
+              href={site.resumeHref}
+              download
+              onSelect={() => trackConversion('resume_download', { surface: 'about_panel' })}
+            >
               EXTRACT FULL RECORD
             </ChannelLink>
           )}
-          <ChannelLink href={`mailto:${site.email}`}>
+          <ChannelLink
+            href={`mailto:${site.email}`}
+            onSelect={() => trackConversion('contact_email', { surface: 'about_panel' })}
+          >
             OPEN CHANNEL
           </ChannelLink>
         </div>

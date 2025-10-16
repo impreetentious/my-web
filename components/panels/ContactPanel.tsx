@@ -7,6 +7,7 @@ import {
   DossierRow,
   ChannelLink,
 } from '@/components/panels/dossier';
+import { trackConversion } from '@/lib/analytics';
 
 // F1 — Contact is the deepest transmission: "OPEN CHANNEL". It reuses the
 // dossier kit wholesale (no new visual language) and owns the recruiter path
@@ -63,9 +64,18 @@ export function ContactPanel() {
       <DossierHead>Channels</DossierHead>
       <DossierBlock>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-          <ChannelLink href={`mailto:${site.email}`}>OPEN CHANNEL</ChannelLink>
+          <ChannelLink
+            href={`mailto:${site.email}`}
+            onSelect={() => trackConversion('contact_email', { surface: 'contact_panel' })}
+          >
+            OPEN CHANNEL
+          </ChannelLink>
           {hasResume && (
-            <ChannelLink href={site.resumeHref} download>
+            <ChannelLink
+              href={site.resumeHref}
+              download
+              onSelect={() => trackConversion('resume_download', { surface: 'contact_panel' })}
+            >
               EXTRACT FULL RECORD
             </ChannelLink>
           )}
@@ -82,6 +92,7 @@ export function ContactPanel() {
         description="Career record, network, and professional signal."
         chips={[host(site.socials.linkedin)]}
         arrowLabel="↗ OPEN"
+        onSelect={() => trackConversion('social_link', { platform: 'linkedin', surface: 'contact_panel' })}
       />
       <DossierRow
         href={site.socials.github}
@@ -90,6 +101,7 @@ export function ContactPanel() {
         description="Source relay — code, builds, and experiments."
         chips={[host(site.socials.github)]}
         arrowLabel="↗ OPEN"
+        onSelect={() => trackConversion('social_link', { platform: 'github', surface: 'contact_panel' })}
       />
 
       {/* Fiction footnote — chrome, so it lives as a code string (Rule A) */}

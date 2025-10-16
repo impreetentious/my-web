@@ -5,6 +5,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllPosts, getPostBySlug, getRelatedPosts } from '@/lib/blog';
 import { PostHeader } from '@/components/blog/PostHeader';
 import { PostBody } from '@/components/blog/PostBody';
+import PostUplinkLinks from '@/components/blog/PostUplinkLinks';
 import site from '@/content/site.json';
 
 export async function generateStaticParams() {
@@ -112,16 +113,7 @@ export default async function BlogPostPage({
           <p className="log-uplink__kicker">END OF TRANSMISSION · OPEN CHANNEL</p>
           <p className="log-uplink__name">{site.name}</p>
           <p className="log-uplink__role">{site.proposition}</p>
-          <div className="log-uplink__links">
-            <a href={`mailto:${site.email}`}>EMAIL</a>
-            <a href={site.socials.linkedin} target="_blank" rel="noopener noreferrer">
-              LINKEDIN
-            </a>
-            <a href={site.socials.github} target="_blank" rel="noopener noreferrer">
-              GITHUB
-            </a>
-            <Link href="/?dossier=contact">CONTACT DOSSIER</Link>
-          </div>
+          <PostUplinkLinks />
         </aside>
 
         <p style={{ marginTop: '56px' }}>

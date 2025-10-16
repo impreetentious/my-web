@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import site from '@/content/site.json';
+import { trackConversion } from '@/lib/analytics';
 
 // C15 — the contact plate carries a transmit mark, not a stock envelope: a
 // source point firing two arcs toward the sky. Hover completes the send —
@@ -17,6 +18,7 @@ export default function EmailIcon() {
       className="email-fab"
       href={`mailto:${site.email}`}
       aria-label="Send me an email"
+      onClick={() => trackConversion('contact_email', { surface: 'fab' })}
       style={{
         position: 'fixed',
         bottom: '28px',

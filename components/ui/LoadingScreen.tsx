@@ -48,12 +48,18 @@ function writeBooted(): void {
 
 export default function LoadingScreen() {
   const [visible, setVisible] = useState(true);
+  // Only the first-visit full-theatre path shows a skip affordance — the
+  // reduced-motion and same-session paths are already instant.
+  const [showSkip, setShowSkip] = useState(false);
   const screenRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
   const lastLabelRef = useRef<HTMLSpanElement>(null);
   const lastExtrasRef = useRef<(HTMLElement | null)[]>([]);
   const finishedRef = useRef(false);
+  // Set inside the effect once the boot timeline exists, so both the button
+  // and the keyboard handler cut to the site through the same path.
+  const skipRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (!motionAllowed()) {
@@ -79,6 +85,9 @@ export default function LoadingScreen() {
         fade.kill();
       };
     }
+
+    // Past the instant paths — this is the full boot, so offer the skip.
+    setShowSkip(true);
 
     let handoff: gsap.core.Timeline | null = null;
 
@@ -173,7 +182,42 @@ export default function LoadingScreen() {
       BOOT_LINES.length * REVEAL_INTERVAL_S + 0.48
     );
 
+    // Skip: a clean cut to the site, not the elaborate handoff. Guarded by the
+    // same finishedRef, so it and the natural finish can never both run. The
+    // veil lifts fast; the boot flag is still written so a reload won't replay.
+    const skip = () => {
+      if (finishedRef.current) return;
+      finishedRef.current = true;
+      boot.kill();
+      handoff?.kill();
+      const screen = screenRef.current;
+      journey.heroHandoff = true;
+      useSiteStore.getState().setIsLoading(false);
+      writeBooted();
+      if (!screen) {
+        setVisible(false);
+        return;
+      }
+      screen.style.pointerEvents = 'none';
+      gsap.to(screen, {
+        opacity: 0,
+        duration: 0.4,
+        ease: EASE_CUT,
+        onComplete: () => setVisible(false),
+      });
+    };
+    skipRef.current = skip;
+
+    const onKeySkip = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        skip();
+      }
+    };
+    window.addEventListener('keydown', onKeySkip);
+
     return () => {
+      window.removeEventListener('keydown', onKeySkip);
       boot.kill();
       handoff?.kill();
     };
@@ -267,6 +311,41 @@ export default function LoadingScreen() {
           </div>
         );
       })}
+
+      {showSkip && (
+        <button
+          type="button"
+          onClick={() => skipRef.current?.()}
+          aria-label="Skip the intro sequence"
+          style={{
+            position: 'absolute',
+            bottom: 'clamp(20px, 6vh, 40px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            padding: '8px 14px',
+            background: 'transparent',
+            border: '1px solid rgba(0, 255, 238, 0.22)',
+            borderRadius: '3px',
+            color: 'rgba(0, 255, 238, 0.7)',
+            fontSize: 'clamp(8px, 2.4vw, 10px)',
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--font-mono)',
+            cursor: 'pointer',
+            transition: 'border-color 0.25s ease, color 0.25s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(0, 255, 238, 0.6)';
+            e.currentTarget.style.color = 'var(--color-accent)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(0, 255, 238, 0.22)';
+            e.currentTarget.style.color = 'rgba(0, 255, 238, 0.7)';
+          }}
+        >
+          Skip ⏎ / Esc
+        </button>
+      )}
     </div>
   );
 }

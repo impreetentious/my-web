@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { totalPageHeight, mobileWorldSvh, activeSections } from '@/lib/activeSections';
 import { initQuality, runFpsProbe } from '@/lib/quality';
+import { initWebVitals } from '@/lib/vitals';
 import { useMobile } from '@/lib/useMobile';
 import { useSiteStore } from '@/store/useSiteStore';
 import {
@@ -40,9 +41,12 @@ export default function Home() {
   const isLoading = useSiteStore((s) => s.isLoading);
   const quality = useSiteStore((s) => s.quality);
 
-  // B3/A2 — capability tier before the veil lifts; fps probe once it has.
+  // B3/A2 — capability tier before the veil lifts; fps probe once it has, and
+  // the field-vitals monitor (A2d) running the whole session for real-user
+  // LCP/CLS/INP telemetry + strain-driven tier demotion.
   useEffect(() => {
     initQuality();
+    const cleanupVitals = initWebVitals();
     let cancelProbe: (() => void) | null = null;
     let unsub: (() => void) | null = null;
     if (useSiteStore.getState().isLoading) {
@@ -62,6 +66,7 @@ export default function Home() {
     return () => {
       unsub?.();
       cancelProbe?.();
+      cleanupVitals();
     };
   }, []);
 

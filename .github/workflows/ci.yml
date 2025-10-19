@@ -20,3 +20,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      # Playwright smoke suite. `npm test` builds against committed content
+      # (SANITY_PROJECT_ID is unset → pull-content fails open) then runs the
+      # e2e specs — no Sanity credentials needed in CI.
+      - run: npx playwright install --with-deps chromium
+      - run: npm test

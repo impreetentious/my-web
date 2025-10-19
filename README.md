@@ -2,17 +2,15 @@
 
 Personal website with an animated SVG spine, WebGL atmospheric effects, GSAP-driven panel overlays, and an MDX blog system.
 
-Public launch is pending a canonical-domain decision. The code currently uses
-`https://sidakpreet.in` as a provisional canonical, but that host does not yet
-resolve; `sidakpreetsingh.com` currently serves the older placeholder site, not
-this Next.js build. Search indexing is disabled until launch (`robots` /
-metadata `noindex`).
+The site is a single scrolling page composed of registered panels — about, portfolio, projects, writing, contact — tied together by a spine graphic, nav dots, and a scroll system that all read from one section config. The blog lives at its own routes and is authored in MDX. Content comes from Sanity when configured, and from committed JSON/MDX files otherwise.
 
 ## Stack
 
 Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · GSAP · Lenis · Zustand · MDX (next-mdx-remote v5) · Vercel
 
 ## Run locally
+
+Requires Node 22+.
 
 ```bash
 npm ci
@@ -21,16 +19,23 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Verify
+
 ```bash
 npm run lint
 npm run build
 ```
 
+```bash
+npm run build          # required once so the production server has .next
+npm test               # placeholder both-states + pull fallback + Playwright (port 3008)
+```
+
+`npm test` builds and drives the real production server, so run `npm run build` first.
+
 ## Updating Content
 
-Content JSON and MDX under `content/` are the committed fallback. With Sanity
-wired (`SANITY_PROJECT_ID`), `npm run content` / `prebuild` pull published
-docs into those files.
+Content JSON and MDX under `content/` are the committed fallback and are always what ships when Sanity is not configured. With `SANITY_PROJECT_ID` set, `npm run content` — and `prebuild`, which runs automatically before every build — pulls published documents into those same files, then validates them. An unset project ID is not an error; the build simply uses the committed content.
 
 - **About Me:** Edit `content/about.json` (or the About singleton in Studio).
 - **Portfolio items:** Edit `content/portfolio.json`.
@@ -66,15 +71,6 @@ npm run content:seed
 npm run content
 ```
 
-
-
-### Tests
-
-```bash
-npm run build          # required once so next start has .next
-npm test               # placeholder both-states + pull fallback + Playwright (port 3008)
-```
-
 ## Adding a Section
 
 1. Create the panel in `components/panels/YourPanel.tsx`
@@ -88,12 +84,19 @@ The spine, nav dots, and scroll system update automatically.
 Set `enabled: false` for that section in `config/sections.ts`.
 Set back to `true` to restore it.
 
+## Rendering and performance
+
+The WebGL layer picks a quality tier by probing the device, then only ever demotes it: a `navigator.connection` Save-Data or slow-effective-type signal, a low battery reading, or poor live Web Vitals each lower the tier. The first-visit boot sequence is skippable with Esc, Space, Enter, or a visible Skip control.
+
+## Search indexing
+
+Indexing is off by default — pages ship with `noindex` metadata. The canonical URL is configured in the site metadata and must point at the host that actually serves this build before indexing is enabled.
+
 ## Deploy
 
-The intended production path is GitHub `main` → Vercel. Before treating a push
-as a public deployment, verify the Vercel integration and the custom-domain
-assignment — the repository alone does not prove that platform state. Flip
-indexing on only after the canonical domain serves this build.
+The production path is GitHub `main` → Vercel. `prebuild` pulls and validates content, so a deploy with `SANITY_PROJECT_ID` set publishes the current CMS state; without it, the committed `content/` files ship.
+
+Operational notes live in `docs/`: `RUNBOOK-ROLLBACK.md`, `RUNBOOK-ERROR-MONITORING.md`, and `PRIVACY.md`.
 
 ## License
 
@@ -101,14 +104,4 @@ MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-## AI Agent Instructions
-
-Never commit or push unless the owner explicitly asks. Before any authorized
-commit, use the owner-assigned release version and update the Version Control
-string below with the real current commit time in IST (`Asia/Kolkata`). Align
-that version in `package.json` and both root version fields in
-`package-lock.json` in the same commit. Historical v0.8.9–v0.12.0 timestamps
-were owner-directed exceptions; do not rewrite pushed history.
-
-* **Base Format Version:** 0.12.10
-* **Portfolio Version:** v0.12.10_2025-10-17_22:47:10 (IST)
+**Version:** v0.13.0

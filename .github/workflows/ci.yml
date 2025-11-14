@@ -19,6 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm run format:check
       - run: npm run build
       # Playwright smoke suite. `npm test` builds against committed content
       # (SANITY_PROJECT_ID is unset → pull-content fails open) then runs the

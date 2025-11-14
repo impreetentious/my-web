@@ -31,10 +31,9 @@ import FooterSection from '@/components/ui/FooterSection';
 import BackgroundGradient from '@/components/ui/BackgroundGradient';
 import MobileSectionNav from '@/components/ui/MobileSectionNav';
 
-const ExperienceCanvas = dynamic(
-  () => import('@/components/canvas/ExperienceCanvas'),
-  { ssr: false }
-);
+const ExperienceCanvas = dynamic(() => import('@/components/canvas/ExperienceCanvas'), {
+  ssr: false,
+});
 
 export default function Home() {
   const isMobile = useMobile();
@@ -58,7 +57,7 @@ export default function Home() {
             unsub?.();
             unsub = null;
           }
-        }
+        },
       );
     } else {
       cancelProbe = runFpsProbe();

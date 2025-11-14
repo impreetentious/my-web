@@ -61,15 +61,17 @@ export default function BlogIndexPage() {
             {posts.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`} className="log-row">
                 <p className="log-row-meta">
-                  LOG {post.date} · ENTRY {String(post.entry).padStart(2, '0')} ·{' '}
-                  {post.readingTime} MIN
+                  LOG {post.date} · ENTRY {String(post.entry).padStart(2, '0')} · {post.readingTime}{' '}
+                  MIN
                   {post.series && post.seriesIndex
                     ? ` · PART ${post.seriesIndex}/${SERIES[post.series]?.planned ?? '?'}`
                     : ''}
                 </p>
                 <h2 className="log-row-title">
                   {post.title}
-                  <span className="log-row-arrow" aria-hidden="true">→</span>
+                  <span className="log-row-arrow" aria-hidden="true">
+                    →
+                  </span>
                 </h2>
                 <p className="log-row-excerpt">{post.excerpt}</p>
               </Link>

@@ -12,10 +12,7 @@ import {
 } from '@/lib/descent';
 import { journey, plungeElapsed, buoyancyVh } from '@/lib/journey';
 import { motionAllowed, EASE_ARRIVE_CSS } from '@/lib/motion';
-import {
-  activeSections,
-  sectionCenterFractionMobile,
-} from '@/lib/activeSections';
+import { activeSections, sectionCenterFractionMobile } from '@/lib/activeSections';
 import { MOBILE_GUTTER_VW } from '@/config/world';
 
 // A3 — the probe's wake on a phone: slimmed to a side gutter the cards
@@ -90,15 +87,11 @@ export default function MobileSpine() {
       anchors.forEach((anchor, i) => {
         const sway = width * SWAY_FRACTION * (i % 2 === 0 ? 1 : -1);
         const c = Math.min(260, Math.max(80, (anchor.y - prevY) * 0.4));
-        parts.push(
-          `C ${gx + sway} ${prevY + c}, ${gx + sway} ${anchor.y - c}, ${gx} ${anchor.y}`
-        );
+        parts.push(`C ${gx + sway} ${prevY + c}, ${gx + sway} ${anchor.y - c}, ${gx} ${anchor.y}`);
         prevY = anchor.y;
       });
       const lastSway = width * SWAY_FRACTION * (anchors.length % 2 === 0 ? 1 : -1);
-      parts.push(
-        `C ${gx + lastSway} ${prevY + 220}, ${gx} ${height - 220}, ${gx} ${height}`
-      );
+      parts.push(`C ${gx + lastSway} ${prevY + 220}, ${gx} ${height - 220}, ${gx} ${height}`);
 
       setGeo({ d: parts.join(' '), anchors, width, height });
     };
@@ -160,11 +153,11 @@ export default function MobileSpine() {
               { transform: 'scale(1.35)', opacity: 1, offset: 0.55 },
               { transform: 'scale(1)', opacity: 1 },
             ],
-            { duration: 950, easing: EASE_ARRIVE_CSS, fill: 'forwards' }
+            { duration: 950, easing: EASE_ARRIVE_CSS, fill: 'forwards' },
           );
         }
         unsubscribe();
-      }
+      },
     );
     return () => unsubscribe();
   }, []);
@@ -228,10 +221,7 @@ export default function MobileSpine() {
       // the underwater lag would smear the rebound into mush)
       const buoy = allowMotion ? buoyancyVh(plungeElapsed(performance.now())) : 0;
 
-      const targetY = Math.min(
-        H,
-        Math.max(0, window.scrollY + ((easedVh + buoy) / 100) * vh)
-      );
+      const targetY = Math.min(H, Math.max(0, window.scrollY + ((easedVh + buoy) / 100) * vh));
       const s = arcAtPageY(targetY);
       const head = pointAtArc(s);
 
@@ -244,14 +234,10 @@ export default function MobileSpine() {
       const offset = String(L - s);
       if (glowRef.current) glowRef.current.style.strokeDashoffset = offset;
       if (coreRef.current) coreRef.current.style.strokeDashoffset = offset;
-      if (hotRef.current)
-        hotRef.current.style.strokeDashoffset = String(HOT_TAIL_PX - s);
+      if (hotRef.current) hotRef.current.style.strokeDashoffset = String(HOT_TAIL_PX - s);
 
       if (dotGroupRef.current)
-        dotGroupRef.current.setAttribute(
-          'transform',
-          `translate(${head.x}, ${head.y})`
-        );
+        dotGroupRef.current.setAttribute('transform', `translate(${head.x}, ${head.y})`);
 
       // warm above the surface, cool below — against the on-screen waterline
       // (buoyed like the shader's, so the flip lands on the beat)
@@ -259,8 +245,7 @@ export default function MobileSpine() {
       const cool = Math.min(1, Math.max(0, (screenY - waterY + 30) / 60));
       if (dotWarmRef.current) dotWarmRef.current.style.opacity = String(1 - cool);
       if (dotCoolRef.current) dotCoolRef.current.style.opacity = String(cool);
-      if (dotRingRef.current)
-        dotRingRef.current.style.stroke = trailColorAt(head.y / H);
+      if (dotRingRef.current) dotRingRef.current.style.stroke = trailColorAt(head.y / H);
 
       // anchors: nothing ahead, materialise on approach, ripple on pass
       const anchorLengths = anchorLengthsRef.current;
@@ -275,7 +260,7 @@ export default function MobileSpine() {
         group.style.opacity = String(vis);
         group.setAttribute(
           'transform',
-          `translate(${geo.anchors[a]?.x ?? 0}, ${geo.anchors[a]?.y ?? 0}) scale(${scale})`
+          `translate(${geo.anchors[a]?.x ?? 0}, ${geo.anchors[a]?.y ?? 0}) scale(${scale})`,
         );
 
         if (passedState.current[a] !== passed) {
@@ -298,7 +283,7 @@ export default function MobileSpine() {
                   { transform: 'scale(1)', opacity: 0.5 },
                   { transform: 'scale(4.2)', opacity: 0 },
                 ],
-                { duration: 750, easing: EASE_ARRIVE_CSS }
+                { duration: 750, easing: EASE_ARRIVE_CSS },
               );
             }
           }
@@ -316,10 +301,7 @@ export default function MobileSpine() {
       const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
       const speed = Math.min(64, Math.abs(v) * 1.05);
       if (tangentRef.current)
-        tangentRef.current.setAttribute(
-          'transform',
-          `rotate(${v >= 0 ? angle : angle + 180})`
-        );
+        tangentRef.current.setAttribute('transform', `rotate(${v >= 0 ? angle : angle + 180})`);
       if (streakRef.current) {
         streakRef.current.setAttribute('x2', String(-speed));
         streakRef.current.style.opacity = String(Math.min(0.5, Math.abs(v) * 0.013));
@@ -435,12 +417,16 @@ export default function MobileSpine() {
           return (
             <g
               key={anchor.id}
-              ref={(el) => { anchorGroupRefs.current[i] = el; }}
+              ref={(el) => {
+                anchorGroupRefs.current[i] = el;
+              }}
               transform={`translate(${anchor.x}, ${anchor.y}) scale(0.55)`}
               style={{ opacity: 0 }}
             >
               <circle
-                ref={(el) => { rippleRefs.current[i] = el; }}
+                ref={(el) => {
+                  rippleRefs.current[i] = el;
+                }}
                 r={6}
                 fill="none"
                 stroke={color}
@@ -448,7 +434,9 @@ export default function MobileSpine() {
                 opacity={0}
               />
               <line
-                ref={(el) => { connectorRefs.current[i] = el; }}
+                ref={(el) => {
+                  connectorRefs.current[i] = el;
+                }}
                 x1={0}
                 y1={0}
                 x2={22}
@@ -462,14 +450,18 @@ export default function MobileSpine() {
                 }}
               />
               <circle
-                ref={(el) => { haloRefs.current[i] = el; }}
+                ref={(el) => {
+                  haloRefs.current[i] = el;
+                }}
                 r={12}
                 fill="url(#m-node-glow-grad)"
                 opacity={0}
                 style={{ transition: 'opacity 0.6s ease' }}
               />
               <circle
-                ref={(el) => { ringRefs.current[i] = el; }}
+                ref={(el) => {
+                  ringRefs.current[i] = el;
+                }}
                 r={3.6}
                 fill="#05070D"
                 stroke={color}
@@ -478,7 +470,9 @@ export default function MobileSpine() {
                 style={{ transition: 'opacity 0.6s ease' }}
               />
               <circle
-                ref={(el) => { nodeCoreRefs.current[i] = el; }}
+                ref={(el) => {
+                  nodeCoreRefs.current[i] = el;
+                }}
                 r={1.4}
                 fill={color}
                 opacity={0}
@@ -492,12 +486,7 @@ export default function MobileSpine() {
         <g ref={dotGroupRef}>
           <g ref={igniteRef}>
             <circle ref={dotWarmRef} r={13} fill="url(#m-dot-warm-grad)" />
-            <circle
-              ref={dotCoolRef}
-              r={13}
-              fill="url(#m-dot-cool-grad)"
-              style={{ opacity: 0 }}
-            />
+            <circle ref={dotCoolRef} r={13} fill="url(#m-dot-cool-grad)" style={{ opacity: 0 }} />
             <g ref={tangentRef}>
               <line
                 ref={streakRef}

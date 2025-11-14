@@ -6,11 +6,7 @@ import { motionAllowed } from '@/lib/motion';
 
 const CHARS = '#%&@$+=*<>/0123456789';
 
-export function scrambleText(
-  el: Element,
-  getFinal: () => string,
-  durationMs = 320
-): void {
+export function scrambleText(el: Element, getFinal: () => string, durationMs = 320): void {
   if (!motionAllowed()) {
     el.textContent = getFinal();
     return;

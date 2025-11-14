@@ -71,7 +71,8 @@ export default function EmailIcon() {
           style={{
             opacity: hover ? 1 : 0.18,
             transform: hover ? 'translate(1.2px, -1.2px)' : 'translate(0, 0)',
-            transition: 'opacity 0.25s ease 0.14s, transform 0.35s cubic-bezier(0.16, 0.84, 0.24, 1) 0.14s',
+            transition:
+              'opacity 0.25s ease 0.14s, transform 0.35s cubic-bezier(0.16, 0.84, 0.24, 1) 0.14s',
           }}
         />
       </svg>

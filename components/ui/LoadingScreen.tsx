@@ -149,7 +149,7 @@ export default function LoadingScreen() {
           duration: 0.6,
           ease: EASE_ARRIVE,
         },
-        '<'
+        '<',
       );
       handoff.to({}, { duration: 0.22 }); // hold the received signal
 
@@ -170,17 +170,9 @@ export default function LoadingScreen() {
     BOOT_LINES.forEach((_, i) => {
       const at = i * REVEAL_INTERVAL_S;
       boot.to(rowRefs.current[i], { opacity: 1, duration: 0.15, ease: 'none' }, at);
-      boot.to(
-        barRefs.current[i],
-        { width: '100%', duration: 0.22, ease: 'power1.out' },
-        at
-      );
+      boot.to(barRefs.current[i], { width: '100%', duration: 0.22, ease: 'power1.out' }, at);
     });
-    boot.call(
-      finish,
-      undefined,
-      BOOT_LINES.length * REVEAL_INTERVAL_S + 0.48
-    );
+    boot.call(finish, undefined, BOOT_LINES.length * REVEAL_INTERVAL_S + 0.48);
 
     // Skip: a clean cut to the site, not the elaborate handoff. Guarded by the
     // same finishedRef, so it and the natural finish can never both run. The
@@ -249,7 +241,9 @@ export default function LoadingScreen() {
         return (
           <div
             key={line}
-            ref={(el) => { rowRefs.current[i] = el; }}
+            ref={(el) => {
+              rowRefs.current[i] = el;
+            }}
             style={{
               display: 'flex',
               width: '100%',
@@ -274,7 +268,9 @@ export default function LoadingScreen() {
               {line}
             </span>
             <div
-              ref={(el) => { if (isLast) lastExtrasRef.current[0] = el; }}
+              ref={(el) => {
+                if (isLast) lastExtrasRef.current[0] = el;
+              }}
               style={{
                 width: 'clamp(48px, 18vw, 120px)',
                 flexShrink: 0,
@@ -285,7 +281,9 @@ export default function LoadingScreen() {
               }}
             >
               <div
-                ref={(el) => { barRefs.current[i] = el; }}
+                ref={(el) => {
+                  barRefs.current[i] = el;
+                }}
                 style={{
                   position: 'absolute',
                   top: 0,
@@ -297,7 +295,9 @@ export default function LoadingScreen() {
               />
             </div>
             <span
-              ref={(el) => { if (isLast) lastExtrasRef.current[1] = el; }}
+              ref={(el) => {
+                if (isLast) lastExtrasRef.current[1] = el;
+              }}
               style={{
                 color: 'rgba(0, 255, 238, 0.75)',
                 fontSize: 'clamp(8px, 2.4vw, 10px)',

@@ -29,8 +29,7 @@ const limit = totalPageHeight - NOMINAL_VH;
 
 /** scroll-t at which card i sits screen-centred (nominal viewport). */
 export const tCard = (i: number): number =>
-  (HEADER_HEIGHT_PX + i * SECTION_HEIGHT_PX + SECTION_HEIGHT_PX / 2 - NOMINAL_VH / 2) /
-  limit;
+  (HEADER_HEIGHT_PX + i * SECTION_HEIGHT_PX + SECTION_HEIGHT_PX / 2 - NOMINAL_VH / 2) / limit;
 
 /** Scroll moment the comet pierces the waterline, mid-viewport. The crossing
  *  lands between the last two cards — everything above the waterline except
@@ -51,29 +50,29 @@ export const K = CROSS_T / 0.76;
  *  derive from CROSS_T — config/world must not import descent). Consumed by
  *  store/useSiteStore to label the active zone. */
 export const ZONE_THRESHOLDS = {
-  sky: 0,                       // always starts here
-  horizon: CROSS_T - 0.26,      // golden-hour descent, sea visible below
-  sea: CROSS_T - 0.04,          // breaking the surface
-  underwater: CROSS_T + 0.04,   // below it
+  sky: 0, // always starts here
+  horizon: CROSS_T - 0.26, // golden-hour descent, sea visible below
+  sea: CROSS_T - 0.04, // breaking the surface
+  underwater: CROSS_T + 0.04, // below it
 } as const;
 
 // ─── Trail gradient (gold in space → amber at the surface → teal below) ────
 
 export interface TrailStop {
-  u: number;      // 0 = top of page, 1 = bottom
-  color: string;  // hex
+  u: number; // 0 = top of page, 1 = bottom
+  color: string; // hex
 }
 
 // v2 palette: desaturated against v1's candy gold/cyan. The handover brackets
 // U_SURFACE so each part of the wake keeps the light of the altitude where it
 // was made. Pure #00FFEE survives only as tiny UI accents, never here.
 export const TRAIL_STOPS: TrailStop[] = [
-  { u: 0.0,  color: '#EADCBC' },  // pale starlight gold
-  { u: 0.34, color: '#DDB878' },  // gold
-  { u: U_SURFACE - 0.035, color: '#CE9A5E' },  // amber — at the surface
-  { u: U_SURFACE + 0.035, color: '#7FC4B8' },  // aqua — just under it
-  { u: 0.86, color: '#3FA898' },  // dim teal
-  { u: 1.0,  color: '#2E7D95' },  // deep-water blue
+  { u: 0.0, color: '#EADCBC' }, // pale starlight gold
+  { u: 0.34, color: '#DDB878' }, // gold
+  { u: U_SURFACE - 0.035, color: '#CE9A5E' }, // amber — at the surface
+  { u: U_SURFACE + 0.035, color: '#7FC4B8' }, // aqua — just under it
+  { u: 0.86, color: '#3FA898' }, // dim teal
+  { u: 1.0, color: '#2E7D95' }, // deep-water blue
 ];
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -98,7 +97,7 @@ export function trailColorAt(u: number): string {
   const [r1, g1, b1] = hexToRgb(a.color);
   const [r2, g2, b2] = hexToRgb(b.color);
   return `rgb(${Math.round(r1 + (r2 - r1) * f)}, ${Math.round(
-    g1 + (g2 - g1) * f
+    g1 + (g2 - g1) * f,
   )}, ${Math.round(b1 + (b2 - b1) * f)})`;
 }
 
@@ -159,8 +158,8 @@ function monotoneCurve(xs: number[], ys: number[]): (x: number) => number {
 /** Scroll span in which the line is anywhere near the frame — cheap gates for
  *  systems that only care whether the ocean is on screen at all. */
 export const WATERLINE = {
-  enterT: CROSS_T - 0.16,  // still fully below the viewport before this
-  exitT:  CROSS_T + 0.08,  // fully above the viewport after this
+  enterT: CROSS_T - 0.16, // still fully below the viewport before this
+  exitT: CROSS_T + 0.08, // fully above the viewport after this
 } as const;
 
 // The line's screen path: rises from far below, eases to a hover in the lower
@@ -169,11 +168,18 @@ export const WATERLINE = {
 // to mid-viewport at that moment (cometProgress) — pierces it on the beat.
 const waterlineCurve = monotoneCurve(
   [
-    CROSS_T - 0.26, CROSS_T - 0.16, CROSS_T - 0.115, CROSS_T - 0.08,
-    CROSS_T - 0.04, CROSS_T - 0.015, CROSS_T, CROSS_T + 0.02,
-    CROSS_T + 0.04, CROSS_T + 0.08,
+    CROSS_T - 0.26,
+    CROSS_T - 0.16,
+    CROSS_T - 0.115,
+    CROSS_T - 0.08,
+    CROSS_T - 0.04,
+    CROSS_T - 0.015,
+    CROSS_T,
+    CROSS_T + 0.02,
+    CROSS_T + 0.04,
+    CROSS_T + 0.08,
   ],
-  [175, 118, 86, 70, 63, 57, 50, 18, -25, -85]
+  [175, 118, 86, 70, 63, 57, 50, 18, -25, -85],
 );
 
 /** Waterline screen position at scroll t, in vh from the top of the viewport.
@@ -233,12 +239,13 @@ export function zoneWeights(t: number): {
   underwater: number;
 } {
   return {
-    space: 1 - smoothstep(K * 0.30, K * 0.55, t),
+    space: 1 - smoothstep(K * 0.3, K * 0.55, t),
     dusk: smoothstep(K * 0.28, K * 0.52, t) * (1 - smoothstep(CROSS_T - 0.08, CROSS_T + 0.02, t)),
     sea: smoothstep(CROSS_T - 0.06, CROSS_T + 0.02, t) * (1 - smoothstep(CROSS_T + 0.09, 0.97, t)),
     abyss: smoothstep(CROSS_T + 0.08, 0.97, t),
-    rays: smoothstep(CROSS_T, CROSS_T + 0.08, t) * (1 - 0.75 * smoothstep(CROSS_T + 0.12, 0.985, t)),
-    stars: 1 - smoothstep(K * 0.55, K * 0.70, t),
+    rays:
+      smoothstep(CROSS_T, CROSS_T + 0.08, t) * (1 - 0.75 * smoothstep(CROSS_T + 0.12, 0.985, t)),
+    stars: 1 - smoothstep(K * 0.55, K * 0.7, t),
     underwater: smoothstep(CROSS_T - 0.02, CROSS_T + 0.06, t),
   };
 }
@@ -252,8 +259,8 @@ export function abyssGate(t: number): number {
 
 // ─── Altitude / depth model ─────────────────────────────────────────────────
 
-const ORBIT_KM = 400;   // start at ISS altitude
-const FLOOR_M = 3800;   // average ocean depth
+const ORBIT_KM = 400; // start at ISS altitude
+const FLOOR_M = 3800; // average ocean depth
 
 /** Altitude hits zero here… */
 export const SEA_T0 = CROSS_T - 0.025;
@@ -261,7 +268,7 @@ export const SEA_T0 = CROSS_T - 0.025;
  *  until the plunge hard-flips it to DEPTH. */
 export const DEPTH_T0 = CROSS_T + 0.005;
 
-const ALT_EXP = 3.2;   // log-ish: early kilometres fly past, low ones crawl
+const ALT_EXP = 3.2; // log-ish: early kilometres fly past, low ones crawl
 const DEPTH_EXP = 1.6;
 
 export function altitudeKm(t: number): number {
@@ -304,9 +311,9 @@ export function depthReading(t: number): string {
 // ─── Altitude milestones (the scale, made felt) ─────────────────────────────
 
 export interface Milestone {
-  label: string;    // 'KÁRMÁN LINE'
-  reading: string;  // '100 KM'
-  t: number;        // scroll moment the caption is at its true altitude
+  label: string; // 'KÁRMÁN LINE'
+  reading: string; // '100 KM'
+  t: number; // scroll moment the caption is at its true altitude
   accent?: boolean; // sea level gets the gold
   /** Opacity bell half-width in t (default 0.085). Narrowed where milestones
    *  cluster around the crossing so at most one caption is prominent near

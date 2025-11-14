@@ -69,6 +69,6 @@ function renderMark(size: number) {
         />
       </div>
     ),
-    { width: size, height: size }
+    { width: size, height: size },
   );
 }

@@ -9,10 +9,8 @@ const BLOG_DIR = path.join(process.cwd(), 'content', 'blog');
 // C8/E4 — series registry: one editable place for anything posts can belong
 // to, mastered in content/series.json (post-G: in Sanity). A post joins a
 // series via `series: <id>` + `seriesIndex: <n>` frontmatter.
-export const SERIES: Record<
-  string,
-  { title: string; planned: number; description: string }
-> = SERIES_DATA;
+export const SERIES: Record<string, { title: string; planned: number; description: string }> =
+  SERIES_DATA;
 
 const WPM = 200;
 
@@ -85,7 +83,7 @@ export function getRelatedPosts(post: BlogPost): {
 
   if (post.series && post.seriesIndex) {
     const inSeries = getSeriesPosts(post.series).find(
-      (p) => p.seriesIndex === (post.seriesIndex ?? 0) + 1
+      (p) => p.seriesIndex === (post.seriesIndex ?? 0) + 1,
     );
     if (inSeries) next = inSeries;
   }

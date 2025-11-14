@@ -17,7 +17,7 @@ function ReducedMotionFrames() {
     invalidate(); // first frame, then one per scroll change
     return useSiteStore.subscribe(
       (s) => s.scrollT,
-      () => invalidate()
+      () => invalidate(),
     );
   }, [invalidate]);
   return null;

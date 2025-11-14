@@ -39,7 +39,7 @@ export default function CursorRing() {
       if (!el) return;
       const target = e.target as Element | null;
       const interactive = !!target?.closest?.(
-        'a, button, [role="button"], [tabindex]:not([tabindex="-1"])'
+        'a, button, [role="button"], [tabindex]:not([tabindex="-1"])',
       );
       if (interactive !== tight) {
         tight = interactive;

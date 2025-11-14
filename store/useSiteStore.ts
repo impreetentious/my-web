@@ -5,16 +5,15 @@ import { ZONE_THRESHOLDS } from '@/lib/descent';
 
 function deriveZone(t: number): ZoneName {
   if (t >= ZONE_THRESHOLDS.underwater) return 'underwater';
-  if (t >= ZONE_THRESHOLDS.sea)        return 'sea';
-  if (t >= ZONE_THRESHOLDS.horizon)    return 'horizon';
+  if (t >= ZONE_THRESHOLDS.sea) return 'sea';
+  if (t >= ZONE_THRESHOLDS.horizon) return 'horizon';
   return 'sky';
 }
 
 export const useSiteStore = create<SiteStore>()(
   subscribeWithSelector((set) => ({
     scrollT: 0,
-    setScrollT: (t) =>
-      set({ scrollT: t, activeZone: deriveZone(t) }),
+    setScrollT: (t) => set({ scrollT: t, activeZone: deriveZone(t) }),
 
     activeZone: 'sky',
 
@@ -36,5 +35,5 @@ export const useSiteStore = create<SiteStore>()(
 
     quality: 'high',
     setQuality: (q) => set({ quality: q }),
-  }))
+  })),
 );

@@ -12,13 +12,13 @@ import type { ActiveSection } from '@/types';
 // E5 — `side` alternates on the FILTERED list (left first), so toggling any
 // section can never strand two adjacent cards on the same side. A config
 // entry may still pin a side explicitly; omitted means auto.
-export const activeSections: ActiveSection[] = SECTIONS
-  .filter((section) => section.enabled)
-  .map((section, index) => ({
+export const activeSections: ActiveSection[] = SECTIONS.filter((section) => section.enabled).map(
+  (section, index) => ({
     ...section,
     index,
     side: section.side ?? (index % 2 === 0 ? 'left' : 'right'),
-  }));
+  }),
+);
 
 // One place for the world's height — the scroll container, spine geometry and
 // the shader's screen→page mapping must all agree on it.
@@ -33,16 +33,10 @@ export const mobileWorldSvh =
  *  height. Card slots and spine anchors both derive from this, so they can
  *  never drift apart. */
 export function sectionCenterFractionDesktop(index: number): number {
-  return (
-    (HEADER_HEIGHT_PX + index * SECTION_HEIGHT_PX + SECTION_HEIGHT_PX / 2) /
-    totalPageHeight
-  );
+  return (HEADER_HEIGHT_PX + index * SECTION_HEIGHT_PX + SECTION_HEIGHT_PX / 2) / totalPageHeight;
 }
 
 /** Same, against the mobile world. */
 export function sectionCenterFractionMobile(index: number): number {
-  return (
-    (MOBILE_HERO_SVH + index * MOBILE_SECTION_SVH + MOBILE_SECTION_SVH / 2) /
-    mobileWorldSvh
-  );
+  return (MOBILE_HERO_SVH + index * MOBILE_SECTION_SVH + MOBILE_SECTION_SVH / 2) / mobileWorldSvh;
 }

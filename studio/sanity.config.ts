@@ -12,7 +12,7 @@ const dataset = process.env.SANITY_STUDIO_DATASET || process.env.SANITY_DATASET 
 if (!projectId) {
   // Studio still boots so schemas can be reviewed; API calls fail until configured.
   console.warn(
-    '[studio] SANITY_STUDIO_PROJECT_ID is unset — set it in studio/.env after creating the Sanity project.'
+    '[studio] SANITY_STUDIO_PROJECT_ID is unset — set it in studio/.env after creating the Sanity project.',
   );
 }
 

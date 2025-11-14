@@ -15,10 +15,7 @@ export function PostHeader({ post }: { post: BlogPost }) {
         LOG {post.date} · ENTRY {String(post.entry).padStart(2, '0')} · {post.readingTime} MIN
       </p>
 
-      <h1
-        className="log-title"
-        style={{ fontSize: 'clamp(34px, 5.4vw, 46px)', lineHeight: 1.12 }}
-      >
+      <h1 className="log-title" style={{ fontSize: 'clamp(34px, 5.4vw, 46px)', lineHeight: 1.12 }}>
         {post.title}
       </h1>
 

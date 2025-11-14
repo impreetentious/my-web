@@ -44,10 +44,10 @@ Content JSON and MDX under `content/` are the committed fallback and are always 
 
 ```mdx
 ---
-title: "Post Title"
-date: "2025-05-25"
-excerpt: "One sentence description."
-slug: "your-slug"
+title: 'Post Title'
+date: '2025-05-25'
+excerpt: 'One sentence description.'
+slug: 'your-slug'
 ---
 
 Post content goes here.
@@ -104,4 +104,4 @@ MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-**Version:** v0.13.0
+**Version:** v0.14.0

@@ -22,7 +22,7 @@ const DURATION_ABYSS = 1.9;
 const WHEEL_ORBIT = 1.0;
 const WHEEL_ABYSS = 0.62;
 
-const IDLE_AFTER_MS = 20000;   // §3.5.6 — idle life
+const IDLE_AFTER_MS = 20000; // §3.5.6 — idle life
 const IDLE_REPEAT_MS = 26000;
 const PLUNGE_THROTTLE_MS = 1500;
 
@@ -80,12 +80,8 @@ export function initScrollSystem(): void {
     // normalise against Lenis's own limit — body.scrollHeight over-reports
     // when late-injected overlays (dev tools) pad it past the scrollable
     // extent, which capped t below 1 at the seafloor
-    const scrollLimit =
-      lenis!.limit || document.body.scrollHeight - window.innerHeight;
-    const scrollT = Math.min(
-      1,
-      Math.max(0, lenis!.scroll / Math.max(1, scrollLimit))
-    );
+    const scrollLimit = lenis!.limit || document.body.scrollHeight - window.innerHeight;
+    const scrollT = Math.min(1, Math.max(0, lenis!.scroll / Math.max(1, scrollLimit)));
     useSiteStore.getState().setScrollT(scrollT);
 
     const now = performance.now();
@@ -148,8 +144,7 @@ export function initScrollSystem(): void {
     }
   };
   document.addEventListener('visibilitychange', onVisibility);
-  teardownExtras = () =>
-    document.removeEventListener('visibilitychange', onVisibility);
+  teardownExtras = () => document.removeEventListener('visibilitychange', onVisibility);
 
   rafId = requestAnimationFrame(raf);
 }

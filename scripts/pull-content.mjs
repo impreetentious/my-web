@@ -100,14 +100,23 @@ function validate(data) {
   if (!site || typeof site !== 'object') errors.push('site missing');
   else {
     for (const k of [
-      'name', 'heroRoleLine', 'email', 'domain', 'metaTitle', 'metaDescription',
-      'proposition', 'availability', 'location', 'resumeHref',
+      'name',
+      'heroRoleLine',
+      'email',
+      'domain',
+      'metaTitle',
+      'metaDescription',
+      'proposition',
+      'availability',
+      'location',
+      'resumeHref',
     ]) {
       if (!site[k]) errors.push(`site.${k} missing`);
     }
     if (site.email && !isEmail(site.email)) errors.push('site.email invalid');
     if (!site.socials?.linkedin || !site.socials?.github) errors.push('site.socials incomplete');
-    if (typeof site.resumeAvailable !== 'boolean') errors.push('site.resumeAvailable must be boolean');
+    if (typeof site.resumeAvailable !== 'boolean')
+      errors.push('site.resumeAvailable must be boolean');
     if (!Array.isArray(site.keywords)) errors.push('site.keywords must be array');
   }
 
@@ -124,7 +133,8 @@ function validate(data) {
     for (const item of portfolio) {
       const id = slugOf(item.id);
       if (!id) errors.push('portfolio item missing id');
-      if (!item.title || !item.year || !item.description) errors.push(`portfolio ${id || '?'} incomplete`);
+      if (!item.title || !item.year || !item.description)
+        errors.push(`portfolio ${id || '?'} incomplete`);
       if (item.figure && !FIGURES.has(item.figure)) errors.push(`portfolio ${id} bad figure`);
       if (item.caseStudy) {
         for (const k of ['context', 'decision', 'move', 'model', 'outcome']) {
@@ -159,7 +169,14 @@ function validate(data) {
   else {
     for (const p of posts) {
       const slug = slugOf(p.slug);
-      if (!slug || !p.title || !p.date || !p.excerpt || typeof p.body !== 'string' || !p.body.trim()) {
+      if (
+        !slug ||
+        !p.title ||
+        !p.date ||
+        !p.excerpt ||
+        typeof p.body !== 'string' ||
+        !p.body.trim()
+      ) {
         errors.push(`post ${slug || '?'} incomplete`);
       }
     }
@@ -352,7 +369,9 @@ async function main() {
     const gotResume = await downloadResume(site);
     if (gotResume) ok('wrote public/resume.pdf');
 
-    ok(`wrote site/about/portfolio(${portfolio.length})/projects(${projects.length})/series/posts(${posts.length})`);
+    ok(
+      `wrote site/about/portfolio(${portfolio.length})/projects(${projects.length})/series/posts(${posts.length})`,
+    );
   } catch (err) {
     warn(`write failed — tree may be partial. ${err.message}`);
     process.exit(0);

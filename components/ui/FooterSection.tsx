@@ -104,11 +104,13 @@ export default function FooterSection() {
       ))}
 
       {/* Vertical fade-in line */}
-      <div style={{
-        width: '1px',
-        height: '44px',
-        background: 'linear-gradient(to bottom, transparent, rgba(63, 168, 152, 0.35))',
-      }} />
+      <div
+        style={{
+          width: '1px',
+          height: '44px',
+          background: 'linear-gradient(to bottom, transparent, rgba(63, 168, 152, 0.35))',
+        }}
+      />
 
       {/* Mission recap — quiet live counters */}
       <p
@@ -145,16 +147,22 @@ export default function FooterSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="LinkedIn"
-          onClick={() => trackConversion('social_link', { platform: 'linkedin', surface: 'footer' })}
+          onClick={() =>
+            trackConversion('social_link', { platform: 'linkedin', surface: 'footer' })
+          }
           style={linkStyle}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.color = '#7FC4B8';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)';
+          }}
         >
           {/* LinkedIn SVG */}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-            <rect x="2" y="9" width="4" height="12"/>
-            <circle cx="4" cy="4" r="2"/>
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+            <rect x="2" y="9" width="4" height="12" />
+            <circle cx="4" cy="4" r="2" />
           </svg>
         </a>
         <a
@@ -164,12 +172,16 @@ export default function FooterSection() {
           aria-label="GitHub"
           onClick={() => trackConversion('social_link', { platform: 'github', surface: 'footer' })}
           style={linkStyle}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.color = '#7FC4B8';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)';
+          }}
         >
           {/* GitHub SVG */}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
           </svg>
         </a>
         {/* A9 — the contact channel docks here; on phones this row is the
@@ -179,19 +191,37 @@ export default function FooterSection() {
           aria-label="Email"
           onClick={() => trackConversion('contact_email', { surface: 'footer' })}
           style={linkStyle}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#7FC4B8'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.color = '#7FC4B8';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)';
+          }}
         >
           {/* Envelope SVG */}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-            <rect x="2.5" y="5" width="19" height="14" rx="2"/>
-            <path d="M3 6.5l9 6.5 9-6.5"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+          >
+            <rect x="2.5" y="5" width="19" height="14" rx="2" />
+            <path d="M3 6.5l9 6.5 9-6.5" />
           </svg>
         </a>
       </div>
 
       {/* End tag with the sonar ping behind it */}
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <div
           aria-hidden="true"
           className="sonar-ring"
@@ -204,14 +234,16 @@ export default function FooterSection() {
             pointerEvents: 'none',
           }}
         />
-        <p style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '10px',
-          letterSpacing: '0.2em',
-          color: 'var(--color-text-muted)',
-          textTransform: 'uppercase',
-          position: 'relative',
-        }}>
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            letterSpacing: '0.2em',
+            color: 'var(--color-text-muted)',
+            textTransform: 'uppercase',
+            position: 'relative',
+          }}
+        >
           — end of transmission —
         </p>
       </div>

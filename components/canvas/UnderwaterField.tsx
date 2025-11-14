@@ -199,18 +199,16 @@ export function UnderwaterField() {
     u.uWaterNdcY.value = 1 - waterlineScreenVh(t) / 50;
     u.uCometNdc.value.set(
       (journey.cometX / state.size.width) * 2 - 1,
-      1 - (journey.cometY / state.size.height) * 2
+      1 - (journey.cometY / state.size.height) * 2,
     );
     if (allowMotion) {
       u.uTime.value = state.clock.elapsedTime;
       u.uWake.value = Math.min(1, Math.abs(journey.velocity) * 0.03);
       // 2.4s bell around the idle beat
       const idleE = (performance.now() - idleAtRef.current) / 1000;
-      u.uIdlePulse.value =
-        idleE > 0 && idleE < 2.4 ? Math.sin((idleE / 2.4) * Math.PI) : 0;
+      u.uIdlePulse.value = idleE > 0 && idleE < 2.4 ? Math.sin((idleE / 2.4) * Math.PI) : 0;
     }
-    if (pointsRef.current) pointsRef.current.visible =
-      u.uOpacity.value > 0.01;
+    if (pointsRef.current) pointsRef.current.visible = u.uOpacity.value > 0.01;
   });
 
   return <points ref={pointsRef} geometry={geometry} material={material} />;

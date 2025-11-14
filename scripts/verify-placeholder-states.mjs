@@ -15,15 +15,12 @@ const SECTIONS = path.join(ROOT, 'config/sections.ts');
 const original = fs.readFileSync(SECTIONS, 'utf8');
 
 function withPlaceholder(enabled) {
-  const next = original.replace(
-    /(id: 'placeholder',\s*enabled:\s*)(true|false)/,
-    `$1${enabled}`
-  );
+  const next = original.replace(/(id: 'placeholder',\s*enabled:\s*)(true|false)/, `$1${enabled}`);
   if (next === original && !original.includes(`enabled: ${enabled}`)) {
     // force-write the known line pattern
     const forced = original.replace(
       /id: 'placeholder',\n\s*enabled: (true|false)/,
-      `id: 'placeholder',\n    enabled: ${enabled}`
+      `id: 'placeholder',\n    enabled: ${enabled}`,
     );
     fs.writeFileSync(SECTIONS, forced);
   } else {

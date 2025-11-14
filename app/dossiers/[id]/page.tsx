@@ -34,11 +34,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function DossierPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function DossierPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const dossier = getAddressableDossier(id);
   const PanelComponent = dossier ? PANEL_REGISTRY[dossier.id] : null;

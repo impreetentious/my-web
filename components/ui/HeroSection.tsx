@@ -37,13 +37,13 @@ export default function HeroSection() {
                 tagRef.current,
                 { opacity: 0 },
                 { opacity: 0.8, duration: 0.45, ease: 'none' },
-                0.18 // under the departing boot line
+                0.18, // under the departing boot line
               );
             } else {
               tl.fromTo(
                 tagRef.current,
                 { opacity: 0, y: -8 },
-                { opacity: 0.8, y: 0, duration: 0.5, ease: EASE_ARRIVE }
+                { opacity: 0.8, y: 0, duration: 0.5, ease: EASE_ARRIVE },
               );
             }
             // NB: the pre-reveal offset lives in inline CSS as translateY(%);
@@ -62,7 +62,7 @@ export default function HeroSection() {
                   if (nameWrapRef.current) nameWrapRef.current.style.overflow = 'visible';
                 },
               },
-              handoff ? 0.3 : '-=0.25'
+              handoff ? 0.3 : '-=0.25',
             );
             tl.fromTo(
               roleRef.current,
@@ -75,7 +75,7 @@ export default function HeroSection() {
                   if (roleWrapRef.current) roleWrapRef.current.style.overflow = 'visible';
                 },
               },
-              `-=${0.75 - STAGGER * 2}`
+              `-=${0.75 - STAGGER * 2}`,
             );
             // C12 — the name catches one specular sweep on the ignition
             // beat: a gradient mask pass over the glyphs, then gone
@@ -83,13 +83,13 @@ export default function HeroSection() {
               sweepRef.current,
               { backgroundPosition: '135% 0%' },
               { backgroundPosition: '-35% 0%', duration: 1.05, ease: 'power2.inOut' },
-              handoff ? 0.55 : '-=0.45'
+              handoff ? 0.55 : '-=0.45',
             );
             tl.fromTo(
               cueRef.current,
               { opacity: 0 },
               { opacity: 1, duration: 0.5, ease: EASE_ARRIVE },
-              '-=0.7'
+              '-=0.7',
             );
           } else {
             gsap.set([tagRef.current, cueRef.current], { opacity: 1 });
@@ -97,7 +97,7 @@ export default function HeroSection() {
           }
           unsubscribe();
         }
-      }
+      },
     );
     return () => unsubscribe();
   }, []);

@@ -2,13 +2,7 @@
 
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import {
-  BufferGeometry,
-  Float32BufferAttribute,
-  Mesh,
-  ShaderMaterial,
-  Vector2,
-} from 'three';
+import { BufferGeometry, Float32BufferAttribute, Mesh, ShaderMaterial, Vector2 } from 'three';
 import { useSiteStore } from '@/store/useSiteStore';
 import { waterlineScreenVh, zoneWeights, abyssGate, CROSS_T, U_SURFACE, K } from '@/lib/descent';
 import { journey, plungeElapsed, buoyancyVh } from '@/lib/journey';
@@ -342,10 +336,7 @@ export function SkyOcean() {
   const { geometry, material } = useMemo(() => {
     // single oversized triangle — covers the frame without a seam
     const geo = new BufferGeometry();
-    geo.setAttribute(
-      'position',
-      new Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3)
-    );
+    geo.setAttribute('position', new Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3));
 
     const mat = new ShaderMaterial({
       vertexShader: VERTEX,

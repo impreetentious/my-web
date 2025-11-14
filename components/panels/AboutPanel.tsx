@@ -2,7 +2,14 @@
 
 import aboutData from '@/content/about.json';
 import site from '@/content/site.json';
-import { DossierBlock, DossierHead, Chip, ChipRow, PullQuote, ChannelLink } from '@/components/panels/dossier';
+import {
+  DossierBlock,
+  DossierHead,
+  Chip,
+  ChipRow,
+  PullQuote,
+  ChannelLink,
+} from '@/components/panels/dossier';
 import { trackConversion } from '@/lib/analytics';
 
 // C4 — About is an actual dossier now: a display-serif pull-quote carries the

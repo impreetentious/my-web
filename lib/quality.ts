@@ -59,15 +59,18 @@ interface BatteryManagerLike {
   charging: boolean;
 }
 function scheduleBatteryCheck(): void {
-  const getBattery = (navigator as Navigator & {
-    getBattery?: () => Promise<BatteryManagerLike>;
-  }).getBattery;
+  const getBattery = (
+    navigator as Navigator & {
+      getBattery?: () => Promise<BatteryManagerLike>;
+    }
+  ).getBattery;
   if (typeof getBattery !== 'function') return;
   getBattery
     .call(navigator)
     .then((battery) => {
       if (battery.charging) return; // plugged in — spend the pixels
-      if (battery.level <= 0.15) capQuality('low'); // nearly flat → CSS world
+      if (battery.level <= 0.15)
+        capQuality('low'); // nearly flat → CSS world
       else if (battery.level <= 0.3) capQuality('medium'); // low → lite set
     })
     .catch(() => {

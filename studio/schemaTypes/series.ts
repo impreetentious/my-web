@@ -14,8 +14,19 @@ export const series = defineType({
       validation: (r) => r.required(),
     }),
     defineField({ name: 'title', title: 'Title', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'planned', title: 'Planned parts', type: 'number', validation: (r) => r.required().min(1) }),
-    defineField({ name: 'description', title: 'Description', type: 'text', rows: 3, validation: (r) => r.required() }),
+    defineField({
+      name: 'planned',
+      title: 'Planned parts',
+      type: 'number',
+      validation: (r) => r.required().min(1),
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 3,
+      validation: (r) => r.required(),
+    }),
   ],
   preview: {
     select: { title: 'title', subtitle: 'key.current' },

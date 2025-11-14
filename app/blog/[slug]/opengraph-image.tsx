@@ -29,8 +29,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '64px 72px',
-          background:
-            'linear-gradient(165deg, #05060D 0%, #0A1220 42%, #142033 68%, #1A1810 100%)',
+          background: 'linear-gradient(165deg, #05060D 0%, #0A1220 42%, #142033 68%, #1A1810 100%)',
           color: '#F2F2F2',
           fontFamily: 'Georgia, serif',
         }}
@@ -94,6 +93,6 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         </div>
       </div>
     ),
-    { ...size }
+    { ...size },
   );
 }

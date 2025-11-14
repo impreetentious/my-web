@@ -12,11 +12,7 @@ import { track } from '@vercel/analytics';
 //
 // A failed beacon must never break an interaction, so every call is guarded.
 
-export type ConversionEvent =
-  | 'contact_email'
-  | 'resume_download'
-  | 'social_link'
-  | 'blog_uplink';
+export type ConversionEvent = 'contact_email' | 'resume_download' | 'social_link' | 'blog_uplink';
 
 /** Allowed by Vercel Analytics (`AllowedPropertyValues`). */
 type EventProps = Record<string, string | number | boolean | null>;

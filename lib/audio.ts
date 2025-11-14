@@ -126,8 +126,8 @@ class DescentAudio {
         (id) => {
           if (id && id !== this.lastPanelId) this.tick();
           this.lastPanelId = id;
-        }
-      )
+        },
+      ),
     );
 
     const onVisibility = () => {
@@ -155,7 +155,8 @@ class DescentAudio {
     // F2 — same rewrite rule as the shader/descent tuning: early-sky voices
     // K-scale, crossing-region voices anchor to CROSS_T.
     const space = 1 - smoothstep(K * 0.5, CROSS_T - 0.01, t);
-    const golden = smoothstep(K * 0.45, K * 0.62, t) * (1 - smoothstep(CROSS_T - 0.04, CROSS_T + 0.04, t));
+    const golden =
+      smoothstep(K * 0.45, K * 0.62, t) * (1 - smoothstep(CROSS_T - 0.04, CROSS_T + 0.04, t));
     const under = smoothstep(CROSS_T - 0.02, CROSS_T + 0.06, t);
     const abyss = abyssGate(t);
 
@@ -169,10 +170,13 @@ class DescentAudio {
 
     // sparse sonar in the dark
     if (abyss > 0.4 && this.sonarTimeout === null) {
-      this.sonarTimeout = setTimeout(() => {
-        this.sonarTimeout = null;
-        if (abyssGate(useSiteStore.getState().scrollT) > 0.4) this.sonarPing();
-      }, 8000 + Math.random() * 7000);
+      this.sonarTimeout = setTimeout(
+        () => {
+          this.sonarTimeout = null;
+          if (abyssGate(useSiteStore.getState().scrollT) > 0.4) this.sonarPing();
+        },
+        8000 + Math.random() * 7000,
+      );
     }
   }
 

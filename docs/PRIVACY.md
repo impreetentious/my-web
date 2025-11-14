@@ -17,11 +17,11 @@ any claim on the site or in review can be checked against it.
 
 ## What is actually sent
 
-| Data | Mechanism | Contains | Destination |
-|---|---|---|---|
-| Page view | `@vercel/analytics` (`<Analytics/>` in `app/layout.tsx`) | Route, referrer, coarse device/geo — cookieless, no PII | Vercel Analytics |
-| Conversion events | `lib/analytics.ts` `trackConversion` | An event name + low-cardinality props (a surface name, a platform) — see below | Vercel Analytics (same pipe) |
-| Field Web Vitals | `lib/vitals.ts` → `trackVital` | `metric` (LCP/CLS/INP), a rounded `value`, a `rating` — no session id, no route trace | Vercel Analytics (same pipe) |
+| Data              | Mechanism                                                | Contains                                                                              | Destination                  |
+| ----------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------- |
+| Page view         | `@vercel/analytics` (`<Analytics/>` in `app/layout.tsx`) | Route, referrer, coarse device/geo — cookieless, no PII                               | Vercel Analytics             |
+| Conversion events | `lib/analytics.ts` `trackConversion`                     | An event name + low-cardinality props (a surface name, a platform) — see below        | Vercel Analytics (same pipe) |
+| Field Web Vitals  | `lib/vitals.ts` → `trackVital`                           | `metric` (LCP/CLS/INP), a rounded `value`, a `rating` — no session id, no route trace | Vercel Analytics (same pipe) |
 
 There is **no separate endpoint**. Everything routes through the single Vercel
 Analytics pipeline the owner opted into; the code adds no new destination.

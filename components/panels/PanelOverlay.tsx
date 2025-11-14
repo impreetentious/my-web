@@ -3,12 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { X } from 'lucide-react';
-import {
-  motionAllowed,
-  EASE_ARRIVE,
-  EASE_CUT,
-  STAGGER,
-} from '@/lib/motion';
+import { motionAllowed, EASE_ARRIVE, EASE_CUT, STAGGER } from '@/lib/motion';
 import { stopScroll, startScroll } from '@/lib/scrollSystem';
 import { useSiteStore } from '@/store/useSiteStore';
 import { activeSections } from '@/lib/activeSections';
@@ -137,7 +132,7 @@ export default function PanelOverlay() {
       }
 
       openedHistoryEntryRef.current = Boolean(
-        validId && currentHistoryState()[DOSSIER_HISTORY_KEY] === true
+        validId && currentHistoryState()[DOSSIER_HISTORY_KEY] === true,
       );
 
       if (useSiteStore.getState().activePanelId === validId) return;
@@ -178,7 +173,7 @@ export default function PanelOverlay() {
       window.history.pushState(
         { ...currentHistoryState(), [DOSSIER_HISTORY_KEY]: true },
         '',
-        historyPath(url)
+        historyPath(url),
       );
       openedHistoryEntryRef.current = true;
       return;
@@ -282,31 +277,36 @@ export default function PanelOverlay() {
       tlRef.current = tl;
 
       tl.set(frame, { opacity: 1, y: 0 }, 0);
-      tl.fromTo(veilRef.current, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: EASE_ARRIVE }, 0);
+      tl.fromTo(
+        veilRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.45, ease: EASE_ARRIVE },
+        0,
+      );
       tl.fromTo(
         ghostRef.current,
         { clipPath: 'inset(0 0 100% 0)', y: 70, opacity: 1 },
         { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.75, ease: EASE_ARRIVE },
-        0.05
+        0.05,
       );
       tl.fromTo(
         ruleRef.current,
         { scaleY: 0 },
         { scaleY: 1, transformOrigin: 'top', duration: 0.6, ease: EASE_ARRIVE },
-        0.08
+        0.08,
       );
       tl.fromTo(
         titleInnerRef.current,
         { yPercent: 115 },
         { yPercent: 0, duration: 0.6, ease: EASE_ARRIVE },
-        0.16
+        0.16,
       );
       if (railRef.current) {
         tl.fromTo(
           railRef.current.querySelectorAll('[data-rail]'),
           { opacity: 0, y: 10 },
           { opacity: 1, y: 0, duration: 0.45, ease: EASE_ARRIVE, stagger: STAGGER },
-          0.14
+          0.14,
         );
       }
       // decode tick on the mono meta strings only — never on body text
@@ -318,19 +318,19 @@ export default function PanelOverlay() {
           });
         },
         undefined,
-        0.2
+        0.2,
       );
       tl.fromTo(
         content.querySelectorAll('[data-block]'),
         { opacity: 0, y: 24 },
         { opacity: 1, y: 0, duration: 0.6, ease: EASE_ARRIVE, stagger: STAGGER },
-        0.24
+        0.24,
       );
       tl.fromTo(
         content.querySelectorAll('[data-hair]'),
         { scaleX: 0 },
         { scaleX: 1, transformOrigin: 'left', duration: 0.55, ease: EASE_ARRIVE, stagger: STAGGER },
-        0.28
+        0.28,
       );
     } else {
       gsap.set(frame, { opacity: 1, y: 0 });
@@ -349,7 +349,7 @@ export default function PanelOverlay() {
       }
       if (event.key === 'Tab' && overlayRef.current) {
         const focusables = overlayRef.current.querySelectorAll<HTMLElement>(
-          'button, a[href], [tabindex]:not([tabindex="-1"])'
+          'button, a[href], [tabindex]:not([tabindex="-1"])',
         );
         if (focusables.length === 0) return;
         const first = focusables[0];
@@ -369,9 +369,7 @@ export default function PanelOverlay() {
   }, [renderedPanelId]);
 
   const PanelComponent = renderedPanelId ? PANEL_REGISTRY[renderedPanelId] : null;
-  const section = renderedPanelId
-    ? activeSections.find((s) => s.id === renderedPanelId)
-    : null;
+  const section = renderedPanelId ? activeSections.find((s) => s.id === renderedPanelId) : null;
   const indexLabel = String((section?.index ?? 0) + 1).padStart(2, '0');
 
   // Telemetry snapshot at open — this render only happens on open/close
@@ -566,11 +564,7 @@ export default function PanelOverlay() {
               </div>
               <div data-rail>
                 <p style={railLabelStyle}>STATUS</p>
-                <p
-                  data-scramble
-                  data-final={`DECODED ${missionClock()}`}
-                  style={railValueStyle}
-                >
+                <p data-scramble data-final={`DECODED ${missionClock()}`} style={railValueStyle}>
                   {`DECODED ${missionClock()}`}
                 </p>
               </div>
@@ -583,7 +577,14 @@ export default function PanelOverlay() {
               {renderedPanelId === 'about' && (
                 <div data-rail>
                   <p style={railLabelStyle}>ACTIONS</p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginTop: '2px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '9px',
+                      marginTop: '2px',
+                    }}
+                  >
                     {site.resumeAvailable && site.resumeHref && (
                       <a
                         href={site.resumeHref}

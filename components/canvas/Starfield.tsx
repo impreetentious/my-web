@@ -107,16 +107,12 @@ export function Starfield() {
 
       const depth = (positions[i * 3 + 2] + 7) / 9; // 0 far → 1 near
       // small and sharp; a sparse handful get real presence
-      sizes[i] =
-        Math.random() < 0.08
-          ? 1.7 + depth * 1.2
-          : 0.5 + Math.random() * 0.8 + depth * 0.5;
+      sizes[i] = Math.random() < 0.08 ? 1.7 + depth * 1.2 : 0.5 + Math.random() * 0.8 + depth * 0.5;
       phases[i] = Math.random() * Math.PI * 2;
       speeds[i] = 0.4 + Math.random() * 1.6;
       parallax[i] = 0.25 + depth * 0.75;
 
-      const tint =
-        TINTS[Math.random() < 0.72 ? 0 : Math.random() < 0.55 ? 1 : 2];
+      const tint = TINTS[Math.random() < 0.72 ? 0 : Math.random() < 0.55 ? 1 : 2];
       tints[i * 3] = tint.r;
       tints[i * 3 + 1] = tint.g;
       tints[i * 3 + 2] = tint.b;
@@ -163,8 +159,7 @@ export function Starfield() {
       material.uniforms.uStretch.value = 1 + v * 1.6;
       material.uniforms.uMouse.value.set(journey.mouseX, journey.mouseY);
     }
-    if (pointsRef.current) pointsRef.current.visible =
-      material.uniforms.uOpacity.value > 0.01;
+    if (pointsRef.current) pointsRef.current.visible = material.uniforms.uOpacity.value > 0.01;
   });
 
   return <points ref={pointsRef} geometry={geometry} material={material} />;

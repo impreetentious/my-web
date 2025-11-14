@@ -66,10 +66,7 @@ export function ProjectsPanel() {
                     height: '5px',
                     borderRadius: '50%',
                     background: STATUS_COLORS[item.status],
-                    boxShadow:
-                      item.status === 'live'
-                        ? '0 0 6px rgba(96, 200, 140, 0.7)'
-                        : 'none',
+                    boxShadow: item.status === 'live' ? '0 0 6px rgba(96, 200, 140, 0.7)' : 'none',
                   }}
                 />
                 {STATUS_LABELS[item.status]}

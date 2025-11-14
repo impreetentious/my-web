@@ -19,7 +19,13 @@ export const portfolioItem = defineType({
     defineField({ name: 'order', title: 'Order', type: 'number', initialValue: 0 }),
     defineField({ name: 'title', title: 'Title', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'year', title: 'Year', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'description', title: 'Description', type: 'text', rows: 4, validation: (r) => r.required() }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+      validation: (r) => r.required(),
+    }),
     defineField({
       name: 'tags',
       title: 'Tags',

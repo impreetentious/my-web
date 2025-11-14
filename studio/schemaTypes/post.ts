@@ -21,7 +21,13 @@ export const post = defineType({
       options: { dateFormat: 'YYYY-MM-DD' },
       validation: (r) => r.required(),
     }),
-    defineField({ name: 'excerpt', title: 'Excerpt', type: 'text', rows: 3, validation: (r) => r.required() }),
+    defineField({
+      name: 'excerpt',
+      title: 'Excerpt',
+      type: 'text',
+      rows: 3,
+      validation: (r) => r.required(),
+    }),
     defineField({
       name: 'body',
       title: 'Body',

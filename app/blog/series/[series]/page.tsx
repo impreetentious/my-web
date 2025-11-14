@@ -7,7 +7,13 @@ import { getAllPosts, getSeriesPosts, SERIES } from '@/lib/blog';
 // unpublished parts hold their slots as TRANSMISSION PENDING.
 
 export async function generateStaticParams() {
-  const ids = [...new Set(getAllPosts().map((p) => p.series).filter(Boolean))] as string[];
+  const ids = [
+    ...new Set(
+      getAllPosts()
+        .map((p) => p.series)
+        .filter(Boolean),
+    ),
+  ] as string[];
   return ids.map((series) => ({ series }));
 }
 
@@ -24,11 +30,7 @@ export async function generateMetadata({
   return { title: meta.title, description: meta.description };
 }
 
-export default async function SeriesPage({
-  params,
-}: {
-  params: Promise<{ series: string }>;
-}) {
+export default async function SeriesPage({ params }: { params: Promise<{ series: string }> }) {
   const { series } = await params;
   const meta = SERIES[series];
   if (!meta) notFound();
@@ -51,9 +53,12 @@ export default async function SeriesPage({
         <h1 className="log-title" style={{ fontSize: 'clamp(32px, 5vw, 44px)', lineHeight: 1.15 }}>
           {meta.title}
         </h1>
-        <p className="log-sub" style={{ maxWidth: '56ch' }}>{meta.description}</p>
+        <p className="log-sub" style={{ maxWidth: '56ch' }}>
+          {meta.description}
+        </p>
         <p className="log-meta">
-          {String(posts.length).padStart(2, '0')} OF {String(meta.planned).padStart(2, '0')} PARTS LOGGED
+          {String(posts.length).padStart(2, '0')} OF {String(meta.planned).padStart(2, '0')} PARTS
+          LOGGED
         </p>
 
         <div className="log-rule" />
@@ -69,27 +74,27 @@ export default async function SeriesPage({
                     style={{ fontSize: '21px', display: 'inline-block' }}
                   >
                     {post.title}
-                    <span className="log-row-arrow" aria-hidden="true">→</span>
+                    <span className="log-row-arrow" aria-hidden="true">
+                      →
+                    </span>
                   </span>
-                  <span
-                    className="log-row-meta"
-                    style={{ display: 'block', marginTop: '6px' }}
-                  >
+                  <span className="log-row-meta" style={{ display: 'block', marginTop: '6px' }}>
                     LOG {post.date} · {post.readingTime} MIN
                   </span>
                 </span>
               </Link>
             ) : (
-              <div key={part} className="log-part log-part-pending" aria-label={`Part ${part}: pending`}>
+              <div
+                key={part}
+                className="log-part log-part-pending"
+                aria-label={`Part ${part}: pending`}
+              >
                 <span className="log-part-num">PART {String(part).padStart(2, '0')}</span>
-                <span
-                  className="log-row-title log-part-title"
-                  style={{ fontSize: '21px' }}
-                >
+                <span className="log-row-title log-part-title" style={{ fontSize: '21px' }}>
                   Transmission pending
                 </span>
               </div>
-            )
+            ),
           )}
         </div>
       </div>

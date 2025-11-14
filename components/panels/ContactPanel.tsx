@@ -1,12 +1,7 @@
 'use client';
 
 import site from '@/content/site.json';
-import {
-  DossierBlock,
-  DossierHead,
-  DossierRow,
-  ChannelLink,
-} from '@/components/panels/dossier';
+import { DossierBlock, DossierHead, DossierRow, ChannelLink } from '@/components/panels/dossier';
 import { trackConversion } from '@/lib/analytics';
 
 // F1 — Contact is the deepest transmission: "OPEN CHANNEL". It reuses the
@@ -92,7 +87,9 @@ export function ContactPanel() {
         description="Career record, network, and professional signal."
         chips={[host(site.socials.linkedin)]}
         arrowLabel="↗ OPEN"
-        onSelect={() => trackConversion('social_link', { platform: 'linkedin', surface: 'contact_panel' })}
+        onSelect={() =>
+          trackConversion('social_link', { platform: 'linkedin', surface: 'contact_panel' })
+        }
       />
       <DossierRow
         href={site.socials.github}
@@ -101,7 +98,9 @@ export function ContactPanel() {
         description="Source relay — code, builds, and experiments."
         chips={[host(site.socials.github)]}
         arrowLabel="↗ OPEN"
-        onSelect={() => trackConversion('social_link', { platform: 'github', surface: 'contact_panel' })}
+        onSelect={() =>
+          trackConversion('social_link', { platform: 'github', surface: 'contact_panel' })
+        }
       />
 
       {/* Fiction footnote — chrome, so it lives as a code string (Rule A) */}

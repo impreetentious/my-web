@@ -8,14 +8,14 @@ monitoring surface is therefore the client, the build, and Vercel's edge.
 
 ## What's instrumented
 
-| Signal | Source | Where to read it |
-|---|---|---|
-| Build failures | Vercel build (runs `prebuild`: content pull + `validate-content.mjs`, then `next build`) | Vercel → Deployments → the failed build's logs |
-| Content-shape errors | `scripts/validate-content.mjs` (prebuild gate) | Build log — the build fails before deploy |
-| Page views / traffic | `@vercel/analytics` (cookieless) | Vercel → Analytics |
-| **Field Web Vitals** | `lib/vitals.ts` — LCP, CLS, INP via `PerformanceObserver`, reported on page hide as `web_vital` events | Vercel → Analytics → Events (`web_vital`, with `metric` / `value` / `rating`) |
-| **Conversions** | `lib/analytics.ts` `trackConversion` (`contact_email`, `resume_download`, `social_link`, `blog_uplink`) | Vercel → Analytics → Events |
-| Runtime JS errors | Browser console only (no external error tracker wired) | DevTools; not aggregated in the field |
+| Signal               | Source                                                                                                  | Where to read it                                                              |
+| -------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Build failures       | Vercel build (runs `prebuild`: content pull + `validate-content.mjs`, then `next build`)                | Vercel → Deployments → the failed build's logs                                |
+| Content-shape errors | `scripts/validate-content.mjs` (prebuild gate)                                                          | Build log — the build fails before deploy                                     |
+| Page views / traffic | `@vercel/analytics` (cookieless)                                                                        | Vercel → Analytics                                                            |
+| **Field Web Vitals** | `lib/vitals.ts` — LCP, CLS, INP via `PerformanceObserver`, reported on page hide as `web_vital` events  | Vercel → Analytics → Events (`web_vital`, with `metric` / `value` / `rating`) |
+| **Conversions**      | `lib/analytics.ts` `trackConversion` (`contact_email`, `resume_download`, `social_link`, `blog_uplink`) | Vercel → Analytics → Events                                                   |
+| Runtime JS errors    | Browser console only (no external error tracker wired)                                                  | DevTools; not aggregated in the field                                         |
 
 > Field Web Vitals are also a **control signal**, not just telemetry: a live
 > poor reading (late LCP, accumulating CLS, janky INP) demotes the render tier
@@ -28,14 +28,16 @@ monitoring surface is therefore the client, the build, and Vercel's edge.
 ## Triage
 
 **Build is failing.**
+
 1. Read the Vercel build log. An empty/invalid `SANITY_PROJECT_ID` fails the
-   build *by design* (the previous deploy stays live) — set the env and redeploy.
+   build _by design_ (the previous deploy stays live) — set the env and redeploy.
 2. A `validate-content.mjs` failure means Sanity returned content that breaks a
    contract. Fix the document in Studio (or the committed `content/*.json`
    fallback), then rebuild. Do **not** weaken the validator to get green.
 3. Never `npm audit fix --force` (proposes an unsafe Next downgrade).
 
 **Web Vitals regressed (rising `poor` rate on LCP/CLS/INP).**
+
 1. Confirm it's field-wide, not one device: check the `rating` split in Analytics.
 2. LCP: look at the hero/above-fold — a heavy image or a blocking asset. Keep the
    ~230 kB home JS budget honest.
@@ -47,6 +49,7 @@ monitoring surface is therefore the client, the build, and Vercel's edge.
    corroborates a real regression.
 
 **Visitors report a broken page but the build is green.**
+
 1. Reproduce with DevTools open; capture the console error and the route.
 2. If it's a content issue, see the rollback runbook (§2). If it's code, revert
    the offending change (rollback runbook §1) while you fix forward.

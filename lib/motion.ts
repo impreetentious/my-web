@@ -24,10 +24,7 @@ export function motionAllowed(): boolean {
 // ride CUT (commit and go), and grouped reveals share the 60ms stagger.
 
 /** Signature arrival: covers most of the distance early, then settles long. */
-export const EASE_ARRIVE = CustomEase.create(
-  'descent-arrive',
-  'M0,0 C0.16,0.84 0.24,1 1,1'
-);
+export const EASE_ARRIVE = CustomEase.create('descent-arrive', 'M0,0 C0.16,0.84 0.24,1 1,1');
 
 /** Signature exit: gathers speed and leaves — no lingering tail. */
 export const EASE_CUT = CustomEase.create('descent-cut', 'M0,0 C0.5,0 0.74,0.22 1,1');

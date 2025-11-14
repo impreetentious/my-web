@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+build
+coverage
+package-lock.json
+playwright-report
+test-results
+tsconfig.tsbuildinfo
+
+# Written by scripts/pull-content.mjs, not by hand. Formatting it here would
+# be undone by the next content pull and then fail CI's format check.
+content

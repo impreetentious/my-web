@@ -31,8 +31,8 @@ const FRAGMENT = /* glsl */ `
   }
 `;
 
-const DURATION = 0.85;      // seconds of flight
-const MIN_GAP = 4;          // seconds between spawns
+const DURATION = 0.85; // seconds of flight
+const MIN_GAP = 4; // seconds between spawns
 const MAX_GAP = 10;
 
 interface FlightState {
@@ -59,7 +59,7 @@ export function ShootingStar() {
         depthWrite: false,
         blending: AdditiveBlending,
       }),
-    []
+    [],
   );
 
   const flight = useRef<FlightState>({
@@ -130,7 +130,7 @@ export function ShootingStar() {
     mesh.position.set(
       f.startX + f.dirX * f.progress * travel,
       f.startY + f.dirY * f.progress * travel,
-      -3
+      -3,
     );
     // brief fade in, longer fade out
     const envelope = Math.sin(Math.min(1, f.progress) * Math.PI);

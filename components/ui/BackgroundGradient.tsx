@@ -13,8 +13,7 @@ import { motionAllowed } from '@/lib/motion';
 // (B3/A2). The fallback animates, carries grain in place of the shader's
 // dither, and dips its palette on the plunge (A5).
 
-const GRAIN_TILE =
-  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+const GRAIN_TILE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
 const layerBase: React.CSSProperties = {
   position: 'absolute',
@@ -46,8 +45,7 @@ export default function BackgroundGradient() {
       if (raysRef.current) raysRef.current.style.opacity = String(w.rays * 0.4);
       if (waterRef.current)
         waterRef.current.style.transform = `translateY(${waterlineScreenVh(t)}vh)`;
-      if (vignetteRef.current)
-        vignetteRef.current.style.opacity = String(0.45 + t * 0.4);
+      if (vignetteRef.current) vignetteRef.current.style.opacity = String(0.45 + t * 0.4);
     };
 
     apply(useSiteStore.getState().scrollT);
@@ -57,14 +55,10 @@ export default function BackgroundGradient() {
     // for the shader's shock envelope
     const onPlunge = () => {
       if (!motionAllowed() || !dipRef.current) return;
-      dipRef.current.animate(
-        [
-          { opacity: 0 },
-          { opacity: 0.4, offset: 0.18 },
-          { opacity: 0 },
-        ],
-        { duration: 950, easing: 'ease-out' }
-      );
+      dipRef.current.animate([{ opacity: 0 }, { opacity: 0.4, offset: 0.18 }, { opacity: 0 }], {
+        duration: 950,
+        easing: 'ease-out',
+      });
     };
     window.addEventListener(PLUNGE_EVENT, onPlunge);
 

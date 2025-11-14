@@ -19,6 +19,7 @@ to restart — every "deploy" is an immutable static build.
 content is fine.
 
 **Fastest path — Instant Rollback (no rebuild):**
+
 1. Vercel dashboard → the project → **Deployments**.
 2. Find the last known-good production deployment (green, correct commit).
 3. **⋯ → Promote to Production** (a.k.a. Instant Rollback). Vercel re-points the
@@ -27,6 +28,7 @@ content is fine.
    footer/version and a couple of pages).
 
 **Durable path — revert the source:**
+
 1. `git revert <bad-sha>` (or revert the merge) on `main`. Never force-push to
    erase pushed history.
 2. Push. Vercel builds the revert and promotes it on success.
@@ -51,6 +53,7 @@ Because content is **build-time static**, wrong content is baked into the live
 build. Two ways back:
 
 **A — fix in Sanity, then rebuild (preferred):**
+
 1. Sanity Studio → the affected document → **History** → restore the previous
    revision (or re-publish the corrected fields).
 2. Trigger a rebuild: the Studio publish fires the Vercel Deploy Hook
@@ -59,6 +62,7 @@ build. Two ways back:
 3. `prebuild` re-pulls the corrected content; confirm live.
 
 **B — fall back to the committed content (Sanity down / can't wait):**
+
 1. The `content/*.json` files are the committed fallback. If they already hold
    the good values, deploy with an **empty `SANITY_PROJECT_ID`** so the pull is
    skipped and the build uses the committed JSON.
@@ -72,7 +76,7 @@ build. Two ways back:
 **Symptom:** the site is unreachable or the wrong project answers the domain.
 
 1. Vercel → Project → **Settings → Domains**: confirm the custom domain is
-   attached to *this* project and points at the production deployment.
+   attached to _this_ project and points at the production deployment.
 2. If DNS records were changed at the registrar, restore the previous A/CNAME
    records. DNS changes propagate on the record's TTL — plan for minutes to
    hours, and communicate that window.

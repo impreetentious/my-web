@@ -131,7 +131,15 @@ function figurePaths(kind: FigureKind, rnd: () => number): React.ReactNode {
       return (
         <>
           {radii.map((r, i) => (
-            <ellipse key={`e${i}`} cx={48} cy={32} rx={r} ry={r * 0.42} fill="none" strokeWidth="0.5" />
+            <ellipse
+              key={`e${i}`}
+              cx={48}
+              cy={32}
+              rx={r}
+              ry={r * 0.42}
+              fill="none"
+              strokeWidth="0.5"
+            />
           ))}
           {dots.map((a, i) => (
             <circle
@@ -206,7 +214,7 @@ function RedactedDoc({ seed, metric }: { seed: string; metric: string }) {
           <span key={i} className="case-doc-redact" style={{ width: `${Math.min(70, row.w)}%` }} />
         ) : (
           <span key={i} className="case-doc-line" style={{ width: `${row.w}%` }} />
-        )
+        ),
       )}
       <p className="case-doc-metric">{metric}</p>
     </div>
@@ -214,15 +222,7 @@ function RedactedDoc({ seed, metric }: { seed: string; metric: string }) {
 }
 
 /** Anonymised case study rendered as a declassified extract (C5). */
-export function CaseFile({
-  index,
-  id,
-  study,
-}: {
-  index: number;
-  id: string;
-  study: CaseStudy;
-}) {
+export function CaseFile({ index, id, study }: { index: number; id: string; study: CaseStudy }) {
   const [open, setOpen] = useState(false);
   const regionId = useId();
   const toggleId = `${regionId}-toggle`;
@@ -239,7 +239,9 @@ export function CaseFile({
         onClick={() => setOpen((v) => !v)}
       >
         <span>{`CASE FILE ${String(index + 1).padStart(2, '0')} · DECLASSIFIED EXTRACT`}</span>
-        <span className="case-file-sign" aria-hidden="true">{open ? '−' : '+'}</span>
+        <span className="case-file-sign" aria-hidden="true">
+          {open ? '−' : '+'}
+        </span>
       </button>
       {/* The collapse is a CSS grid-rows clip — the content stays mounted, so
           assistive tech must be told it's gone: inert + aria-hidden track the
@@ -274,7 +276,10 @@ export function CaseFile({
 export function PullQuote({ quote, refLine }: { quote: string; refLine?: string }) {
   return (
     <div data-block style={{ margin: '34px 0 8px' }}>
-      <div data-hair style={{ height: '1px', background: 'rgba(224, 178, 110, 0.35)', transformOrigin: 'left' }} />
+      <div
+        data-hair
+        style={{ height: '1px', background: 'rgba(224, 178, 110, 0.35)', transformOrigin: 'left' }}
+      />
       <blockquote
         style={{
           fontFamily: 'var(--font-display), Georgia, serif',
@@ -301,7 +306,10 @@ export function PullQuote({ quote, refLine }: { quote: string; refLine?: string 
           {refLine}
         </p>
       )}
-      <div data-hair style={{ height: '1px', background: 'rgba(255, 255, 255, 0.10)', transformOrigin: 'left' }} />
+      <div
+        data-hair
+        style={{ height: '1px', background: 'rgba(255, 255, 255, 0.10)', transformOrigin: 'left' }}
+      />
     </div>
   );
 }
@@ -373,9 +381,7 @@ export function Chip({ children }: { children: React.ReactNode }) {
 }
 
 export function ChipRow({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>{children}</div>
-  );
+  return <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>{children}</div>;
 }
 
 // ─── Channel CTA (C6/F1) ─────────────────────────────────────────────────────
@@ -556,9 +562,7 @@ export function DossierRow({
       ) : (
         // No .dossier-row class: hover choreography implies clickability,
         // and these rows don't go anywhere
-        <div style={rowStyle}>
-          {inner}
-        </div>
+        <div style={rowStyle}>{inner}</div>
       )}
       {children && <div className="dossier-row-extra">{children}</div>}
     </div>

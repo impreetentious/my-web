@@ -28,7 +28,8 @@ function rateReading(t: number): string {
   if (t < CROSS_T) {
     const kmPerT = (altitudeKm(t + DERIV_H) - altitudeKm(t - DERIV_H)) / (2 * DERIV_H);
     const kmPerSec = kmPerT * tPerSec; // negative while descending
-    if (Math.abs(kmPerSec) >= 1) return `RATE ${kmPerSec > 0 ? '+' : '−'}${Math.abs(kmPerSec).toFixed(1)} KM/S`;
+    if (Math.abs(kmPerSec) >= 1)
+      return `RATE ${kmPerSec > 0 ? '+' : '−'}${Math.abs(kmPerSec).toFixed(1)} KM/S`;
     const mPerSec = Math.round(kmPerSec * 1000);
     if (mPerSec === 0) return 'RATE 0 M/S';
     return `RATE ${mPerSec > 0 ? '+' : '−'}${Math.abs(mPerSec).toLocaleString('en-US')} M/S`;
@@ -129,7 +130,7 @@ export default function DepthIndicator() {
           }, WARN_FADE_MS),
           setTimeout(() => {
             warn.textContent = '';
-          }, WARN_CLEAR_MS)
+          }, WARN_CLEAR_MS),
         );
       }
     };
@@ -158,8 +159,7 @@ export default function DepthIndicator() {
       return;
     }
     const tick = () => {
-      if (gaugeRef.current)
-        gaugeRef.current.textContent = audioGauge(true, getAudioIntensity());
+      if (gaugeRef.current) gaugeRef.current.textContent = audioGauge(true, getAudioIntensity());
     };
     tick();
     const interval = setInterval(tick, 400);

@@ -9,7 +9,7 @@ import type { SpineAnchor } from '@/types';
 
 export function generateSpinePath(
   viewportWidth: number,
-  totalHeight: number
+  totalHeight: number,
 ): { d: string; anchors: SpineAnchor[] } {
   const center = viewportWidth / 2;
   const ctrl = SPINE_CONTROL_DISTANCE_PX;
@@ -34,16 +34,14 @@ export function generateSpinePath(
   for (let i = 0; i < anchors.length - 1; i++) {
     const a = anchors[i];
     const b = anchors[i + 1];
-    parts.push(
-      `C ${a.x} ${a.y + ctrl}, ${b.x} ${b.y - ctrl}, ${b.x} ${b.y}`
-    );
+    parts.push(`C ${a.x} ${a.y + ctrl}, ${b.x} ${b.y - ctrl}, ${b.x} ${b.y}`);
   }
 
   // Last curve: from final anchor to end point (center, totalHeight)
   if (anchors.length > 0) {
     const last = anchors[anchors.length - 1];
     parts.push(
-      `C ${last.x} ${last.y + ctrl}, ${center} ${totalHeight - ctrl}, ${center} ${totalHeight}`
+      `C ${last.x} ${last.y + ctrl}, ${center} ${totalHeight - ctrl}, ${center} ${totalHeight}`,
     );
   } else {
     // No active sections — straight vertical line

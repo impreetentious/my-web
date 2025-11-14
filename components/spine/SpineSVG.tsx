@@ -3,12 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { generateSpinePath } from '@/lib/spinePathGenerator';
 import { useSiteStore } from '@/store/useSiteStore';
-import {
-  TRAIL_STOPS,
-  trailColorAt,
-  cometScreenVh,
-  waterlineScreenVh,
-} from '@/lib/descent';
+import { TRAIL_STOPS, trailColorAt, cometScreenVh, waterlineScreenVh } from '@/lib/descent';
 import { journey, PLUNGE_EVENT, IDLE_EVENT, plungeElapsed, buoyancyVh } from '@/lib/journey';
 import { motionAllowed, EASE_ARRIVE_CSS } from '@/lib/motion';
 import type { SpineAnchor } from '@/types';
@@ -76,8 +71,14 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
   const sparkRefs = useRef<(SVGCircleElement | null)[]>([]);
   const sparks = useRef<Spark[]>(
     Array.from({ length: SPARK_POOL }, () => ({
-      x: 0, y: 0, vx: 0, vy: 0, age: 0, life: 1, active: false,
-    }))
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      age: 0,
+      life: 1,
+      active: false,
+    })),
   );
 
   const [pathString, setPathString] = useState('');
@@ -94,10 +95,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
     let timeout: ReturnType<typeof setTimeout>;
 
     const generate = () => {
-      const { d, anchors: nextAnchors } = generateSpinePath(
-        window.innerWidth,
-        totalHeight
-      );
+      const { d, anchors: nextAnchors } = generateSpinePath(window.innerWidth, totalHeight);
       setPathString(d);
       setAnchors(nextAnchors);
     };
@@ -162,7 +160,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
               { transform: 'scale(1.35)', opacity: 1, offset: 0.55 },
               { transform: 'scale(1)', opacity: 1 },
             ],
-            { duration: 950, easing: EASE_ARRIVE_CSS, fill: 'forwards' }
+            { duration: 950, easing: EASE_ARRIVE_CSS, fill: 'forwards' },
           );
         }
         if (flare) {
@@ -173,11 +171,11 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
               { transform: 'scale(0.3)', opacity: 0.9 },
               { transform: 'scale(2.6)', opacity: 0 },
             ],
-            { duration: 900, easing: 'cubic-bezier(0.2, 0.6, 0.3, 1)' }
+            { duration: 900, easing: 'cubic-bezier(0.2, 0.6, 0.3, 1)' },
           );
         }
         unsubscribe();
-      }
+      },
     );
     return () => unsubscribe();
   }, []);
@@ -214,7 +212,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
             { transform: 'scale(1)', opacity: 0.55 },
             { transform: 'scale(5)', opacity: 0 },
           ],
-          { duration: 1600, easing: 'cubic-bezier(0.16, 0.84, 0.24, 1)' }
+          { duration: 1600, easing: 'cubic-bezier(0.16, 0.84, 0.24, 1)' },
         );
       }
     };
@@ -284,7 +282,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
       // dev overlay padding body height beyond the world container
       const targetY = Math.min(
         totalHeight,
-        Math.max(0, window.scrollY + ((cometScreenVh(t) + buoy) / 100) * vh)
+        Math.max(0, window.scrollY + ((cometScreenVh(t) + buoy) / 100) * vh),
       );
       const s = arcAtPageY(targetY);
       const head = pointAtArc(s);
@@ -303,16 +301,12 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
         if (glowTightRef.current) glowTightRef.current.style.strokeDashoffset = offset;
         if (coreRef.current) coreRef.current.style.strokeDashoffset = offset;
         // hot window: pattern shifted so its lit dash ends exactly at the head
-        if (hotRef.current)
-          hotRef.current.style.strokeDashoffset = String(HOT_TAIL_PX - s);
+        if (hotRef.current) hotRef.current.style.strokeDashoffset = String(HOT_TAIL_PX - s);
         if (hotInnerRef.current)
           hotInnerRef.current.style.strokeDashoffset = String(HOT_INNER_PX - s);
 
         if (dotGroupRef.current)
-          dotGroupRef.current.setAttribute(
-            'transform',
-            `translate(${head.x}, ${head.y})`
-          );
+          dotGroupRef.current.setAttribute('transform', `translate(${head.x}, ${head.y})`);
 
         // warm above the surface, cool below — judged against the actual
         // on-screen waterline (buoyed like the shader's), so the flip lands
@@ -337,7 +331,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           group.style.opacity = String(vis);
           group.setAttribute(
             'transform',
-            `translate(${anchors[a]?.x ?? 0}, ${anchors[a]?.y ?? 0}) scale(${scale})`
+            `translate(${anchors[a]?.x ?? 0}, ${anchors[a]?.y ?? 0}) scale(${scale})`,
           );
 
           if (passedState.current[a] !== passed) {
@@ -360,7 +354,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
                     { transform: 'scale(1)', opacity: 0.5 },
                     { transform: 'scale(4.6)', opacity: 0 },
                   ],
-                  { duration: 750, easing: EASE_ARRIVE_CSS }
+                  { duration: 750, easing: EASE_ARRIVE_CSS },
                 );
               }
             }
@@ -379,10 +373,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
       const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
       const speed = Math.min(90, Math.abs(v) * 1.15);
       if (tangentRef.current)
-        tangentRef.current.setAttribute(
-          'transform',
-          `rotate(${v >= 0 ? angle : angle + 180})`
-        );
+        tangentRef.current.setAttribute('transform', `rotate(${v >= 0 ? angle : angle + 180})`);
       if (streakRef.current) {
         streakRef.current.setAttribute('x2', String(-speed));
         streakRef.current.style.opacity = String(Math.min(0.55, Math.abs(v) * 0.014));
@@ -392,7 +383,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
       if (parallaxRef.current)
         parallaxRef.current.setAttribute(
           'transform',
-          `translate(${journey.mouseX * 6}, ${journey.mouseY * 4})`
+          `translate(${journey.mouseX * 6}, ${journey.mouseY * 4})`,
         );
 
       // shed sparks while moving fast
@@ -405,10 +396,12 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           sp.x = head.x + (Math.random() - 0.5) * 6;
           sp.y = head.y;
           // opposite the travel direction, with lateral scatter
-          sp.vx = -Math.cos((angle * Math.PI) / 180) * tang * 0.02 * Math.sign(v)
-            + (Math.random() - 0.5) * 1.6;
-          sp.vy = -Math.sin((angle * Math.PI) / 180) * tang * 0.02 * Math.sign(v)
-            + (Math.random() - 0.5) * 1.6;
+          sp.vx =
+            -Math.cos((angle * Math.PI) / 180) * tang * 0.02 * Math.sign(v) +
+            (Math.random() - 0.5) * 1.6;
+          sp.vy =
+            -Math.sin((angle * Math.PI) / 180) * tang * 0.02 * Math.sign(v) +
+            (Math.random() - 0.5) * 1.6;
           sp.age = 0;
           sp.life = 0.35 + Math.random() * 0.35;
           sp.active = true;
@@ -472,11 +465,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           y2={totalHeight}
         >
           {TRAIL_STOPS.map((stop) => (
-            <stop
-              key={stop.u}
-              offset={`${stop.u * 100}%`}
-              stopColor={stop.color}
-            />
+            <stop key={stop.u} offset={`${stop.u * 100}%`} stopColor={stop.color} />
           ))}
         </linearGradient>
 
@@ -494,7 +483,14 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           <stop offset="0%" stopColor="rgba(255, 236, 200, 0.55)" />
           <stop offset="100%" stopColor="rgba(255, 236, 200, 0)" />
         </radialGradient>
-        <linearGradient id="streak-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="-90" y2="0">
+        <linearGradient
+          id="streak-grad"
+          gradientUnits="userSpaceOnUse"
+          x1="0"
+          y1="0"
+          x2="-90"
+          y2="0"
+        >
           <stop offset="0%" stopColor="rgba(255, 244, 222, 0.85)" />
           <stop offset="100%" stopColor="rgba(255, 244, 222, 0)" />
         </linearGradient>
@@ -570,12 +566,16 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           return (
             <g
               key={anchor.id}
-              ref={(el) => { anchorGroupRefs.current[i] = el; }}
+              ref={(el) => {
+                anchorGroupRefs.current[i] = el;
+              }}
               transform={`translate(${anchor.x}, ${anchor.y}) scale(0.55)`}
               style={{ opacity: 0 }}
             >
               <circle
-                ref={(el) => { rippleRefs.current[i] = el; }}
+                ref={(el) => {
+                  rippleRefs.current[i] = el;
+                }}
                 r={6}
                 fill="none"
                 stroke={color}
@@ -583,7 +583,9 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
                 opacity={0}
               />
               <line
-                ref={(el) => { connectorRefs.current[i] = el; }}
+                ref={(el) => {
+                  connectorRefs.current[i] = el;
+                }}
                 x1={0}
                 y1={0}
                 x2={towardCard}
@@ -597,14 +599,18 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
                 }}
               />
               <circle
-                ref={(el) => { haloRefs.current[i] = el; }}
+                ref={(el) => {
+                  haloRefs.current[i] = el;
+                }}
                 r={13}
                 fill="url(#node-glow-grad)"
                 opacity={0}
                 style={{ transition: 'opacity 0.6s ease' }}
               />
               <circle
-                ref={(el) => { ringRefs.current[i] = el; }}
+                ref={(el) => {
+                  ringRefs.current[i] = el;
+                }}
                 r={4}
                 fill="#05070D"
                 stroke={color}
@@ -613,7 +619,9 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
                 style={{ transition: 'opacity 0.6s ease' }}
               />
               <circle
-                ref={(el) => { nodeCoreRefs.current[i] = el; }}
+                ref={(el) => {
+                  nodeCoreRefs.current[i] = el;
+                }}
                 r={1.6}
                 fill={color}
                 opacity={0}
@@ -628,7 +636,9 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           {Array.from({ length: SPARK_POOL }, (_, k) => (
             <circle
               key={k}
-              ref={(el) => { sparkRefs.current[k] = el; }}
+              ref={(el) => {
+                sparkRefs.current[k] = el;
+              }}
               r={1.1}
               fill="#FFE9C4"
               style={{ opacity: 0 }}
@@ -641,12 +651,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
           <g ref={igniteRef}>
             <g ref={parallaxRef}>
               <circle ref={dotWarmRef} r={15} fill="url(#dot-warm-grad)" />
-              <circle
-                ref={dotCoolRef}
-                r={15}
-                fill="url(#dot-cool-grad)"
-                style={{ opacity: 0 }}
-              />
+              <circle ref={dotCoolRef} r={15} fill="url(#dot-cool-grad)" style={{ opacity: 0 }} />
             </g>
             <g ref={tangentRef}>
               <line
@@ -661,7 +666,14 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
                 style={{ opacity: 0 }}
               />
             </g>
-            <circle ref={pingRef} r={6} fill="none" stroke="#EADCBC" strokeWidth={0.8} opacity={0} />
+            <circle
+              ref={pingRef}
+              r={6}
+              fill="none"
+              stroke="#EADCBC"
+              strokeWidth={0.8}
+              opacity={0}
+            />
             <circle
               ref={dotRingRef}
               className="comet-ring"

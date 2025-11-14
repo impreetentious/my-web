@@ -38,7 +38,7 @@ export const SECTIONS: SectionConfig[] = [
     // the deepest transmission; flipping this boolean must produce a correct
     // world in BOTH states (the world tuning derives from the enabled count).
     id: 'placeholder',
-    enabled: false,        // ← change to true when ready to activate
+    enabled: false, // ← change to true when ready to activate
     label: 'TBD',
     type: 'panel',
     tagline: 'Transmission pending.',

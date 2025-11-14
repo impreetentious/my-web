@@ -6,8 +6,18 @@ export const about = defineType({
   title: 'About',
   type: 'document',
   fields: [
-    defineField({ name: 'headline', title: 'Headline', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'tagline', title: 'Tagline', type: 'string', validation: (r) => r.required() }),
+    defineField({
+      name: 'headline',
+      title: 'Headline',
+      type: 'string',
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: 'tagline',
+      title: 'Tagline',
+      type: 'string',
+      validation: (r) => r.required(),
+    }),
     defineField({
       name: 'bio',
       title: 'Bio',
@@ -32,8 +42,18 @@ export const about = defineType({
         {
           type: 'object',
           fields: [
-            defineField({ name: 'value', title: 'Value', type: 'string', validation: (r) => r.required() }),
-            defineField({ name: 'label', title: 'Label', type: 'string', validation: (r) => r.required() }),
+            defineField({
+              name: 'value',
+              title: 'Value',
+              type: 'string',
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (r) => r.required(),
+            }),
           ],
           preview: {
             select: { title: 'value', subtitle: 'label' },

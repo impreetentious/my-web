@@ -143,7 +143,7 @@ test.describe('plunge', () => {
               deltaY: 160,
               bubbles: true,
               cancelable: true,
-            })
+            }),
           );
           i += 1;
           if (i < 28) {

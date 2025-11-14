@@ -76,17 +76,13 @@ export function plungeElapsed(nowMs: number): number {
 // per-frame integration state. Never applied to raw scroll position; under
 // reduced motion the plunge never fires, so this stays 0 there.
 
-const BUOY_ZETA = 0.34;  // one visible rebound (~31 % of the overshoot), then done
-const BUOY_OMEGA = 7.2;  // rad/s — overshoot peaks ~0.18 s in, settled by ~1.4 s
+const BUOY_ZETA = 0.34; // one visible rebound (~31 % of the overshoot), then done
+const BUOY_OMEGA = 7.2; // rad/s — overshoot peaks ~0.18 s in, settled by ~1.4 s
 const BUOY_OMEGA_D = BUOY_OMEGA * Math.sqrt(1 - BUOY_ZETA * BUOY_ZETA);
 
 /** Screen-space buoyancy offset in vh, `e` seconds after the plunge.
  *  Positive = deeper than scroll says. Zero before any plunge. */
 export function buoyancyVh(e: number): number {
   if (e <= 0 || e > 2.5) return 0;
-  return (
-    journey.plungeKickVh *
-    Math.exp(-BUOY_ZETA * BUOY_OMEGA * e) *
-    Math.sin(BUOY_OMEGA_D * e)
-  );
+  return journey.plungeKickVh * Math.exp(-BUOY_ZETA * BUOY_OMEGA * e) * Math.sin(BUOY_OMEGA_D * e);
 }

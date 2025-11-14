@@ -19,7 +19,13 @@ export const projectItem = defineType({
     defineField({ name: 'enabled', title: 'Enabled', type: 'boolean', initialValue: true }),
     defineField({ name: 'order', title: 'Order', type: 'number', initialValue: 0 }),
     defineField({ name: 'title', title: 'Title', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'description', title: 'Description', type: 'text', rows: 4, validation: (r) => r.required() }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+      validation: (r) => r.required(),
+    }),
     defineField({
       name: 'stack',
       title: 'Stack',

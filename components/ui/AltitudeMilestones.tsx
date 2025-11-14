@@ -42,9 +42,7 @@ export default function AltitudeMilestones() {
         const dt = t - MILESTONES[i].t;
         el.style.transform = `translateY(${(-dt * vh * 0.35).toFixed(1)}px)`;
         const bell = Math.max(0, 1 - Math.abs(dt) / (MILESTONES[i].bell ?? DEFAULT_BELL));
-        el.style.opacity = (
-          Math.pow(bell, 1.4) * (MILESTONES[i].accent ? 0.85 : 0.5)
-        ).toFixed(3);
+        el.style.opacity = (Math.pow(bell, 1.4) * (MILESTONES[i].accent ? 0.85 : 0.5)).toFixed(3);
       }
     };
     apply(useSiteStore.getState().scrollT);
@@ -70,7 +68,9 @@ export default function AltitudeMilestones() {
       {MILESTONES.map((m, i) => (
         <div
           key={m.label}
-          ref={(el) => { refs.current[i] = el; }}
+          ref={(el) => {
+            refs.current[i] = el;
+          }}
           className="milestone"
           data-extra={m.core ? undefined : 'true'}
           style={{
@@ -78,7 +78,9 @@ export default function AltitudeMilestones() {
             color: m.accent ? '#E0B26E' : 'rgba(196, 212, 230, 0.9)',
           }}
         >
-          <span>{m.label} — {m.reading}</span>
+          <span>
+            {m.label} — {m.reading}
+          </span>
           <span
             style={{
               display: 'inline-block',

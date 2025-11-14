@@ -24,7 +24,7 @@ interface CardProps {
 }
 
 const SNR_SURFACE = 12.4; // dB at the top of the descent…
-const SNR_FLOOR = 5.2;    // …attenuated to this at the seafloor
+const SNR_FLOOR = 5.2; // …attenuated to this at the seafloor
 const TICK_COUNT = 5;
 
 function missionClock(): string {
@@ -97,14 +97,14 @@ export function Card({ section }: CardProps) {
           el,
           { opacity: 0, y: 18 },
           { opacity: 1, y: 0, duration: 0.55, ease: EASE_ARRIVE, clearProps: 'transform' },
-          0
+          0,
         );
         if (scanRef.current) {
           tl.fromTo(
             scanRef.current,
             { top: -36, opacity: 0.9 },
             { top: '104%', opacity: 0.55, duration: 0.62, ease: 'power1.inOut' },
-            0.04
+            0.04,
           );
           tl.set(scanRef.current, { opacity: 0 });
         }
@@ -112,7 +112,7 @@ export function Card({ section }: CardProps) {
           content,
           { opacity: 0, y: 9 },
           { opacity: 1, y: 0, duration: 0.5, ease: EASE_ARRIVE, stagger: 0.06 },
-          0.16
+          0.16,
         );
       } else {
         gsap.set(el, { opacity: 1 });
@@ -128,7 +128,7 @@ export function Card({ section }: CardProps) {
             observer?.unobserve(el);
           });
         },
-        { threshold: 0.3 }
+        { threshold: 0.3 },
       );
       observer.observe(el);
     };
@@ -145,7 +145,7 @@ export function Card({ section }: CardProps) {
             unsubLoading = null;
             observe();
           }
-        }
+        },
       );
     } else {
       observe();
@@ -188,7 +188,7 @@ export function Card({ section }: CardProps) {
           el.style.transform = '';
           unsubT();
         }
-      }
+      },
     );
     return () => {
       unsubT();
@@ -206,10 +206,9 @@ export function Card({ section }: CardProps) {
 
     const onMove = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width - 0.5;  // −0.5..0.5
+      const px = (e.clientX - r.left) / r.width - 0.5; // −0.5..0.5
       const py = (e.clientY - r.top) / r.height - 0.5;
-      el.style.transform =
-        `perspective(760px) rotateX(${(-py * 3.4).toFixed(2)}deg) rotateY(${(px * 4.4).toFixed(2)}deg) translateY(-2px)`;
+      el.style.transform = `perspective(760px) rotateX(${(-py * 3.4).toFixed(2)}deg) rotateY(${(px * 4.4).toFixed(2)}deg) translateY(-2px)`;
       el.style.setProperty('--shx', `${(50 + px * 46).toFixed(1)}%`);
       el.style.setProperty('--shy', `${(50 + py * 46).toFixed(1)}%`);
     };
@@ -250,7 +249,9 @@ export function Card({ section }: CardProps) {
           {Array.from({ length: TICK_COUNT }, (_, i) => (
             <span
               key={i}
-              ref={(el) => { tickRefs.current[i] = el; }}
+              ref={(el) => {
+                tickRefs.current[i] = el;
+              }}
               className="tx-tick"
             />
           ))}
@@ -268,7 +269,9 @@ export function Card({ section }: CardProps) {
 
         <div className="tx-cta" data-tx-content>
           {section.type === 'panel' ? 'DECODE' : 'READ'}
-          <span className="tx-cta-arrow" aria-hidden="true">→</span>
+          <span className="tx-cta-arrow" aria-hidden="true">
+            →
+          </span>
         </div>
       </div>
     </>
@@ -280,8 +283,10 @@ export function Card({ section }: CardProps) {
     '--tx-glow': accentA(0.16),
     '--sheen-rgba': submerged ? 'rgba(127, 196, 184, 0.10)' : 'rgba(224, 178, 110, 0.10)',
     '--sheen-angle': submerged
-      ? (section.side === 'left' ? '250deg' : '110deg') // lit from the probe's side
-      : '160deg',                                        // lit from the sky
+      ? section.side === 'left'
+        ? '250deg'
+        : '110deg' // lit from the probe's side
+      : '160deg', // lit from the sky
     opacity: 0, // the decode reveals it on viewport entry
   } as React.CSSProperties;
 

@@ -63,7 +63,10 @@ export default function NavDots() {
         const isActive = section.index === activeSectionIndex;
         const isHovered = hoveredId === section.id;
         return (
-          <div key={section.id} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <div
+            key={section.id}
+            style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
+          >
             <span
               style={{
                 position: 'absolute',
@@ -130,7 +133,8 @@ export default function NavDots() {
                       ? 'rgba(224, 178, 110, 0.6)'
                       : 'rgba(255, 255, 255, 0.30)',
                   boxShadow: isActive ? '0 0 6px rgba(224, 178, 110, 0.55)' : 'none',
-                  transition: 'width 0.3s cubic-bezier(0.16, 0.84, 0.24, 1), background 0.3s ease, box-shadow 0.3s ease',
+                  transition:
+                    'width 0.3s cubic-bezier(0.16, 0.84, 0.24, 1), background 0.3s ease, box-shadow 0.3s ease',
                   marginRight: '5px',
                 }}
               />

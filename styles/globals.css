@@ -3,18 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --color-accent:           #00FFEE;
+  --color-accent: #00ffee;
 
-  --color-bg:               #05060D; /* near-black indigo — matches the top of the descent gradient */
-  --color-gold:             #E0B26E; /* desaturated world gold (v2) */
-  --color-elevated:         #1A1A1A;
+  --color-bg: #05060d; /* near-black indigo — matches the top of the descent gradient */
+  --color-gold: #e0b26e; /* desaturated world gold (v2) */
+  --color-elevated: #1a1a1a;
 
-  --color-text-primary:     #F2F2F2;
+  --color-text-primary: #f2f2f2;
   /* Both quiet text tokens clear AA against the darkest descent backdrop. */
-  --color-text-secondary:   #B8C3D0;
-  --color-text-muted:       #A5B2C0;
+  --color-text-secondary: #b8c3d0;
+  --color-text-muted: #a5b2c0;
 
-  --color-border-subtle:    rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
 
   /* --font-sans and --font-mono are NOT defined here. They come from next/font/google
      in app/layout.tsx (I.2), applied via className on <html>. Defining them again here
@@ -27,7 +27,9 @@
      app/page.tsx — one source for the card geometry. */
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -74,8 +76,12 @@
   width: var(--card-width);
   pointer-events: auto;
 }
-.card-slot[data-side='left'] { right: var(--card-side-offset); }
-.card-slot[data-side='right'] { left: var(--card-side-offset); }
+.card-slot[data-side='left'] {
+  right: var(--card-side-offset);
+}
+.card-slot[data-side='right'] {
+  left: var(--card-side-offset);
+}
 
 .footer-section {
   position: absolute;
@@ -98,8 +104,7 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 78% 12%, rgba(0, 255, 238, 0.08), transparent 30%),
-    var(--color-bg);
+    radial-gradient(circle at 78% 12%, rgba(0, 255, 238, 0.08), transparent 30%), var(--color-bg);
   color: var(--color-text-primary);
 }
 .dossier-route__grain {
@@ -144,7 +149,12 @@
   width: 100%;
   height: 1px;
   margin: 34px 0 40px;
-  background: linear-gradient(90deg, rgba(224, 178, 110, 0.7), rgba(0, 255, 238, 0.26), transparent);
+  background: linear-gradient(
+    90deg,
+    rgba(224, 178, 110, 0.7),
+    rgba(0, 255, 238, 0.26),
+    transparent
+  );
 }
 .dossier-route__nav {
   display: flex;
@@ -197,10 +207,18 @@
   flex-direction: column;
   gap: 6px;
 }
-.depth-indicator .depth-value { font-size: 13px; }
-.depth-indicator .depth-rate { font-size: 10px; }
-.depth-indicator .depth-zone { font-size: 9px; }
-.depth-indicator .depth-warn { font-size: 10px; }
+.depth-indicator .depth-value {
+  font-size: 13px;
+}
+.depth-indicator .depth-rate {
+  font-size: 10px;
+}
+.depth-indicator .depth-zone {
+  font-size: 9px;
+}
+.depth-indicator .depth-warn {
+  font-size: 10px;
+}
 
 /* C11 — the audio gauge: quiet mono chrome, gold when live */
 .audio-toggle {
@@ -215,9 +233,13 @@
   opacity: 0.82;
   cursor: pointer;
   text-align: left;
-  transition: opacity 0.25s ease, color 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    color 0.25s ease;
 }
-.audio-toggle:hover { opacity: 1; }
+.audio-toggle:hover {
+  opacity: 1;
+}
 .audio-toggle[aria-pressed='true'] {
   color: rgba(224, 178, 110, 0.85);
   opacity: 0.9;
@@ -239,25 +261,51 @@
 
 /* display lives HERE, not inline, so the mobile media query below can turn
    these off — an inline display would win the cascade and resurrect them */
-.email-fab { display: flex; }
-.nav-dots { display: flex; }
+.email-fab {
+  display: flex;
+}
+.nav-dots {
+  display: flex;
+}
 
 @media (max-width: 1023px) {
   /* telemetry returns, smaller (A4) */
-  .depth-indicator { bottom: 14px; left: 14px; gap: 4px; }
-  .depth-indicator .depth-value { font-size: 11px; }
-  .depth-indicator .depth-rate { font-size: 9px; }
-  .depth-indicator .depth-zone { font-size: 8px; }
-  .depth-indicator .depth-warn { font-size: 9px; }
+  .depth-indicator {
+    bottom: 14px;
+    left: 14px;
+    gap: 4px;
+  }
+  .depth-indicator .depth-value {
+    font-size: 11px;
+  }
+  .depth-indicator .depth-rate {
+    font-size: 9px;
+  }
+  .depth-indicator .depth-zone {
+    font-size: 8px;
+  }
+  .depth-indicator .depth-warn {
+    font-size: 9px;
+  }
 
   /* only the landmark trio drifts past on phones */
-  .milestone { right: 14px; font-size: 9px; letter-spacing: 0.16em; }
-  .milestone[data-extra='true'] { display: none; }
+  .milestone {
+    right: 14px;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+  .milestone[data-extra='true'] {
+    display: none;
+  }
 
   /* the fixed email plate would overlap full-width cards (A9) — on phones
      the contact affordance lives in the footer's social row instead */
-  .email-fab { display: none; }
-  .nav-dots { display: none; }
+  .email-fab {
+    display: none;
+  }
+  .nav-dots {
+    display: none;
+  }
 }
 
 /* ─── B11: one keyboard voice — gold outline + soft world halo ───────────── */
@@ -288,9 +336,9 @@
   left: 14px;
   z-index: 200;
   padding: 9px 14px;
-  background: #05060D;
+  background: #05060d;
   border: 1px solid rgba(224, 178, 110, 0.55);
-  color: #E0B26E;
+  color: #e0b26e;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.14em;
@@ -321,15 +369,28 @@ body {
 
 /* Hero scroll prompt animation — used by the HeroSection component */
 @keyframes pulse-opacity {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 0.9; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
 }
 
 /* One barely-there signal pulse behind the hero name */
 @keyframes signal-pulse {
-  0%   { transform: scale(0.6);  opacity: 0; }
-  22%  { opacity: 0.6; }
-  100% { transform: scale(1.32); opacity: 0; }
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.32);
+    opacity: 0;
+  }
 }
 .signal-pulse {
   animation: signal-pulse 7s cubic-bezier(0.16, 0.84, 0.24, 1) infinite;
@@ -338,10 +399,24 @@ body {
 
 /* Falling light under the scroll prompt */
 @keyframes cue-drip {
-  0%   { transform: scaleY(0); transform-origin: top; opacity: 0; }
-  25%  { opacity: 1; }
-  70%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
-  100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  70% {
+    transform: scaleY(1);
+    transform-origin: top;
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    transform-origin: top;
+    opacity: 0;
+  }
 }
 .cue-drip {
   animation: cue-drip 2s ease-in-out infinite;
@@ -350,9 +425,18 @@ body {
 /* Comet head ring pulse (SVG circle — needs fill-box transform space).
    v2: slower and quieter — a heartbeat, not a beacon. */
 @keyframes comet-pulse {
-  0%   { transform: scale(1);   opacity: 0.32; }
-  70%  { transform: scale(1.9); opacity: 0; }
-  100% { transform: scale(1.9); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.32;
+  }
+  70% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
 }
 .comet-ring {
   transform-box: fill-box;
@@ -362,12 +446,25 @@ body {
 
 /* Plunge warning burst (C3) — unstable signal, then reacquired */
 @keyframes hud-warn-flicker {
-  0%, 100% { opacity: 1; }
-  14%      { opacity: 0.15; }
-  28%      { opacity: 0.85; }
-  42%      { opacity: 0.3; }
-  60%      { opacity: 1; }
-  78%      { opacity: 0.55; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0.15;
+  }
+  28% {
+    opacity: 0.85;
+  }
+  42% {
+    opacity: 0.3;
+  }
+  60% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 0.55;
+  }
 }
 .hud-warn {
   animation: hud-warn-flicker 0.38s steps(2, end) 2;
@@ -375,11 +472,25 @@ body {
 
 /* Depth ticker hard-glitch on the plunge */
 @keyframes hud-glitch {
-  0%   { transform: translateX(0);              clip-path: inset(0); }
-  20%  { transform: translateX(2px) skewX(5deg); }
-  40%  { transform: translateX(-2px);           clip-path: inset(0 0 45% 0); }
-  60%  { transform: translateX(1px) skewX(-4deg); clip-path: inset(35% 0 0 0); }
-  100% { transform: none;                       clip-path: inset(0); }
+  0% {
+    transform: translateX(0);
+    clip-path: inset(0);
+  }
+  20% {
+    transform: translateX(2px) skewX(5deg);
+  }
+  40% {
+    transform: translateX(-2px);
+    clip-path: inset(0 0 45% 0);
+  }
+  60% {
+    transform: translateX(1px) skewX(-4deg);
+    clip-path: inset(35% 0 0 0);
+  }
+  100% {
+    transform: none;
+    clip-path: inset(0);
+  }
 }
 .hud-glitch {
   animation: hud-glitch 0.36s steps(2, end) 1;
@@ -387,11 +498,21 @@ body {
 
 /* One mote adrift on the 404 (C15) */
 @keyframes mote-drift {
-  0%   { transform: translate(0, 0); }
-  30%  { transform: translate(38px, 26px); }
-  55%  { transform: translate(12px, 58px); }
-  80%  { transform: translate(-30px, 34px); }
-  100% { transform: translate(0, 0); }
+  0% {
+    transform: translate(0, 0);
+  }
+  30% {
+    transform: translate(38px, 26px);
+  }
+  55% {
+    transform: translate(12px, 58px);
+  }
+  80% {
+    transform: translate(-30px, 34px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
 }
 .lost-mote {
   animation: mote-drift 26s ease-in-out infinite;
@@ -399,9 +520,17 @@ body {
 
 /* Sonar ping behind END OF TRANSMISSION at the seafloor */
 @keyframes sonar-ping {
-  0%   { transform: scale(0.25); opacity: 0; }
-  12%  { opacity: 0.35; }
-  100% { transform: scale(1.6);  opacity: 0; }
+  0% {
+    transform: scale(0.25);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
 }
 .sonar-ring {
   animation: sonar-ping 7s cubic-bezier(0.16, 0.84, 0.24, 1) infinite;
@@ -409,8 +538,13 @@ body {
 
 /* Golden waterline breathing */
 @keyframes waterline-breathe {
-  0%, 100% { opacity: 0.85; }
-  50%      { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 .waterline-shimmer {
   animation: waterline-breathe 3.2s ease-in-out infinite;
@@ -418,8 +552,12 @@ body {
 
 /* Underwater god rays sway slowly */
 @keyframes rays-sway {
-  0%   { transform: translateX(-30px); }
-  100% { transform: translateX(30px); }
+  0% {
+    transform: translateX(-30px);
+  }
+  100% {
+    transform: translateX(30px);
+  }
 }
 .god-rays {
   animation: rays-sway 16s ease-in-out infinite alternate;
@@ -439,7 +577,7 @@ body {
   background: rgba(8, 11, 16, 0.74);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0;
   clip-path: polygon(
     0 0,
@@ -462,7 +600,7 @@ body {
     box-shadow 0.35s ease;
 }
 .tx-card:hover {
-  border-color: rgba(255, 255, 255, 0.20);
+  border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 18px 50px -16px var(--tx-glow);
 }
 
@@ -480,7 +618,9 @@ body {
     linear-gradient(var(--tx-accent-dim), var(--tx-accent-dim)) bottom right / 1px 14px;
   background-repeat: no-repeat;
 }
-.tx-card:hover .tx-brackets { opacity: 1; }
+.tx-card:hover .tx-brackets {
+  opacity: 1;
+}
 
 /* the port faces the spine — where the anchor's connector arrives */
 .tx-port {
@@ -491,11 +631,17 @@ body {
   height: 22px;
   background: var(--tx-accent);
   opacity: 0.5;
-  transition: opacity 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    box-shadow 0.3s ease;
   pointer-events: none;
 }
-.tx-card[data-side='left'] .tx-port { right: 0; }
-.tx-card[data-side='right'] .tx-port { left: 0; }
+.tx-card[data-side='left'] .tx-port {
+  right: 0;
+}
+.tx-card[data-side='right'] .tx-port {
+  left: 0;
+}
 .tx-card:hover .tx-port {
   opacity: 0.95;
   box-shadow: 0 0 10px var(--tx-glow);
@@ -534,7 +680,9 @@ body {
   background-size: 230% 230%;
   background-position: var(--shx, 50%) var(--shy, 50%);
 }
-.tx-card:hover .tx-sheen { opacity: 1; }
+.tx-card:hover .tx-sheen {
+  opacity: 1;
+}
 
 /* H — parallax wrapper. Composited transform hint only; the JS writes
    translate3d each scroll frame. Untransformed by default so the card is
@@ -559,9 +707,15 @@ body {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
-.tx-num { color: rgba(255, 255, 255, 0.25); }
+.tx-num {
+  color: rgba(255, 255, 255, 0.25);
+}
 
-.tx-ticks { display: flex; gap: 3px; margin-top: 10px; }
+.tx-ticks {
+  display: flex;
+  gap: 3px;
+  margin-top: 10px;
+}
 .tx-tick {
   width: 3px;
   height: 8px;
@@ -602,12 +756,20 @@ body {
   transform: translateX(0);
   transition: transform 0.3s cubic-bezier(0.16, 0.84, 0.24, 1);
 }
-.tx-card:hover .tx-cta { color: var(--tx-accent); }
-.tx-card:hover .tx-cta-arrow { transform: translateX(4px); }
+.tx-card:hover .tx-cta {
+  color: var(--tx-accent);
+}
+.tx-card:hover .tx-cta-arrow {
+  transform: translateX(4px);
+}
 
 @media (max-width: 1023px) {
-  .tx-card { padding: 18px 18px 17px; }
-  .tx-title { font-size: 22px; }
+  .tx-card {
+    padding: 18px 18px 17px;
+  }
+  .tx-title {
+    font-size: 22px;
+  }
 }
 
 /* Panel enter/exit animations are handled by GSAP, not CSS */
@@ -645,7 +807,11 @@ body {
   width: 84px;
   color: rgba(196, 212, 230, 0.5);
 }
-.dossier-figure svg { display: block; width: 100%; height: auto; }
+.dossier-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 .dossier-figure-serial {
   font-family: var(--font-mono);
   font-size: 8px;
@@ -662,7 +828,9 @@ body {
   grid-template-columns: minmax(72px, 96px) 1fr;
   gap: 20px;
 }
-.dossier-row-extra > * { grid-column: 2; }
+.dossier-row-extra > * {
+  grid-column: 2;
+}
 
 .case-file-toggle {
   display: inline-flex;
@@ -676,21 +844,30 @@ body {
   letter-spacing: 0.2em;
   color: rgba(224, 178, 110, 0.85);
   cursor: pointer;
-  transition: border-color 0.25s ease, background 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
 }
 .case-file-toggle:hover {
   border-color: rgba(224, 178, 110, 0.55);
   background: rgba(224, 178, 110, 0.05);
 }
-.case-file-sign { font-size: 12px; }
+.case-file-sign {
+  font-size: 12px;
+}
 
 .case-file-body {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.55s cubic-bezier(0.16, 0.84, 0.24, 1);
 }
-.case-file[data-open='true'] .case-file-body { grid-template-rows: 1fr; }
-.case-file-inner { overflow: hidden; min-height: 0; }
+.case-file[data-open='true'] .case-file-body {
+  grid-template-rows: 1fr;
+}
+.case-file-inner {
+  overflow: hidden;
+  min-height: 0;
+}
 
 .case-file-grid {
   display: grid;
@@ -702,7 +879,9 @@ body {
   margin-top: 14px;
 }
 
-.case-beat { margin-bottom: 14px; }
+.case-beat {
+  margin-bottom: 14px;
+}
 .case-beat-label {
   font-family: var(--font-mono);
   font-size: 9px;
@@ -733,7 +912,7 @@ body {
 .case-doc-redact {
   height: 9px;
   background: rgba(2, 3, 6, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .case-doc-metric {
   font-family: var(--font-mono);
@@ -762,13 +941,32 @@ body {
 }
 
 @media (max-width: 1023px) {
-  .case-file-grid { grid-template-columns: 1fr; gap: 18px; }
-  .case-doc { max-width: 210px; }
-  .dossier-row-extra { grid-template-columns: 1fr; padding-left: 4px; }
-  .dossier-row-extra > * { grid-column: 1; }
-  .dossier-figure { width: 72px; margin-top: 12px; }
-  .dossier-annot-row { grid-template-columns: 1fr; gap: 4px; }
-  .dossier-annot { text-align: left; padding-top: 0; }
+  .case-file-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .case-doc {
+    max-width: 210px;
+  }
+  .dossier-row-extra {
+    grid-template-columns: 1fr;
+    padding-left: 4px;
+  }
+  .dossier-row-extra > * {
+    grid-column: 1;
+  }
+  .dossier-figure {
+    width: 72px;
+    margin-top: 12px;
+  }
+  .dossier-annot-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .dossier-annot {
+    text-align: left;
+    padding-top: 0;
+  }
 }
 
 /* ─── Transmission log — the blog joins the fiction (C8) ─────────────────────
@@ -792,7 +990,9 @@ body {
   text-decoration: none;
   transition: color 0.25s ease;
 }
-.log-return:hover { color: rgba(238, 203, 148, 1); }
+.log-return:hover {
+  color: rgba(238, 203, 148, 1);
+}
 
 .log-kicker {
   font-family: var(--font-mono);
@@ -829,7 +1029,12 @@ body {
 
 .log-rule {
   height: 1px;
-  background: linear-gradient(90deg, rgba(224, 178, 110, 0.45), rgba(255, 255, 255, 0.10) 40%, rgba(255, 255, 255, 0.06));
+  background: linear-gradient(
+    90deg,
+    rgba(224, 178, 110, 0.45),
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0.06)
+  );
   margin: 26px 0 6px;
 }
 
@@ -843,7 +1048,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.09);
   padding: 12px 14px;
   margin-top: 22px;
-  transition: border-color 0.25s ease, color 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease;
 }
 .log-series-strip:hover {
   border-color: rgba(224, 178, 110, 0.4);
@@ -880,10 +1087,15 @@ body {
   color: rgba(224, 178, 110, 0.9);
   opacity: 0;
   transform: translateX(-6px);
-  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 0.84, 0.24, 1);
+  transition:
+    opacity 0.3s ease,
+    transform 0.35s cubic-bezier(0.16, 0.84, 0.24, 1);
 }
 .log-row:hover .log-row-arrow,
-.log-part:hover .log-row-arrow { opacity: 1; transform: translateX(0); }
+.log-part:hover .log-row-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
 .log-row-excerpt {
   font-family: var(--font-sans);
   font-size: 14px;
@@ -901,7 +1113,9 @@ body {
   flex: 1 1 240px;
   transition: border-color 0.25s ease;
 }
-.log-next:hover { border-color: rgba(224, 178, 110, 0.4); }
+.log-next:hover {
+  border-color: rgba(224, 178, 110, 0.4);
+}
 .log-next-label {
   font-family: var(--font-mono);
   font-size: 9px;
@@ -933,7 +1147,9 @@ body {
   color: var(--color-text-muted);
   padding-top: 5px;
 }
-.log-part-pending .log-part-title { color: var(--color-text-muted); }
+.log-part-pending .log-part-title {
+  color: var(--color-text-muted);
+}
 
 /* End-of-post uplink */
 .log-uplink {
@@ -1051,25 +1267,38 @@ body {
     color: var(--color-accent);
   }
   /* Keep the depth HUD clear of the navigator */
-  .depth-indicator { bottom: 68px; }
+  .depth-indicator {
+    bottom: 68px;
+  }
 }
 
 /* Scrollbar — tuned to the world (B14): dim teal thumb over the abyss track,
    brightening toward the wake's aqua on hover. Firefox gets the same voice. */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(63, 168, 152, 0.38) #05060D;
+  scrollbar-color: rgba(63, 168, 152, 0.38) #05060d;
 }
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--color-bg); }
-::-webkit-scrollbar-thumb { background: rgba(63, 168, 152, 0.38); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(127, 196, 184, 0.62); }
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(63, 168, 152, 0.38);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(127, 196, 184, 0.62);
+}
 
 /* ─── Cursor ring (C14) — descent only, fine pointers only ──────────────── */
 
 /* the ring never replaces precision: a centre dot stays exactly on target */
 html.mw-cursor,
-html.mw-cursor * { cursor: none !important; }
+html.mw-cursor * {
+  cursor: none !important;
+}
 
 .cursor-ring {
   position: fixed;
@@ -1112,9 +1341,18 @@ html.mw-cursor * { cursor: none !important; }
   background: rgba(242, 242, 242, 0.9);
 }
 @keyframes cursor-sonar {
-  0%   { transform: scale(0.5); opacity: 0.5; }
-  70%  { transform: scale(1.9); opacity: 0; }
-  100% { transform: scale(1.9); opacity: 0; }
+  0% {
+    transform: scale(0.5);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
 }
 .cursor-ring-sonar {
   position: absolute;
@@ -1130,7 +1368,9 @@ html.mw-cursor * { cursor: none !important; }
 /* ─── Accessibility: Respect system motion preferences ─────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

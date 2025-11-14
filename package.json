@@ -1,6 +1,6 @@
 {
   "name": "my-web",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "private": true,
   "engines": {
     "node": ">=22"
@@ -16,7 +16,11 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node scripts/verify-placeholder-states.mjs && SANITY_PROJECT_ID= node scripts/pull-content.mjs && npm run build && playwright test"
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:e2e": "playwright test",
+    "budget:bundle": "node scripts/bundle-budget.mjs",
+    "budget:performance": "node scripts/performance-budget.mjs",
+    "test": "npm run test:unit && node scripts/verify-placeholder-states.mjs && SANITY_PROJECT_ID= node scripts/pull-content.mjs && npm run build && npm run budget:bundle && npm run budget:performance && npm run test:e2e"
   },
   "dependencies": {
     "@react-three/fiber": "^9.4.0",

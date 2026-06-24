@@ -6,7 +6,7 @@ The site is a single scrolling page composed of registered panels — about, por
 
 ## Stack
 
-Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · GSAP · Lenis · Zustand · MDX (next-mdx-remote v5) · Vercel
+Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · GSAP · Lenis · Zustand · MDX (next-mdx-remote v6) · Vercel
 
 ## Run locally
 
@@ -104,4 +104,4 @@ MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-**Version:** v0.14.2
+**Version:** v0.14.3

@@ -34,7 +34,6 @@ for (const file of ['README.md']) {
   else if (found !== version) errors.push(`${file} version ${found} != package.json ${version}`);
 }
 
-
 // The studio lives in this repo and ships with it, so it carries the release version too.
 if (existsSync(path.join(root, 'studio/package.json'))) {
   const studio = JSON.parse(read('studio/package.json'));

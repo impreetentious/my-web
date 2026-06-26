@@ -67,9 +67,29 @@ test.describe('routes render', () => {
   test('rss feed renders', async ({ request }) => {
     const res = await request.get('/feed.xml');
     expect(res.ok()).toBeTruthy();
+    expect(res.headers()['content-type']).toContain('application/rss+xml');
     const body = await res.text();
     expect(body).toContain('<rss');
     expect(body).toContain('the-abundance-trap');
+  });
+
+  test('atom feed renders and is discoverable', async ({ request, page }) => {
+    const res = await request.get('/feed.atom');
+    expect(res.ok()).toBeTruthy();
+    expect(res.headers()['content-type']).toContain('application/atom+xml');
+
+    const body = await res.text();
+    expect(body).toContain('<feed xmlns="http://www.w3.org/2005/Atom"');
+    expect(body).toContain('the-abundance-trap');
+    // Atom requires RFC 3339 on <updated>, not RSS's RFC 822.
+    expect(body).toMatch(/<updated>\d{4}-\d{2}-\d{2}T[\d:.]+Z<\/updated>/);
+    // Every entry needs an id; a feed reader dedupes on it.
+    expect(body.match(/<entry>/g)?.length).toBe(body.match(/<id>/g)!.length - 1);
+
+    await page.goto('/');
+    await expect(
+      page.locator('link[rel="alternate"][type="application/atom+xml"]'),
+    ).toHaveAttribute('href', /\/feed\.atom$/);
   });
 });
 

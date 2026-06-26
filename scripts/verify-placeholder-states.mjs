@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 /**
  * L6 — both placeholder states must produce a sane parametric world.
- * Flips config/sections.ts placeholder enabled, runs tsc, restores.
+ *
+ * The toggle is driven by MW_FORCE_PLACEHOLDER (read in config/sections.ts),
+ * so this script never writes to tracked source: an interrupted run leaves the
+ * working tree clean. Each state is both typechecked and BUILT — a geometry
+ * regression that typechecks (a CROSS_T past the 0.88 clamp in lib/descent.ts,
+ * a card overlapping the waterline) only surfaces at build time.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,33 +15,17 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
-const SECTIONS = path.join(ROOT, 'config/sections.ts');
+const NEXT_DIR = path.join(ROOT, '.next');
 
-const original = fs.readFileSync(SECTIONS, 'utf8');
-
-function withPlaceholder(enabled) {
-  const next = original.replace(/(id: 'placeholder',\s*enabled:\s*)(true|false)/, `$1${enabled}`);
-  if (next === original && !original.includes(`enabled: ${enabled}`)) {
-    // force-write the known line pattern
-    const forced = original.replace(
-      /id: 'placeholder',\n\s*enabled: (true|false)/,
-      `id: 'placeholder',\n    enabled: ${enabled}`,
-    );
-    fs.writeFileSync(SECTIONS, forced);
-  } else {
-    fs.writeFileSync(SECTIONS, next);
-  }
-}
-
-function runTsc(label) {
-  console.log(`[placeholder-states] tsc — placeholder ${label}`);
-  const r = spawnSync('npx', ['tsc', '--noEmit'], {
+function run(label, command, args, env) {
+  console.log(`[placeholder-states] ${command} ${args.join(' ')} — placeholder ${label}`);
+  const r = spawnSync(command, args, {
     cwd: ROOT,
     encoding: 'utf8',
     shell: process.platform === 'win32',
+    env: { ...process.env, ...env },
   });
   if (r.status !== 0) {
-    fs.writeFileSync(SECTIONS, original);
     console.error(r.stdout || '');
     console.error(r.stderr || '');
     console.error(`[placeholder-states] FAILED under placeholder ${label}`);
@@ -44,12 +33,18 @@ function runTsc(label) {
   }
 }
 
-try {
-  withPlaceholder(false);
-  runTsc('disabled (5 cards)');
-  withPlaceholder(true);
-  runTsc('enabled (6 cards)');
-  console.log('[placeholder-states] both states typecheck clean');
-} finally {
-  fs.writeFileSync(SECTIONS, original);
+function verify(label, enabled) {
+  // Two consecutive builds share `.next`; clearing it stops the second from
+  // reading the first's route manifests.
+  fs.rmSync(NEXT_DIR, { recursive: true, force: true });
+
+  const env = { MW_FORCE_PLACEHOLDER: String(enabled) };
+  run(label, 'npx', ['tsc', '--noEmit'], env);
+  // SANITY_PROJECT_ID='' keeps `prebuild` on the committed content.
+  run(label, 'npm', ['run', 'build'], { ...env, SANITY_PROJECT_ID: '' });
 }
+
+verify('disabled (5 cards)', false);
+verify('enabled (6 cards)', true);
+
+console.log('[placeholder-states] both states typecheck and build clean');

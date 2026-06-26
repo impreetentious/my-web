@@ -1,0 +1,23 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npx next start -p 3008",
+      "startServerReadyPattern": "Ready in",
+      "url": ["http://127.0.0.1:3008/?boot=skip", "http://127.0.0.1:3008/blog"],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.95 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci"
+    }
+  }
+}

@@ -2,8 +2,14 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { gzipSync } from 'node:zlib';
 
-const budgetKiB = Number(process.env.BUNDLE_BUDGET_KIB ?? 250);
-const budgetBytes = budgetKiB * 1024;
+const defaultBudgetKiB = Number(process.env.BUNDLE_BUDGET_KIB ?? 250);
+const routeBudgetKiB = {
+  'index.html': 230,
+};
+
+function budgetFor(route) {
+  return routeBudgetKiB[route] ?? defaultBudgetKiB;
+}
 
 function filesUnder(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -79,15 +85,20 @@ const routeSizes = files
   .sort((left, right) => right.bytes - left.bytes);
 
 const largestRoute = routeSizes[0];
-const oversizedRoutes = routeSizes.filter(({ bytes }) => bytes > budgetBytes);
+const oversizedRoutes = routeSizes.filter(({ route, bytes }) => bytes > budgetFor(route) * 1024);
 
 console.log(
-  `Largest initial route JavaScript: ${(largestRoute.bytes / 1024).toFixed(1)} KiB gzip across ${largestRoute.files} files for ${largestRoute.route} (budget: ${budgetKiB} KiB per route; ${routeSizes.length} routes checked).`,
+  `Largest initial route JavaScript: ${(largestRoute.bytes / 1024).toFixed(1)} KiB gzip across ${largestRoute.files} files for ${largestRoute.route} (${routeSizes.length} routes checked).`,
 );
+for (const route of routeSizes) {
+  console.log(
+    `- ${route.route}: ${(route.bytes / 1024).toFixed(1)} KiB gzip (budget: ${budgetFor(route.route)} KiB)`,
+  );
+}
 
 if (oversizedRoutes.length > 0) {
   for (const route of oversizedRoutes) {
-    console.error(`- ${route.route}: ${(route.bytes / 1024).toFixed(1)} KiB gzip`);
+    console.error(`Over budget: ${route.route}: ${(route.bytes / 1024).toFixed(1)} KiB gzip`);
   }
   process.exit(1);
 }

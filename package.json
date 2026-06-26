@@ -1,6 +1,6 @@
 {
   "name": "my-web",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "private": true,
   "engines": {
     "node": "22.22.x",
@@ -22,7 +22,8 @@
     "test:e2e": "playwright test",
     "budget:bundle": "node scripts/bundle-budget.mjs",
     "budget:performance": "node scripts/performance-budget.mjs",
-    "test": "npm run test:unit && node scripts/verify-placeholder-states.mjs && SANITY_PROJECT_ID= node scripts/pull-content.mjs && npm run build && npm run budget:bundle && npm run budget:performance && npm run test:e2e",
+    "budget:lighthouse": "lhci autorun",
+    "test": "npm run test:unit && npm run build && npm run budget:bundle && npm run budget:performance && npm run test:e2e && node scripts/verify-placeholder-states.mjs",
     "check:version": "node scripts/check-version-coherence.mjs"
   },
   "dependencies": {
@@ -43,7 +44,7 @@
     "@axe-core/playwright": "^4.11.1",
     "@eslint/eslintrc": "^3",
     "@lhci/cli": "^0.15.1",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.59.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

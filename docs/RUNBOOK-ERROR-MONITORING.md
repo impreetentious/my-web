@@ -40,7 +40,7 @@ monitoring surface is therefore the client, the build, and Vercel's edge.
 
 1. Confirm it's field-wide, not one device: check the `rating` split in Analytics.
 2. LCP: look at the hero/above-fold — a heavy image or a blocking asset. Keep the
-   ~230 kB home JS budget honest.
+   [230 kB home-JS budget](./ENGINEERING-OPERATIONS.md#home-javascript-budget) honest.
 3. CLS: something is shifting after paint — an async-loaded block without reserved
    space. The world heights are CSS-resolved for CLS≈0; a regression usually means
    new chrome broke that.

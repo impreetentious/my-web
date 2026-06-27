@@ -29,8 +29,9 @@ content is fine.
 
 **Durable path — revert the source:**
 
-1. `git revert <bad-sha>` (or revert the merge) on `main`. Never force-push to
-   erase pushed history.
+1. `git revert <bad-sha>` (or revert the merge) on `main`. Preserve published
+   history; the [release discipline](./ENGINEERING-OPERATIONS.md#release-discipline)
+   forbids force-pushing or rewriting a shared branch.
 2. Push. Vercel builds the revert and promotes it on success.
 3. Bump the README version block per the versioning protocol in the same commit.
 

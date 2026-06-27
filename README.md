@@ -86,7 +86,7 @@ Set back to `true` to restore it.
 
 ## Rendering and performance
 
-The WebGL layer picks a quality tier by probing the device, then only ever demotes it: a `navigator.connection` Save-Data or slow-effective-type signal, a low battery reading, or poor live Web Vitals each lower the tier. The first-visit boot sequence is skippable with Esc, Space, Enter, or a visible Skip control.
+The WebGL layer picks a quality tier by probing the device, then only ever demotes it: a `navigator.connection` Save-Data or slow-effective-type signal, a low battery reading, or poor live Web Vitals each lower the tier. The first-visit boot sequence is skippable with Esc, Space, Enter, or a visible Skip control. `npm run budget:bundle` enforces a 230 KiB gzip first-load JavaScript budget for the home route and 250 KiB for other routes.
 
 ## Search indexing
 
@@ -104,4 +104,4 @@ MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-**Version:** v0.15.3
+**Version:** v0.15.4

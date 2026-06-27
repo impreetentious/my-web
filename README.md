@@ -10,7 +10,7 @@ Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · G
 
 ## Run locally
 
-Requires Node 22+.
+Requires Node `22.22.x` (see `.nvmrc`; `engine-strict` makes `npm ci` fail on a different version).
 
 ```bash
 npm ci
@@ -96,6 +96,8 @@ Indexing is off by default — pages ship with `noindex` metadata. The canonical
 
 The production path is GitHub `main` → Vercel. `prebuild` pulls and validates content, so a deploy with `SANITY_PROJECT_ID` set publishes the current CMS state; without it, the committed `content/` files ship.
 
+The GitHub remote is authoritative and carries the only pipeline; `.github/workflows/ci.yml` runs every gate and Vercel deploys from it. The GitLab remote is a backup mirror kept in sync, deliberately without a `.gitlab-ci.yml` — there is no second publication target to gate, and a mirrored pipeline would only create a second place for gate drift.
+
 Operational notes live in `docs/`: `RUNBOOK-ROLLBACK.md`, `RUNBOOK-ERROR-MONITORING.md`, and `PRIVACY.md`.
 
 ## License
@@ -104,4 +106,4 @@ MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-**Version:** v0.15.4
+**Version:** v0.16.0

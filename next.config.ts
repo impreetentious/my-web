@@ -17,7 +17,10 @@ const securityHeaders = [
     // violations, which is what caught it.
     //
     // Every other executable script stays external, and JSON-LD tags are inert
-    // data that need no execution allowance.
+    // data that need no execution allowance. Sanity is pulled by
+    // scripts/pull-content.mjs during the build; the shipped front end makes
+    // no runtime Sanity request, so no Sanity origin belongs in img-src or
+    // connect-src here.
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
@@ -29,6 +32,9 @@ const securityHeaders = [
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "object-src 'none'",
+      "worker-src 'none'",
+      "manifest-src 'self'",
+      "form-action 'self'",
     ].join('; '),
   },
   { key: 'X-Content-Type-Options', value: 'nosniff' },

@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 /**
- * G4 — One-time (idempotent) seed: content/* → Sanity via mutate API.
- * Requires SANITY_PROJECT_ID + SANITY_WRITE_TOKEN (never commit the token).
- * Stable _ids so re-runs are createOrReplace-safe.
- *
- * After seeding: npm run content && git diff (ideally clean / whitespace only).
+ * One-time, idempotent content/* → Sanity seed.
+ * Requires SANITY_PROJECT_ID + SANITY_WRITE_TOKEN.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parse as parseYaml } from 'yaml';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const CONTENT = path.join(ROOT, 'content');
 const BLOG = path.join(CONTENT, 'blog');
 const API_VERSION = '2024-01-01';
+const SANITY_ID = /^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$/;
+const DATASET = /^[a-z][a-z0-9_-]{0,63}$/;
+const FETCH_TIMEOUT_MS = 20_000;
 
 function loadEnvFiles() {
   for (const name of ['.env', '.env.local']) {
@@ -53,6 +54,8 @@ function ok(msg) {
 }
 
 if (!projectId) die('SANITY_PROJECT_ID is required');
+if (!SANITY_ID.test(projectId)) die('SANITY_PROJECT_ID has an invalid format');
+if (!DATASET.test(dataset)) die('SANITY_DATASET has an invalid format');
 if (!token) die('SANITY_WRITE_TOKEN is required (Editor token; never commit it)');
 
 function readJson(name) {
@@ -62,20 +65,9 @@ function readJson(name) {
 function parseMdx(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!match) return null;
-  const fm = {};
-  for (const line of match[1].split(/\r?\n/)) {
-    const i = line.indexOf(':');
-    if (i < 0) continue;
-    const key = line.slice(0, i).trim();
-    let val = line.slice(i + 1).trim();
-    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-      val = JSON.parse(val.replace(/^'/, '"').replace(/'$/, '"'));
-    } else if (/^\d+$/.test(val)) {
-      val = Number(val);
-    }
-    fm[key] = val;
-  }
-  return { data: fm, body: match[2].replace(/^\n+/, '').replace(/\n+$/, '') };
+  const data = parseYaml(match[1]);
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
+  return { data, body: match[2].replace(/^\n+/, '').replace(/\n+$/, '') };
 }
 
 function slugField(current) {
@@ -229,13 +221,11 @@ const res = await fetch(url, {
     Authorization: `Bearer ${token}`,
   },
   body: JSON.stringify({ mutations }),
+  signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
 });
 
-const text = await res.text();
 if (!res.ok) {
-  die(`mutate failed ${res.status}: ${text}`);
+  die(`mutate failed (${res.status} ${res.statusText})`);
 }
 
 ok('seed complete');
-ok('next: npm run content && git diff  (expect clean / whitespace-only)');
-console.log(text.slice(0, 400));

@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
+import { parse as parseYaml } from 'yaml';
 import SERIES_DATA from '@/content/series.json';
 import type { BlogPost } from '@/types';
 
 const BLOG_DIR = path.join(process.cwd(), 'content', 'blog');
 
-// C8/E4 — series registry: one editable place for anything posts can belong
-// to, mastered in content/series.json (post-G: in Sanity). A post joins a
+// Series registry: one editable place for anything posts can belong to,
+// mastered in content/series.json. A post joins a
 // series via `series: <id>` + `seriesIndex: <n>` frontmatter.
 export const SERIES: Record<string, { title: string; planned: number; description: string }> =
   SERIES_DATA;
@@ -15,21 +15,38 @@ export const SERIES: Record<string, { title: string; planned: number; descriptio
 const WPM = 200;
 
 function readingTimeMin(source: string): number {
-  const words = source.trim().split(/\s+/).length;
+  const words = source.trim() ? source.trim().split(/\s+/).length : 0;
   return Math.max(1, Math.round(words / WPM));
+}
+
+function parseFrontmatter(
+  raw: string,
+  filename: string,
+): { data: Record<string, unknown>; content: string } {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
+  if (!match) throw new Error(`${filename}: missing or malformed frontmatter`);
+
+  const parsed = parseYaml(match[1]);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`${filename}: frontmatter must be a YAML mapping`);
+  }
+  return { data: parsed as Record<string, unknown>, content: match[2] };
 }
 
 function parseFile(filename: string, withContent: boolean): Omit<BlogPost, 'entry'> {
   const raw = fs.readFileSync(path.join(BLOG_DIR, filename), 'utf-8');
-  const { data, content } = matter(raw);
+  const { data, content } = parseFrontmatter(raw, filename);
   return {
-    slug: data.slug || filename.replace('.mdx', ''),
-    title: data.title || 'Untitled',
-    date: data.date || '',
-    excerpt: data.excerpt || '',
+    slug: typeof data.slug === 'string' ? data.slug : filename.replace(/\.mdx$/, ''),
+    title: typeof data.title === 'string' ? data.title : 'Untitled',
+    date: typeof data.date === 'string' ? data.date : '',
+    excerpt: typeof data.excerpt === 'string' ? data.excerpt : '',
     readingTime: readingTimeMin(content),
     series: typeof data.series === 'string' ? data.series : undefined,
-    seriesIndex: typeof data.seriesIndex === 'number' ? data.seriesIndex : undefined,
+    seriesIndex:
+      typeof data.seriesIndex === 'number' && Number.isInteger(data.seriesIndex)
+        ? data.seriesIndex
+        : undefined,
     ...(withContent ? { content } : {}),
   };
 }
@@ -69,7 +86,7 @@ export function getSeriesPosts(seriesId: string): BlogPost[] {
     .sort((a, b) => (a.seriesIndex ?? 0) - (b.seriesIndex ?? 0));
 }
 
-/** Related-next links (C8): the next part of the same series when there is
+/** Related-next links: the next part of the same series when there is
  *  one, otherwise the chronological neighbours. */
 export function getRelatedPosts(post: BlogPost): {
   next: BlogPost | null;

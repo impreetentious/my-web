@@ -1,8 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 // Color tokens live as CSS variables in styles/globals.css (consumed via
-// var(--color-*)). Tailwind utilities for accent/surface/text-* were unused
-// and removed in the dead-CSS pass — keep only the font aliases next/font sets.
+// var(--color-*)). This config exposes only the font aliases set by next/font.
 const config: Config = {
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
   theme: {

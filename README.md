@@ -1,6 +1,6 @@
 # Sidakpreet Singh
 
-Personal website with an animated SVG spine, WebGL atmospheric effects, GSAP-driven panel overlays, and an MDX blog system.
+Source for [sidakpreetsingh.com](https://sidakpreetsingh.com), a personal website built around a single animated descent. The home page combines an SVG navigation spine, WebGL atmosphere, scroll-driven dossier panels, and a progressively enhanced mobile layout. Writing is published as statically generated MDX pages with RSS and Atom feeds.
 
 The site is a single scrolling page composed of registered panels — about, portfolio, projects, writing, contact — tied together by a spine graphic, nav dots, and a scroll system that all read from one section config. The blog lives at its own routes and is authored in MDX. Content comes from Sanity when configured, and from committed JSON/MDX files otherwise.
 
@@ -106,4 +106,4 @@ MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-**Version:** v0.17.0
+**Version:** v0.17.1

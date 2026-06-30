@@ -3,6 +3,7 @@ import { Space_Grotesk, Space_Mono, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import site from '@/content/site.json';
 import HydrationMarker from '@/components/ui/HydrationMarker';
+import { serializeJsonLd } from '@/lib/jsonLd';
 import '@/styles/globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -17,7 +18,7 @@ const spaceMono = Space_Mono({
   weight: ['400', '700'],
 });
 
-// C9 — the display voice: name, panel titles, ghost numerals, card titles,
+// the display voice: name, panel titles, ghost numerals, card titles,
 // post titles. A dossier is a printed document, so the display face is a
 // sharp archival serif against the instrument sans/mono — one weight + its
 // italic, self-hosted by next/font, ~30 kB of woff2 that never touches the
@@ -36,8 +37,8 @@ export const viewport: Viewport = {
   themeColor: '#05060D',
 };
 
-// E2 — every personal fact in the metadata comes from content/site.json;
-// this file owns only the metadata STRUCTURE (Rule A).
+// Every personal fact in the metadata comes from content/site.json;
+// this file owns only the metadata structure.
 export const metadata: Metadata = {
   metadataBase: new URL(site.domain),
   title: {
@@ -59,8 +60,7 @@ export const metadata: Metadata = {
     title: site.metaTitle,
     description: site.metaDescription,
   },
-  // Keep noindex until the canonical domain serves this build publicly.
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
   alternates: {
     types: {
       'application/rss+xml': '/feed.xml',
@@ -69,8 +69,8 @@ export const metadata: Metadata = {
   },
 };
 
-// L2 — Person JSON-LD, built from content/site.json (Rule B: one source per
-// fact). Emitted site-wide via layout so every route inherits the identity
+// Person JSON-LD is built from content/site.json. It is emitted site-wide so
+// every route inherits the identity
 // entity; per-route entities (Article on posts) are additive.
 const personLd = {
   '@context': 'https://schema.org',
@@ -90,12 +90,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${spaceGrotesk.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
     >
       <head>
-        {/* L3 — iOS status bar sits over the descent's night sky. */}
+        {/* iOS status bar sits over the descent's night sky. */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(personLd) }}
         />
         {/* Hydration fail-open: JS loaded but React never mounts → same
             reveal as <noscript>. Cleared by HydrationMarker on mount. */}
@@ -116,7 +116,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}</style>
         </noscript>
         <HydrationMarker />
-        {/* B4 — the Lenis scroll system is scoped to the home experience
+        {/* the Lenis scroll system is scoped to the home experience
             (app/page.tsx wraps itself in ScrollProvider); blog routes scroll
             natively and run no rAF loop. */}
         {children}

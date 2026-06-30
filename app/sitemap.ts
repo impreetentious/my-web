@@ -25,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       .filter((t) => Number.isFinite(t));
     return {
       url: `${BASE_URL}/blog/series/${id}`,
-      lastModified: dates.length ? new Date(Math.max(...dates)) : new Date(),
+      ...(dates.length ? { lastModified: new Date(Math.max(...dates)) } : {}),
       changeFrequency: 'monthly' as const,
       priority: 0.5,
     };
@@ -33,7 +33,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const dossierRoutes: MetadataRoute.Sitemap = addressableDossiers.map((section) => ({
     url: `${BASE_URL}/dossiers/${section.id}`,
-    lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }));
@@ -41,13 +40,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: BASE_URL,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 1,
     },
     {
       url: `${BASE_URL}/blog`,
-      lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },

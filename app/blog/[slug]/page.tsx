@@ -6,13 +6,14 @@ import { getAllPosts, getPostBySlug, getRelatedPosts } from '@/lib/blog';
 import { PostHeader } from '@/components/blog/PostHeader';
 import { PostBody } from '@/components/blog/PostBody';
 import PostUplinkLinks from '@/components/blog/PostUplinkLinks';
+import { serializeJsonLd } from '@/lib/jsonLd';
 import site from '@/content/site.json';
 
 export async function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
 }
 
-// B13 — only pre-rendered slugs are valid: anything else 404s before it can
+// only pre-rendered slugs are valid: anything else 404s before it can
 // reach getPostBySlug with an unsanitised path segment.
 export const dynamicParams = false;
 
@@ -51,7 +52,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   const { next, prev } = getRelatedPosts(post);
 
-  // L2 — Article JSON-LD. Author reuses the Person emitted in the root
+  // Article JSON-LD. Author reuses the Person emitted in the root
   // layout via URL identity, so the entities join without duplication.
   const articleLd = {
     '@context': 'https://schema.org',
@@ -70,7 +71,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <main style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleLd) }}
       />
       <div className="log-grain" aria-hidden="true" />
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '72px 24px 110px' }}>
@@ -79,7 +80,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <MDXRemote source={post.content ?? ''} />
         </PostBody>
 
-        {/* Related-next (C8): the log continues */}
+        {/* Related-next: the log continues */}
         {(next || prev) && (
           <nav aria-label="Adjacent transmissions" style={{ marginTop: '70px' }}>
             <div className="log-rule" style={{ marginBottom: '22px' }} />
@@ -104,7 +105,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </nav>
         )}
 
-        {/* End-of-post uplink — facts from site.json only (Rule B). */}
+        {/* End-of-post uplink; identity facts come from site.json. */}
         <aside className="log-uplink" aria-label="Author channel">
           <p className="log-uplink__kicker">END OF TRANSMISSION · OPEN CHANNEL</p>
           <p className="log-uplink__name">{site.name}</p>

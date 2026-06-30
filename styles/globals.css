@@ -6,7 +6,7 @@
   --color-accent: #00ffee;
 
   --color-bg: #05060d; /* near-black indigo — matches the top of the descent gradient */
-  --color-gold: #e0b26e; /* desaturated world gold (v2) */
+  --color-gold: #e0b26e; /* desaturated world gold */
   --color-elevated: #1a1a1a;
 
   --color-text-primary: #f2f2f2;
@@ -35,7 +35,7 @@
   padding: 0;
 }
 
-/* ─── World layout (A1/A8) ───────────────────────────────────────────────────
+/* ─── World layout ───────────────────────────────────────────────────
    Geometry lives in CSS behind media queries so the FIRST paint is right on
    every device — no JS breakpoint flip, no CLS. All values come through
    custom properties set from config/world.ts constants in app/page.tsx.
@@ -195,7 +195,7 @@
   }
 }
 
-/* ─── Fixed HUD placement (A4/A9) ──────────────────────────────────────── */
+/* ─── Fixed HUD placement ──────────────────────────────────────── */
 
 .depth-indicator {
   position: fixed;
@@ -220,7 +220,7 @@
   font-size: 10px;
 }
 
-/* C11 — the audio gauge: quiet mono chrome, gold when live */
+/* the audio gauge: quiet mono chrome, gold when live */
 .audio-toggle {
   margin-top: 6px;
   padding: 5px 0; /* lifts the hit area toward the 24px floor */
@@ -269,7 +269,7 @@
 }
 
 @media (max-width: 1023px) {
-  /* telemetry returns, smaller (A4) */
+  /* telemetry returns, smaller */
   .depth-indicator {
     bottom: 14px;
     left: 14px;
@@ -298,7 +298,7 @@
     display: none;
   }
 
-  /* the fixed email plate would overlap full-width cards (A9) — on phones
+  /* the fixed email plate would overlap full-width cards — on phones
      the contact affordance lives in the footer's social row instead */
   .email-fab {
     display: none;
@@ -308,7 +308,7 @@
   }
 }
 
-/* ─── B11: one keyboard voice — gold outline + soft world halo ───────────── */
+/* ─── Keyboard focus — gold outline + soft world halo ───────────────────── */
 
 :where(a, button, [tabindex]:not([tabindex='-1'])):focus-visible {
   outline: 1px solid rgba(224, 178, 110, 0.95);
@@ -328,7 +328,7 @@
     0 18px 50px -16px var(--tx-glow);
 }
 
-/* ─── B12: skip link — the first tab stop, hidden until focused ──────────── */
+/* ─── Skip link — the first tab stop, hidden until focused ──────────────── */
 
 .skip-link {
   position: fixed;
@@ -422,8 +422,8 @@ body {
   animation: cue-drip 2s ease-in-out infinite;
 }
 
-/* Comet head ring pulse (SVG circle — needs fill-box transform space).
-   v2: slower and quieter — a heartbeat, not a beacon. */
+/* Comet head ring pulse (SVG circle — needs fill-box transform space):
+   a quiet heartbeat rather than a beacon. */
 @keyframes comet-pulse {
   0% {
     transform: scale(1);
@@ -444,7 +444,7 @@ body {
   animation: comet-pulse 4.2s ease-out infinite;
 }
 
-/* Plunge warning burst (C3) — unstable signal, then reacquired */
+/* Plunge warning burst — unstable signal, then reacquired */
 @keyframes hud-warn-flicker {
   0%,
   100% {
@@ -496,7 +496,7 @@ body {
   animation: hud-glitch 0.36s steps(2, end) 1;
 }
 
-/* One mote adrift on the 404 (C15) */
+/* One mote adrift on the 404 */
 @keyframes mote-drift {
   0% {
     transform: translate(0, 0);
@@ -563,7 +563,7 @@ body {
   animation: rays-sway 16s ease-in-out infinite alternate;
 }
 
-/* ─── Transmission cards (C1) ────────────────────────────────────────────────
+/* ─── Transmission cards ────────────────────────────────────────────────
    A card is an intercepted transmission: notched plate (no radius), corner
    brackets, a spine-facing port, reception header + signal ticks in the
    wake's colour at that depth (--tx-accent set per card), display-serif
@@ -800,7 +800,7 @@ body {
   transform: translateX(0);
 }
 
-/* ─── Dossier artifacts + case files (C4/C5) ────────────────────────────── */
+/* ─── Dossier artifacts + case files ────────────────────────────── */
 
 .dossier-figure {
   margin-top: 16px;
@@ -923,7 +923,7 @@ body {
   margin-top: 4px;
 }
 
-/* margin annotations (C4) — a note column beside the transcript on desktop */
+/* margin annotations — a note column beside the transcript on desktop */
 .dossier-annot-row {
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
@@ -969,7 +969,7 @@ body {
   }
 }
 
-/* ─── Transmission log — the blog joins the fiction (C8) ─────────────────────
+/* ─── Transmission log — the blog joins the fiction ─────────────────────
    Server-rendered, native scroll, no Lenis: fast stays fast. Film grain is a
    self-contained data URI (no request), gold accents, mono meta, serif titles. */
 
@@ -1272,7 +1272,7 @@ body {
   }
 }
 
-/* Scrollbar — tuned to the world (B14): dim teal thumb over the abyss track,
+/* Scrollbar — tuned to the world: dim teal thumb over the abyss track,
    brightening toward the wake's aqua on hover. Firefox gets the same voice. */
 html {
   scrollbar-width: thin;
@@ -1292,7 +1292,7 @@ html {
   background: rgba(127, 196, 184, 0.62);
 }
 
-/* ─── Cursor ring (C14) — descent only, fine pointers only ──────────────── */
+/* ─── Cursor ring — descent only, fine pointers only ──────────────── */
 
 /* the ring never replaces precision: a centre dot stays exactly on target */
 html.mw-cursor,

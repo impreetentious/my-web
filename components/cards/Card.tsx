@@ -11,7 +11,7 @@ import { scrambleText } from '@/lib/scramble';
 import { sectionCenterFractionDesktop } from '@/lib/activeSections';
 import type { ActiveSection } from '@/types';
 
-// C1 — a card is an intercepted transmission, not a UI tile. The frame is
+// a card is an intercepted transmission, not a UI tile. The frame is
 // notched (no radius), the header is live reception telemetry (mission clock
 // + SNR derived from the depth it was decoded at), signal ticks echo the SNR,
 // the title speaks the display voice, and the entrance is a decode scanline
@@ -76,7 +76,7 @@ export function Card({ section }: CardProps) {
     const el = cardRef.current;
     if (!el) return;
 
-    // R09 guard: without IntersectionObserver, cards must not stay invisible
+    // Without IntersectionObserver, cards must not stay invisible.
     if (!('IntersectionObserver' in window)) {
       gsap.set(el, { opacity: 1 });
       decode();
@@ -133,9 +133,8 @@ export function Card({ section }: CardProps) {
       observer.observe(el);
     };
 
-    // B7 — IntersectionObserver can't see the boot veil (z-100, opaque), so
-    // a first-screen card used to play its entrance underneath it. Observe
-    // only once the veil is gone.
+    // IntersectionObserver cannot see the opaque boot veil. Observe only
+    // after the veil is gone so first-screen entrances remain visible.
     if (useSiteStore.getState().isLoading) {
       unsubLoading = useSiteStore.subscribe(
         (s) => s.isLoading,
@@ -160,8 +159,7 @@ export function Card({ section }: CardProps) {
   // H — Scroll-linked parallax drift. Content rides ±14px as the world scrolls
   // through the card's centre-t. Desktop, motion-allowed, quality ≠ 'low' only:
   // low tier is the CSS-gradient world where micro-motion adds no depth cue and
-  // costs paints. Delete-on-taste-veto — remove this useEffect + the driftRef
-  // wrapper below and the tilt/decode stay intact (§9 note).
+  // costs paints.
   useEffect(() => {
     if (!motionAllowed()) return;
     if (window.matchMedia('(pointer: coarse)').matches) return;

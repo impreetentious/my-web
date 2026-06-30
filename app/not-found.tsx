@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-// C15 — the lost-signal page keeps the fiction: film grain, one mote adrift
+// the lost-signal page keeps the fiction: film grain, one mote adrift
 // in the dark, the display voice. The mote's drift keyframes live in
 // globals.css (mote-drift) and collapse under prefers-reduced-motion.
 export default function NotFound() {
@@ -41,7 +41,7 @@ export default function NotFound() {
         style={{
           fontSize: '10px',
           letterSpacing: '0.25em',
-          color: '#444444',
+          color: '#888888',
           textTransform: 'uppercase',
           fontFamily: 'var(--font-mono), monospace',
         }}

@@ -8,7 +8,7 @@ import site from '@/content/site.json';
 import { trackConversion } from '@/lib/analytics';
 
 // The seafloor: a faint ridge silhouette, settled motes, a slow sonar ping
-// behind the end tag — and the mission recap (§3.5.4), quiet live counters
+// behind the end tag — and the mission recap, quiet live counters
 // nobody's template has: distance fallen, transmissions decoded, time on
 // mission. Numbers are written imperatively; no re-render per tick.
 
@@ -54,9 +54,9 @@ export default function FooterSection() {
     };
   }, []);
 
-  // 32×32 hit targets around the 16px icons (the ≥24px floor, §0): 8px pad
+  // 32×32 hit targets around the 16px icons: 8px pad
   // grows the box, the negative vertical margin keeps the row's layout height,
-  // and the social row's 4px gap keeps icon-to-icon spacing at the old 20px.
+  // and the social row's 4px gap keeps icon-to-icon spacing at 20px.
   const linkStyle: React.CSSProperties = {
     color: 'var(--color-text-muted)',
     transition: 'color 0.25s ease',
@@ -69,7 +69,7 @@ export default function FooterSection() {
 
   return (
     // Height is CSS-resolved (.footer-section): FOOTER_HEIGHT_PX on desktop,
-    // a 120svh seafloor shelf on mobile (A1).
+    // a 120svh seafloor shelf on mobile.
     <div className="footer-section">
       {/* Seafloor ridge silhouette */}
       <svg
@@ -135,11 +135,6 @@ export default function FooterSection() {
         <span ref={clockRef}>T+00:00</span>
       </p>
 
-      {/* F1 — the C6 recruiter-path channel block moved to the Contact
-          dossier (the deepest transmission owns it now). The footer keeps the
-          recap counters, the social row, and the end tag; the About rail +
-          EmailIcon fab still keep the path ≤10s. */}
-
       {/* Social link row */}
       <div style={{ display: 'flex', gap: '4px', alignItems: 'center', position: 'relative' }}>
         <a
@@ -184,7 +179,7 @@ export default function FooterSection() {
             <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
           </svg>
         </a>
-        {/* A9 — the contact channel docks here; on phones this row is the
+        {/* the contact channel docks here; on phones this row is the
             only email affordance (the fixed plate is hidden) */}
         <a
           href={`mailto:${site.email}`}

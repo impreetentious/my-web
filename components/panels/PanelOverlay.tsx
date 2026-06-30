@@ -96,7 +96,7 @@ export default function PanelOverlay() {
   const isMobile = useMobile();
   const activePanelId = useSiteStore((s) => s.activePanelId);
   // Kept until the close tween finishes so content stays visible for the full
-  // fade instead of unmounting to a blank backdrop (R17).
+  // fade instead of unmounting to a blank backdrop.
   const [renderedPanelId, setRenderedPanelId] = useState<string | null>(null);
   const renderedRef = useRef<string | null>(null);
 
@@ -265,10 +265,8 @@ export default function PanelOverlay() {
     overlay.style.pointerEvents = 'auto';
     tlRef.current?.kill();
 
-    // B5 — the overlay becomes visible SYNCHRONOUSLY, then focus moves. The
-    // focus used to race the timeline's first tick: focusing an element that
-    // is still visibility:hidden silently no-ops, stranding focus on the
-    // invoking card.
+    // The overlay becomes visible synchronously before focus moves; focusing
+    // a visibility:hidden element would silently strand focus on the card.
     gsap.set(overlay, { autoAlpha: 1 });
     closeButtonRef.current?.focus();
 
@@ -406,7 +404,7 @@ export default function PanelOverlay() {
       />
 
       {/* Ghost numeral rising behind the content — smaller and fully inside
-          the frame on mobile (A10: the old right:-6% crop read as a mistake) */}
+          the frame on mobile. */}
       <div
         ref={ghostRef}
         aria-hidden="true"
@@ -453,7 +451,7 @@ export default function PanelOverlay() {
       </button>
 
       {/* Frame — the scrollable dossier; data-lenis-prevent stops Lenis
-          swallowing wheel events inside it (R16). The frame covers the veil
+          swallowing wheel events inside it. The frame covers the veil
           (z-index 1), so IT must own backdrop dismissal: close only when the
           click lands on the frame or the grid's own padding — never on
           content that merely bubbled up. */}
@@ -487,7 +485,7 @@ export default function PanelOverlay() {
           }}
         >
           {/* Meta rail — the decode header. Mobile collapses it to a compact
-              strip (A10) so the title lands on the first screen; the [ESC]
+              strip so the title lands on the first screen; the [ESC]
               hint is desktop-only — a keyboard promise means nothing under a
               thumb, and the ✕ is in view. */}
           {isMobile ? (
@@ -572,7 +570,7 @@ export default function PanelOverlay() {
                 <p style={railLabelStyle}>ZONE</p>
                 <p style={railValueStyle}>{ZONE_LABELS[openZone]}</p>
               </div>
-              {/* C6 — the About dossier's rail keeps the recruiter path in
+              {/* the About dossier's rail keeps the recruiter path in
                   reach the whole scroll: full record + open channel */}
               {renderedPanelId === 'about' && (
                 <div data-rail>

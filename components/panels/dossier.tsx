@@ -7,7 +7,7 @@ import type { CaseStudy, FigureKind } from '@/types';
 // data-block (staggered y/opacity entrance) and hairlines carry data-hair
 // (scaleX draw) — PanelOverlay's open timeline picks both up by attribute.
 
-// ─── Seeded artifact figures (C4) ───────────────────────────────────────────
+// ─── Seeded artifact figures ───────────────────────────────────────────
 // Every row carries an abstract schematic drawn deterministically from its
 // id — serial-numbered figures, no photos, no randomness between renders.
 
@@ -168,7 +168,7 @@ function figurePaths(kind: FigureKind, rnd: () => number): React.ReactNode {
   }
 }
 
-/** Serial-numbered abstract schematic — the row's artifact (C4). */
+/** Serial-numbered abstract schematic — the row's artifact. */
 export function DossierFigure({
   kind,
   seed,
@@ -189,7 +189,7 @@ export function DossierFigure({
   );
 }
 
-// ─── Case file extract (C5) ─────────────────────────────────────────────────
+// ─── Case file extract ─────────────────────────────────────────────────
 
 const CASE_BEATS: Array<[keyof CaseStudy, string]> = [
   ['context', 'CONTEXT'],
@@ -221,7 +221,7 @@ function RedactedDoc({ seed, metric }: { seed: string; metric: string }) {
   );
 }
 
-/** Anonymised case study rendered as a declassified extract (C5). */
+/** Anonymised case study rendered as a declassified extract. */
 export function CaseFile({ index, id, study }: { index: number; id: string; study: CaseStudy }) {
   const [open, setOpen] = useState(false);
   const regionId = useId();
@@ -272,7 +272,7 @@ export function CaseFile({ index, id, study }: { index: number; id: string; stud
   );
 }
 
-/** Display-serif pull-quote — a stat callout speaking the document voice (C4). */
+/** Display-serif pull-quote — a stat callout speaking the document voice. */
 export function PullQuote({ quote, refLine }: { quote: string; refLine?: string }) {
   return (
     <div data-block style={{ margin: '34px 0 8px' }}>
@@ -329,8 +329,7 @@ export function DossierBlock({
 }
 
 /** Mono section head with a drawn hairline underneath. Rendered as a real h3
- *  (panel title is the h2) so the dossier outline is navigable by heading —
- *  fontWeight 400 keeps it pixel-identical to the old <p>. */
+ *  (panel title is the h2) so the dossier outline is navigable by heading. */
 export function DossierHead({ children }: { children: React.ReactNode }) {
   return (
     <div data-block style={{ marginTop: '52px', marginBottom: '20px' }}>
@@ -384,10 +383,10 @@ export function ChipRow({ children }: { children: React.ReactNode }) {
   return <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>{children}</div>;
 }
 
-// ─── Channel CTA (C6/F1) ─────────────────────────────────────────────────────
+// ─── Channel CTA ─────────────────────────────────────────────────────
 // The recruiter-path link, on-fiction: a bordered gold affordance with a
 // departing arrow. Shared by AboutPanel (channels block) and ContactPanel so
-// both speak the same language (F1 extracted it here).
+// both speak the same language.
 
 const channelLinkStyle: React.CSSProperties = {
   display: 'inline-flex',
@@ -455,12 +454,12 @@ export function DossierRow({
   description: string;
   chips: string[];
   arrowLabel?: string;
-  /** Row artifact (C4) — rendered in the meta column under the meta text. */
+  /** Row artifact — rendered in the meta column under the meta text. */
   figure?: React.ReactNode;
   /** Fired when the row link is activated — the call site names the
    *  conversion (analytics). Only meaningful when `href` is set. */
   onSelect?: () => void;
-  /** Extras below the row (C5 case files) — rendered OUTSIDE the link so an
+  /** Extras below the row, rendered outside the link so an
    *  interactive extract never nests inside an <a>. */
   children?: React.ReactNode;
 }) {

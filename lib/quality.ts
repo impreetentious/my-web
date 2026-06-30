@@ -2,7 +2,7 @@ import { useSiteStore } from '@/store/useSiteStore';
 import { isMobileViewport } from '@/lib/useMobile';
 import type { QualityLevel } from '@/types';
 
-// B3/A2 — the render-tier system behind the store's `quality` field:
+// the render-tier system behind the store's `quality` field:
 //   high   — full shader world, native dpr (capped 2). Desktop default.
 //   medium — same world at dpr 1 with the lite uniform set. Mobile default.
 //   low    — no WebGL: the animated CSS fallback world (BackgroundGradient).
@@ -18,15 +18,15 @@ let webglOk: boolean | null = null;
 const RANK: Record<QualityLevel, number> = { low: 0, medium: 1, high: 2 };
 
 /** Lower the render tier toward `ceiling`, never raise it. The one place any
- *  runtime demotion goes through, so the B3 invariant ("a device that showed
- *  strain doesn't get re-promoted into visible flip-flopping") holds for the
+ *  runtime demotion goes through, so a device that showed strain does not get
+ *  re-promoted into visible flip-flopping. This holds for the
  *  fps probe, the battery check, and the field-vitals monitor alike. */
 export function capQuality(ceiling: QualityLevel): void {
   const { quality, setQuality } = useSiteStore.getState();
   if (RANK[ceiling] < RANK[quality]) setQuality(ceiling);
 }
 
-// A2b — the network's own hint. Save-Data ("reduce my data") and 2G-class
+// the network's own hint. Save-Data ("reduce my data") and 2G-class
 // links have no business downloading the shader world; 3G caps the desktop
 // default to the lite uniform set. `navigator.connection` is not in the TS DOM
 // lib, so the shape is declared locally and read behind a guard.
@@ -49,7 +49,7 @@ function connectionCeiling(): QualityLevel | null {
   }
 }
 
-// A2c — battery is a soft, runtime signal, so (unlike the connection ceiling)
+// battery is a soft, runtime signal, so (unlike the connection ceiling)
 // it never rewrites `probed`: a device that gets plugged in and restores its
 // WebGL context still returns to the capability tier. It only ever demotes the
 // live tier. getBattery() is Promise-based and absent on many browsers, so the
@@ -78,7 +78,7 @@ function scheduleBatteryCheck(): void {
     });
 }
 
-export function webglSupported(): boolean {
+function webglSupported(): boolean {
   if (webglOk !== null) return webglOk;
   try {
     const canvas = document.createElement('canvas');
@@ -126,7 +126,7 @@ const PROBE_WINDOW_MS = 1200;
 const MIN_FPS_HIGH = 34;
 const MIN_FPS_MEDIUM = 22;
 
-/** One-shot fps probe (A2). Returns a cancel function. */
+/** One-shot fps probe. Returns a cancel function. */
 export function runFpsProbe(): () => void {
   let rafId = 0;
   let cancelled = false;

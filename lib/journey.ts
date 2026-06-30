@@ -26,11 +26,11 @@ export const journey = {
   plungeAt: -1e12,
   /** Re-arms when the visitor scrolls back above the crossing. */
   plungeArmed: true,
-  /** Buoyancy amplitude (C2), vh — captured from scroll velocity at the
+  /** Buoyancy amplitude, vh — captured from scroll velocity at the
    *  plunge so a crawl barely dips and a dive visibly overshoots. */
   plungeKickVh: 0,
 
-  /** Idle beats (§3.5.6): last input + last fired beat. */
+  /** Idle beats: last input + last fired beat. */
   lastInputAt: 0,
   idleBeatAt: -1e12,
 
@@ -68,7 +68,7 @@ export function plungeElapsed(nowMs: number): number {
   return Math.min(30, (nowMs - journey.plungeAt) / 1000);
 }
 
-// ─── Buoyancy spring (C2) ───────────────────────────────────────────────────
+// ─── Buoyancy spring ───────────────────────────────────────────────────
 // Surface tension made physical: a fast crossing carries the probe/world a
 // few vh deeper than scroll says, then one damped rebound settles it. The
 // offset is analytic — a critically-under-damped sine of plungeElapsed — so

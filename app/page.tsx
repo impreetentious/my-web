@@ -40,8 +40,8 @@ export default function Home() {
   const isLoading = useSiteStore((s) => s.isLoading);
   const quality = useSiteStore((s) => s.quality);
 
-  // B3/A2 — capability tier before the veil lifts; fps probe once it has, and
-  // the field-vitals monitor (A2d) running the whole session for real-user
+  // capability tier before the veil lifts; fps probe once it has, and
+  // the field-vitals monitor running the whole session for real-user
   // LCP/CLS/INP telemetry + strain-driven tier demotion.
   useEffect(() => {
     initQuality();
@@ -72,7 +72,7 @@ export default function Home() {
   // WebGL boots once — after the veil (no point rendering under an opaque
   // overlay) and only if the capability probe passed. It then STAYS mounted:
   // tier drops hide/park it inside ExperienceCanvas, so a restored context
-  // can come back without re-initialising three.js (B3).
+  // can come back without re-initialising three.js.
   const [canvasBooted, setCanvasBooted] = useState(false);
   useEffect(() => {
     if (!isLoading && quality !== 'low') setCanvasBooted(true);
@@ -80,7 +80,7 @@ export default function Home() {
 
   return (
     <ScrollProvider>
-      {/* B12 — first tab stop jumps past the descent chrome to the first
+      {/* first tab stop jumps past the descent chrome to the first
           transmission card */}
       <a className="skip-link" href={`#card-${activeSections[0]?.id ?? ''}`}>
         Skip to transmissions
@@ -94,7 +94,7 @@ export default function Home() {
           that pass the tier probe — dpr 1 lite set on mobile) */}
       {canvasBooted && <ExperienceCanvas />}
 
-      {/* Layer 1: the world. Heights are CSS-resolved per breakpoint (A1/A8)
+      {/* Layer 1: the world. Heights are CSS-resolved per breakpoint
           from the custom properties below — the server HTML paints correctly
           on every device, CLS ≈ 0. */}
       <main

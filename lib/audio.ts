@@ -1,4 +1,4 @@
-// C11 — the descent, scored procedurally. Zero assets: every voice is an
+// the descent, scored procedurally. Zero assets: every voice is an
 // oscillator or filtered noise built at enable-time. MUTE IS THE DEFAULT —
 // the graph doesn't even exist until the visitor opts in (which also
 // satisfies autoplay policy: the toggle click is the user gesture).
@@ -13,8 +13,7 @@
 //   plunge — one-shot pitch-drop thump on the crossing
 //   tick   — tiny decode blip when a dossier opens
 //
-// Everything rides one master gain at a deliberately quiet ceiling. If it
-// isn't clearly excellent in the owner's ears, ship silent (brief C11).
+// Everything rides one master gain at a deliberately quiet ceiling.
 
 import { useSiteStore } from '@/store/useSiteStore';
 import { journey, PLUNGE_EVENT } from '@/lib/journey';
@@ -132,7 +131,7 @@ class DescentAudio {
 
     const onVisibility = () => {
       if (document.hidden) void this.ctx.suspend();
-      else void this.ctx.resume();
+      else if (enabled) void this.ctx.resume();
     };
     document.addEventListener('visibilitychange', onVisibility);
     this.unsubs.push(() => document.removeEventListener('visibilitychange', onVisibility));
@@ -152,7 +151,7 @@ class DescentAudio {
     const now = this.ctx.currentTime;
     const vel = Math.min(1, Math.abs(journey.velocity) * 0.02);
 
-    // F2 — same rewrite rule as the shader/descent tuning: early-sky voices
+    // same rewrite rule as the shader/descent tuning: early-sky voices
     // K-scale, crossing-region voices anchor to CROSS_T.
     const space = 1 - smoothstep(K * 0.5, CROSS_T - 0.01, t);
     const golden =

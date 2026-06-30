@@ -1,9 +1,8 @@
 import { capQuality } from '@/lib/quality';
 import { trackVital, type VitalName, type VitalRating } from '@/lib/analytics';
 
-// A2d — field Core Web Vitals, measured in the real session with the platform
-// PerformanceObserver rather than a dependency (the runtime-dep budget is
-// frozen; web-vitals is not worth reopening it for three observers). Two jobs:
+// field Core Web Vitals, measured in the real session with the platform
+// PerformanceObserver rather than another runtime dependency. Two jobs:
 //
 //   • telemetry — LCP, CLS and an INP-lite are reported once, on page hide,
 //     through the cookieless Vercel `track` (lib/analytics.trackVital).
@@ -60,28 +59,33 @@ export function initWebVitals(): () => void {
     capQuality('medium'); // a struggling device drops to the lite set, once
   };
 
-  const observers: PerformanceObserver[] = [];
+  const observers: Array<{
+    observer: PerformanceObserver;
+    process: (entries: PerformanceEntry[]) => void;
+  }> = [];
   const observe = (
     type: string,
     cb: (entries: PerformanceEntry[]) => void,
     opts: PerformanceObserverInit = {},
-  ) => {
+  ): boolean => {
     try {
       const po = new PerformanceObserver((list) => cb(list.getEntries()));
       po.observe({ type, buffered: true, ...opts });
-      observers.push(po);
+      observers.push({ observer: po, process: cb });
+      return true;
     } catch {
       // this entry type isn't supported here — skip it, keep the others
+      return false;
     }
   };
 
-  observe('largest-contentful-paint', (entries) => {
+  const observesLcp = observe('largest-contentful-paint', (entries) => {
     const last = entries[entries.length - 1];
     if (last) lcp = last.startTime;
     if (lcp > THRESHOLDS.LCP[1]) demote();
   });
 
-  observe('layout-shift', (entries) => {
+  const observesCls = observe('layout-shift', (entries) => {
     for (const raw of entries) {
       const e = raw as LayoutShiftEntry;
       if (e.hadRecentInput) continue; // shifts within 500ms of input don't count
@@ -112,9 +116,12 @@ export function initWebVitals(): () => void {
   const report = () => {
     if (reported) return;
     reported = true;
-    for (const po of observers) po.takeRecords?.(); // flush anything buffered
-    trackVital('LCP', lcp, rate('LCP', lcp));
-    trackVital('CLS', cls, rate('CLS', cls));
+    for (const { observer, process } of observers) {
+      const pending = observer.takeRecords();
+      if (pending.length > 0) process(pending);
+    }
+    if (observesLcp && lcp > 0) trackVital('LCP', lcp, rate('LCP', lcp));
+    if (observesCls) trackVital('CLS', cls, rate('CLS', cls));
     if (inp > 0) trackVital('INP', inp, rate('INP', inp));
   };
 
@@ -129,6 +136,6 @@ export function initWebVitals(): () => void {
   return () => {
     document.removeEventListener('visibilitychange', onHide);
     window.removeEventListener('pagehide', report);
-    for (const po of observers) po.disconnect();
+    for (const { observer } of observers) observer.disconnect();
   };
 }

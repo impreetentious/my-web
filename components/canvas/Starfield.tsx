@@ -16,8 +16,8 @@ import { zoneWeights, waterlineScreenVh } from '@/lib/descent';
 import { journey } from '@/lib/journey';
 import { motionAllowed } from '@/lib/motion';
 
-// v2: the deep starfield lives in the SkyOcean shader — this system is the
-// NEAR parallax layer only: fewer, sharper points that separate from the
+// The deep starfield lives in the SkyOcean shader. This system is the near
+// parallax layer only: fewer, sharper points that separate from the
 // background on scroll, streak with scroll velocity, and lean ±6px with the
 // pointer. Occluded below the waterline via uWaterNdcY.
 const COUNT = 170;

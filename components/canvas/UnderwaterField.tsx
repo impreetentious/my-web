@@ -98,7 +98,7 @@ const FRAGMENT = /* glsl */ `
       color = vec3(0.72, 0.82, 0.87);
       alpha = smoothstep(0.5, 0.1, d) * 0.26;
     } else if (vKind < 1.5) {
-      // bubble as refraction, not outline (B1): a thin rim lit from the
+      // bubble as refraction, not outline: a thin rim lit from the
       // upper-left, one displaced glint, interior left transparent
       float ring = smoothstep(0.50, 0.40, d) * smoothstep(0.26, 0.40, d);
       float rimLight = 0.25 + 0.75 * smoothstep(-0.3, 0.9, dot(uv / max(d, 1e-4), vec2(-0.55, 0.72)));
@@ -110,7 +110,7 @@ const FRAGMENT = /* glsl */ `
       alpha = smoothstep(0.5, 0.05, d) * vPulse * (0.65 + uIdlePulse * 0.9);
     }
 
-    // B1 — clipped above the on-screen waterline (inverse of Starfield's
+    // clipped above the on-screen waterline (inverse of Starfield's
     // occlusion test): during the crossing gate nothing floats in the sky
     float belowWater = smoothstep(uWaterNdcY + 0.02, uWaterNdcY - 0.02, vNdc.y);
 

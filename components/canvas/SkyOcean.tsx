@@ -15,8 +15,8 @@ const BEAST_DELAY_S = 1.4;
 
 // The whole world in one fullscreen fragment pass: altitude-continuous sky,
 // procedural deep starfield, FBM nebulae, a living ocean surface, underwater
-// light, the abyss lit by the probe, and the plunge shock — replacing v1's
-// stacked CSS gradients. Colour is a function of WORLD position (scroll +
+// light, the abyss lit by the probe, and the plunge shock. Colour is a
+// function of world position (scroll +
 // screen offset), so descending physically slides one continuous atmosphere
 // past the camera instead of cross-fading posters.
 
@@ -41,11 +41,11 @@ const FRAGMENT = /* glsl */ `
   uniform float uAbyss;    // 0 lit world → 1 the deep
   uniform float uRays;     // god-ray gate
   uniform vec2  uMouse;    // eased pointer, −1..1
-  uniform float uLite;     // medium tier (A2): single dim star layer, no nebulae
-  uniform float uBeast;    // C10: abyss passage progress ∈ (0,1); off outside it
-  uniform float uCross;    // F2: derived crossing scroll-t (CROSS_T)
-  uniform float uSurfaceU; // F2: derived surface page-depth (U_SURFACE)
-  uniform float uK;        // F2: sky-stretch factor for early-sky gates
+  uniform float uLite;     // medium tier: single dim star layer, no nebulae
+  uniform float uBeast;    // abyss passage progress ∈ (0,1); off outside it
+  uniform float uCross;    // derived crossing scroll-t (CROSS_T)
+  uniform float uSurfaceU; // derived surface page-depth (U_SURFACE)
+  uniform float uK;        // sky-stretch factor for early-sky gates
 
   varying vec2 vUv;
 
@@ -123,7 +123,7 @@ const FRAGMENT = /* glsl */ `
     uv.x += sin(uvTop0 * 46.0 - e * 34.0) * 0.005 * wob;
     uv.y += sin(uvTop0 * 29.0 - e * 24.0) * 0.0032 * wob;
 
-    // C13 — the medium persists: while submerged the world keeps refracting
+    // the medium persists: while submerged the world keeps refracting
     // at ~10% of the plunge wobble, world-only (the DOM above stays crisp)
     float sub = smoothstep(uCross + 0.02, uCross + 0.10, uScroll);
     uv.x += sin(uvTop0 * 41.0 + uTime * 0.80) * 0.0006 * sub;
@@ -133,7 +133,7 @@ const FRAGMENT = /* glsl */ `
     float wt = uScroll + (uvTop - 0.5) * uSpanT;   // world altitude at this pixel
 
     // waterline, breathing via 1D noise displacement; a second, much longer
-    // swell rolls under the chop so the surface never reads uniform (C13)
+    // swell rolls under the chop so the surface never reads uniform
     float wUvTop = uWaterVh / 100.0;
     float swell = vnoise(vec2(uv.x * 2.1 + uTime * 0.045, uTime * 0.028));
     float disp = (vnoise(vec2(uv.x * 7.0 + uTime * 0.14, uTime * 0.05)) - 0.5) * 0.008
@@ -246,7 +246,7 @@ const FRAGMENT = /* glsl */ `
       float sp1 = vnoise(vec2(uv.x * 300.0 * uAspect, dy * 560.0 - uTime * 0.7));
       float sp2 = vnoise(vec2(uv.x * 133.0 * uAspect + 13.0, dy * 210.0 + uTime * 0.4));
       float sparkle = pow(sp1 * sp2, 6.0) * 4.0;
-      // the long swell owns the specular band — glints gather on its crests (C13)
+      // the long swell owns the specular band — glints gather on its crests
       sparkle *= 0.55 + 0.90 * swell;
       col += lineCol * sparkle * glintBand * (0.30 + 0.45 * goldGate) * lineAtten * 0.55;
     }
@@ -259,7 +259,7 @@ const FRAGMENT = /* glsl */ `
     col *= ambient;
     col += vec3(0.42, 0.55, 0.52) * halo * halo * uAbyss * uCometOn * 0.28;
 
-    // C10 — once per session, something vast passes at the edge of the
+    // once per session, something vast passes at the edge of the
     // probe's light: a shadow IN the light, never lit itself. Long low body,
     // tapered tail, one dorsal hint, swimming on a slow spinal undulation.
     if (uBeast > 0.0 && uBeast < 1.0) {
@@ -319,7 +319,7 @@ export function SkyOcean() {
   const meshRef = useRef<Mesh>(null);
   const allowMotion = useMemo(() => motionAllowed(), []);
 
-  // C10 — the abyss passage is a once-per-session beat: armed the first time
+  // the abyss passage is a once-per-session beat: armed the first time
   // the visitor reaches the dark with motion allowed, then never again.
   const beastRef = useRef<{ seen: boolean; start: number | null }>({
     seen: true,
@@ -356,7 +356,7 @@ export function SkyOcean() {
         uMouse: { value: new Vector2(0, 0) },
         uLite: { value: 0 },
         uBeast: { value: -1 },
-        // F2 — derived world tuning; constant at runtime (baked from the
+        // derived world tuning; constant at runtime (baked from the
         // enabled section count), so never touched in the frame loop.
         uCross: { value: CROSS_T },
         uSurfaceU: { value: U_SURFACE },
@@ -380,7 +380,7 @@ export function SkyOcean() {
     // (desktop px world, mobile svh world)
     const spanT = h / getScrollLimit();
     const pe = allowMotion ? plungeElapsed(performance.now()) : 30;
-    // C2 — buoyancy: the world samples a touch deeper than scroll says
+    // buoyancy: the world samples a touch deeper than scroll says
     // through the crossing, and the line rides up by the same offset
     const buoy = buoyancyVh(pe);
 
@@ -398,7 +398,7 @@ export function SkyOcean() {
     u.uPlungeE.value = pe;
     u.uMouse.value.set(journey.mouseX, journey.mouseY);
 
-    // C10 — arm the passage deep in the dark; play it exactly once
+    // arm the passage deep in the dark; play it exactly once
     const beast = beastRef.current;
     if (!beast.seen && beast.start === null && allowMotion && t > 0.9 && journey.cometOn) {
       beast.start = state.clock.elapsedTime + BEAST_DELAY_S;

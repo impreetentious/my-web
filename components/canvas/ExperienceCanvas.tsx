@@ -34,7 +34,7 @@ function useReducedMotion(): boolean {
   return reduced;
 }
 
-// Mounted once after boot and never unmounted for tier changes (B3): a drop
+// Mounted once after boot and never unmounted for tier changes: a drop
 // to 'low' — fps demotion or a lost WebGL context — hides the surface and
 // parks the frameloop so the animated CSS world underneath takes over, and a
 // restored context resumes at the probed tier without re-initialising three.

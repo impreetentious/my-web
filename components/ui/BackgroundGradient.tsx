@@ -10,8 +10,8 @@ import { motionAllowed } from '@/lib/motion';
 // (a) a static backstop under the canvas while a shader tier runs, and
 // (b) the FULL scroll-driven fallback world whenever quality is 'low' — no
 // WebGL, an fps demotion, or a lost context — on desktop and mobile alike
-// (B3/A2). The fallback animates, carries grain in place of the shader's
-// dither, and dips its palette on the plunge (A5).
+//. The fallback animates, carries grain in place of the shader's
+// dither, and dips its palette on the plunge.
 
 const GRAIN_TILE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
@@ -51,7 +51,7 @@ export default function BackgroundGradient() {
     apply(useSiteStore.getState().scrollT);
     const unsubscribe = useSiteStore.subscribe((s) => s.scrollT, apply);
 
-    // A5 — the plunge on the fallback world: a brief palette dip standing in
+    // the plunge on the fallback world: a brief palette dip standing in
     // for the shader's shock envelope
     const onPlunge = () => {
       if (!motionAllowed() || !dipRef.current) return;
@@ -131,7 +131,7 @@ export default function BackgroundGradient() {
             }}
           />
 
-          {/* Waterline sheet — softened v2: thin displaced-looking line, dim glow */}
+          {/* Waterline sheet — a thin displaced-looking line with a dim glow. */}
           <div
             ref={waterRef}
             style={{
@@ -208,7 +208,7 @@ export default function BackgroundGradient() {
             }}
           />
 
-          {/* Plunge palette dip (A5) — flashed dark by the WAAPI burst above */}
+          {/* Plunge palette dip — flashed dark by the WAAPI burst above */}
           <div
             ref={dipRef}
             style={{

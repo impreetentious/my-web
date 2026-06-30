@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSiteStore } from '@/store/useSiteStore';
 import { activeSections } from '@/lib/activeSections';
 import { scrollToY, getScrollLimit } from '@/lib/scrollSystem';
-import { SECTION_HEIGHT_PX, HEADER_HEIGHT_PX } from '@/config/world';
+import { MOBILE_HERO_SVH, MOBILE_SECTION_SVH } from '@/config/world';
 import { useMobile } from '@/lib/useMobile';
 
 // Compact mobile section navigator — altitude chips along the bottom edge.
@@ -19,14 +19,18 @@ export default function MobileSectionNav() {
     if (typeof window === 'undefined') return 0;
     const scrollPx = s.scrollT * getScrollLimit();
     const viewportCenter = scrollPx + window.innerHeight / 2;
-    const raw = Math.floor((viewportCenter - HEADER_HEIGHT_PX) / SECTION_HEIGHT_PX);
+    const heroPx = (MOBILE_HERO_SVH / 100) * window.innerHeight;
+    const sectionPx = (MOBILE_SECTION_SVH / 100) * window.innerHeight;
+    const raw = Math.floor((viewportCenter - heroPx) / sectionPx);
     return Math.min(Math.max(raw, 0), activeSections.length - 1);
   });
 
   if (!isMobile || activePanelId) return null;
 
   const jump = (index: number) => {
-    const y = HEADER_HEIGHT_PX + index * SECTION_HEIGHT_PX - window.innerHeight * 0.28;
+    const heroPx = (MOBILE_HERO_SVH / 100) * window.innerHeight;
+    const sectionPx = (MOBILE_SECTION_SVH / 100) * window.innerHeight;
+    const y = heroPx + (index + 0.5) * sectionPx - window.innerHeight / 2;
     scrollToY(Math.max(0, y));
     setOpen(false);
   };

@@ -27,21 +27,18 @@ export const SPINE_CONTROL_DISTANCE_PX = 220;
 // --card-width (consumed by .card-slot) — change it here, not in globals.css.
 export const CARD_WIDTH_PX = 280;
 
-// ZONE_THRESHOLDS moved to lib/descent.ts in F2 — the boundaries now derive
-// from CROSS_T, and world.ts must not import descent (activeSections → world
-// would cycle). Import it from '@/lib/descent'.
+// Zone boundaries derive from CROSS_T in lib/descent.ts. This module must not
+// import descent because activeSections → world would create a cycle.
 
-// Single-column breakpoint — THE single source (B10): lib/useMobile.ts builds
+// Single-column breakpoint — THE single source: lib/useMobile.ts builds
 // its matchMedia query from this constant. The CSS twin lives in
 // styles/globals.css as `@media (max-width: 1023px)` (CSS cannot read TS);
 // if this number changes, change those media queries in the same edit.
-// 1024 (was 768): the desktop card geometry needs a ≥1000px viewport (see
-// CARD_OFFSET_PX above) — at 768–999px the two-column layout clipped both
-// cards with horizontal overflow suppressed, so tablets/portrait iPads get
-// the single-column world.
+// The desktop card geometry needs a ≥1000px viewport (see CARD_OFFSET_PX
+// above), so narrower tablets and portrait iPads get the single-column world.
 export const MOBILE_BREAKPOINT_PX = 1024;
 
-// ─── The mobile world (A1) ──────────────────────────────────────────────────
+// ─── The mobile world ──────────────────────────────────────────────────
 // On phones the journey is a designed world of ~7.8 small viewports, not a
 // stack of cards. Units are svh (stable while browser chrome collapses);
 // the CSS in globals.css turns these numbers into real heights via custom
@@ -57,7 +54,7 @@ export const MOBILE_SECTION_SVH = 140;
 /** Seafloor/footer zone height, in svh. */
 export const MOBILE_FOOTER_SVH = 120;
 
-/** Horizontal position of the mobile wake gutter (A3), in vw. Cards indent
+/** Horizontal position of the mobile wake gutter, in vw. Cards indent
  *  off it: their slots start at calc(gutter + 22px) — see .card-slot in
  *  globals.css and MobileSpine's connector geometry. */
 export const MOBILE_GUTTER_VW = 11;

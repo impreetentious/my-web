@@ -9,7 +9,7 @@ import {
 } from '@/config/world';
 import type { ActiveSection } from '@/types';
 
-// E5 — `side` alternates on the FILTERED list (left first), so toggling any
+// `side` alternates on the FILTERED list (left first), so toggling any
 // section can never strand two adjacent cards on the same side. A config
 // entry may still pin a side explicitly; omitted means auto.
 export const activeSections: ActiveSection[] = SECTIONS.filter((section) => section.enabled).map(
@@ -25,7 +25,7 @@ export const activeSections: ActiveSection[] = SECTIONS.filter((section) => sect
 export const totalPageHeight =
   HEADER_HEIGHT_PX + activeSections.length * SECTION_HEIGHT_PX + FOOTER_HEIGHT_PX;
 
-/** Mobile world height in svh units (A1) — hero + section slots + seafloor. */
+/** Mobile world height in svh units — hero + section slots + seafloor. */
 export const mobileWorldSvh =
   MOBILE_HERO_SVH + activeSections.length * MOBILE_SECTION_SVH + MOBILE_FOOTER_SVH;
 

@@ -8,7 +8,7 @@ import { journey } from '@/lib/journey';
 import site from '@/content/site.json';
 
 // The hero lives in orbit, so its accent is the world gold of the space zone
-// (v2: desaturated #E0B26E) — interface chrome elsewhere stays cyan.
+// (#E0B26E) — interface chrome elsewhere stays cyan.
 const GOLD = '#E0B26E';
 
 export default function HeroSection() {
@@ -25,81 +25,96 @@ export default function HeroSection() {
   // handoff take, the boot line is already sitting on the tag's position, so
   // the tag crossfades in place while name/role rise through line masks.
   useEffect(() => {
-    const unsubscribe = useSiteStore.subscribe(
-      (state) => state.isLoading,
-      (isLoading) => {
-        if (!isLoading) {
-          if (motionAllowed()) {
-            const handoff = journey.heroHandoff;
-            const tl = gsap.timeline({ delay: handoff ? 0 : 0.2 });
-            if (handoff) {
-              tl.fromTo(
-                tagRef.current,
-                { opacity: 0 },
-                { opacity: 0.8, duration: 0.45, ease: 'none' },
-                0.18, // under the departing boot line
-              );
-            } else {
-              tl.fromTo(
-                tagRef.current,
-                { opacity: 0, y: -8 },
-                { opacity: 0.8, y: 0, duration: 0.5, ease: EASE_ARRIVE },
-              );
-            }
-            // NB: the pre-reveal offset lives in inline CSS as translateY(%);
-            // gsap parses that into its pixel `y` channel, so the tween must
-            // drive `y` with percent strings — a yPercent tween would leave
-            // the pixel channel stranded at the old offset.
-            tl.fromTo(
-              nameRef.current,
-              { y: '112%' },
-              {
-                y: '0%',
-                duration: 0.75,
-                ease: EASE_ARRIVE,
-                onComplete: () => {
-                  // free the glow — masks clip the text-shadow once settled
-                  if (nameWrapRef.current) nameWrapRef.current.style.overflow = 'visible';
-                },
-              },
-              handoff ? 0.3 : '-=0.25',
-            );
-            tl.fromTo(
-              roleRef.current,
-              { y: '120%' },
-              {
-                y: '0%',
-                duration: 0.65,
-                ease: EASE_ARRIVE,
-                onComplete: () => {
-                  if (roleWrapRef.current) roleWrapRef.current.style.overflow = 'visible';
-                },
-              },
-              `-=${0.75 - STAGGER * 2}`,
-            );
-            // C12 — the name catches one specular sweep on the ignition
-            // beat: a gradient mask pass over the glyphs, then gone
-            tl.fromTo(
-              sweepRef.current,
-              { backgroundPosition: '135% 0%' },
-              { backgroundPosition: '-35% 0%', duration: 1.05, ease: 'power2.inOut' },
-              handoff ? 0.55 : '-=0.45',
-            );
-            tl.fromTo(
-              cueRef.current,
-              { opacity: 0 },
-              { opacity: 1, duration: 0.5, ease: EASE_ARRIVE },
-              '-=0.7',
-            );
-          } else {
-            gsap.set([tagRef.current, cueRef.current], { opacity: 1 });
-            gsap.set([nameRef.current, roleRef.current], { y: '0%' });
-          }
-          unsubscribe();
-        }
-      },
-    );
-    return () => unsubscribe();
+    let revealed = false;
+    let timeline: gsap.core.Timeline | null = null;
+    let unsubscribe: (() => void) | null = null;
+
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      unsubscribe?.();
+      unsubscribe = null;
+
+      if (!motionAllowed()) {
+        gsap.set([tagRef.current, cueRef.current], { opacity: 1 });
+        gsap.set([nameRef.current, roleRef.current], { y: '0%' });
+        return;
+      }
+
+      const handoff = journey.heroHandoff;
+      const tl = gsap.timeline({ delay: handoff ? 0 : 0.2 });
+      timeline = tl;
+      if (handoff) {
+        tl.fromTo(
+          tagRef.current,
+          { opacity: 0 },
+          { opacity: 0.8, duration: 0.45, ease: 'none' },
+          0.18,
+        );
+      } else {
+        tl.fromTo(
+          tagRef.current,
+          { opacity: 0, y: -8 },
+          { opacity: 0.8, y: 0, duration: 0.5, ease: EASE_ARRIVE },
+        );
+      }
+      // The pre-reveal offset uses translateY(%), so these tweens drive the
+      // same GSAP y channel with percentage strings.
+      tl.fromTo(
+        nameRef.current,
+        { y: '112%' },
+        {
+          y: '0%',
+          duration: 0.75,
+          ease: EASE_ARRIVE,
+          onComplete: () => {
+            if (nameWrapRef.current) nameWrapRef.current.style.overflow = 'visible';
+          },
+        },
+        handoff ? 0.3 : '-=0.25',
+      );
+      tl.fromTo(
+        roleRef.current,
+        { y: '120%' },
+        {
+          y: '0%',
+          duration: 0.65,
+          ease: EASE_ARRIVE,
+          onComplete: () => {
+            if (roleWrapRef.current) roleWrapRef.current.style.overflow = 'visible';
+          },
+        },
+        `-=${0.75 - STAGGER * 2}`,
+      );
+      tl.fromTo(
+        sweepRef.current,
+        { backgroundPosition: '135% 0%' },
+        { backgroundPosition: '-35% 0%', duration: 1.05, ease: 'power2.inOut' },
+        handoff ? 0.55 : '-=0.45',
+      );
+      tl.fromTo(
+        cueRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: EASE_ARRIVE },
+        '-=0.7',
+      );
+    };
+
+    if (useSiteStore.getState().isLoading) {
+      unsubscribe = useSiteStore.subscribe(
+        (state) => state.isLoading,
+        (isLoading) => {
+          if (!isLoading) reveal();
+        },
+      );
+    } else {
+      reveal();
+    }
+
+    return () => {
+      unsubscribe?.();
+      timeline?.kill();
+    };
   }, []);
 
   // The whole hero sinks and fades as the descent begins; the scroll cue dies
@@ -124,8 +139,7 @@ export default function HeroSection() {
   return (
     // Height is CSS-resolved (.hero-section): HEADER_HEIGHT_PX on desktop via
     // the world container's --hero-h-desktop, one full small-viewport on
-    // mobile (A1/B10 — the old hardcoded 800px claimed decoupling but was
-    // silently coupled).
+    // mobile, avoiding a breakpoint-dependent hydration shift.
     <div ref={containerRef} className="hero-section">
       {/* width:100% (not fit-content) so long lines wrap inside narrow viewports */}
       <div
@@ -172,7 +186,7 @@ export default function HeroSection() {
           — SIGNAL RECEIVED —
         </p>
         <div ref={nameWrapRef} style={{ overflow: 'hidden', marginTop: '16px' }}>
-          {/* C9 — the display voice: archival serif against the instrument mono */}
+          {/* the display voice: archival serif against the instrument mono */}
           <h1
             ref={nameRef}
             style={{
@@ -187,7 +201,7 @@ export default function HeroSection() {
             }}
           >
             {site.name}
-            {/* C12 — glyph-accurate specular overlay; invisible until (and
+            {/* glyph-accurate specular overlay; invisible until (and
                 after) its one background-position pass */}
             <span
               ref={sweepRef}

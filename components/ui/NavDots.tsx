@@ -7,7 +7,7 @@ import { scrollToY, getScrollLimit } from '@/lib/scrollSystem';
 import { depthReading } from '@/lib/descent';
 import { SECTION_HEIGHT_PX, HEADER_HEIGHT_PX } from '@/config/world';
 
-// C15 — the section nav is a thin altitude rail: tick marks on a hairline
+// the section nav is a thin altitude rail: tick marks on a hairline
 // track, each at a real place in the fall; hover names the transmission and
 // reads out the altitude the probe passes it at. Quiet by design.
 
@@ -16,8 +16,7 @@ export default function NavDots() {
 
   // Derived selector: re-renders only when the active index changes, not every
   // scroll frame. Converts scrollT back to pixels via the SAME limit scrollT
-  // was normalised with (B9) — the old totalHeight−innerHeight denominator
-  // drifted the index near section boundaries.
+  // was normalised with, which keeps the index aligned at section boundaries.
   const activeSectionIndex = useSiteStore((s) => {
     if (typeof window === 'undefined') return 0;
     const scrollPx = s.scrollT * getScrollLimit();
@@ -26,10 +25,17 @@ export default function NavDots() {
     return Math.min(Math.max(raw, 0), activeSections.length - 1);
   });
 
-  const anchorT = (index: number): number =>
-    (HEADER_HEIGHT_PX + index * SECTION_HEIGHT_PX) / Math.max(1, getScrollLimit());
+  const sectionScrollY = (index: number): number =>
+    Math.max(
+      0,
+      HEADER_HEIGHT_PX +
+        (index + 0.5) * SECTION_HEIGHT_PX -
+        (typeof window === 'undefined' ? 0 : window.innerHeight / 2),
+    );
 
-  // Desktop-only chrome — phones get the ticker instead (A4); the CSS media
+  const anchorT = (index: number): number => sectionScrollY(index) / Math.max(1, getScrollLimit());
+
+  // Desktop-only chrome — phones get the ticker instead; the CSS media
   // query hides this whole rail below the breakpoint.
   return (
     <nav
@@ -107,7 +113,7 @@ export default function NavDots() {
             <button
               type="button"
               aria-label={`Go to ${section.label}`}
-              onClick={() => scrollToY(HEADER_HEIGHT_PX + section.index * SECTION_HEIGHT_PX)}
+              onClick={() => scrollToY(sectionScrollY(section.index))}
               onMouseEnter={() => setHoveredId(section.id)}
               onMouseLeave={() => setHoveredId(null)}
               // 24px button = WCAG minimum target size; the visible tick stays thin

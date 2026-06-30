@@ -64,6 +64,18 @@ test.describe('routes render', () => {
     await expect(page.locator('body')).toContainText(/404|lost|signal|transmission/i);
   });
 
+  test('client-side return from blog reveals the home hero', async ({ page }) => {
+    await skipBoot(page);
+    await page.goto('/blog');
+    await page.getByRole('link', { name: /return to descent/i }).click();
+
+    const hero = page.getByRole('heading', { level: 1, name: 'Sidakpreet Singh' });
+    await expect(hero).toBeVisible({ timeout: 10_000 });
+    await expect
+      .poll(async () => hero.evaluate((element) => getComputedStyle(element).transform))
+      .toBe('matrix(1, 0, 0, 1, 0, 0)');
+  });
+
   test('rss feed renders', async ({ request }) => {
     const res = await request.get('/feed.xml');
     expect(res.ok()).toBeTruthy();
@@ -91,6 +103,19 @@ test.describe('routes render', () => {
       page.locator('link[rel="alternate"][type="application/atom+xml"]'),
     ).toHaveAttribute('href', /\/feed\.atom$/);
   });
+});
+
+test('mobile navigator uses the mobile world geometry', async ({ page }) => {
+  await skipBoot(page);
+  await page.setViewportSize({ width: 375, height: 800 });
+  await waitForHome(page);
+
+  await page.locator('.m-sec-nav__toggle').click();
+  await page.locator('.m-sec-nav__item').filter({ hasText: 'Projects' }).click();
+
+  await expect
+    .poll(() => page.locator('.m-sec-nav__current').textContent(), { timeout: 10_000 })
+    .toContain('PROJECTS');
 });
 
 test.describe('dossier a11y', () => {

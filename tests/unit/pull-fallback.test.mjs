@@ -5,9 +5,8 @@ import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 // The env-unset path is what every build without SANITY_PROJECT_ID takes,
-// including production deploys of the committed content. Before this test it
-// was exercised by a bare invocation with no assertion, so `pull-content.mjs`
-// exiting 0 proved nothing about whether it had left `content/` alone.
+// including production deploys of the committed content. It must not rewrite
+// that fallback content.
 const root = process.cwd();
 const siteJson = join(root, 'content', 'site.json');
 
@@ -31,5 +30,21 @@ describe('pull-content fallback', () => {
       'content/site.json was rewritten during the fallback path',
     );
     assert.ok(after.bytes.equals(before.bytes), 'content/site.json bytes changed');
+  });
+
+  it('fails closed and preserves content when a configured project id is invalid', () => {
+    const before = { stat: statSync(siteJson), bytes: readFileSync(siteJson) };
+
+    const result = spawnSync(process.execPath, [join(root, 'scripts', 'pull-content.mjs')], {
+      cwd: root,
+      encoding: 'utf8',
+      env: { ...process.env, SANITY_PROJECT_ID: 'invalid/project' },
+    });
+
+    assert.notEqual(result.status, 0);
+
+    const after = { stat: statSync(siteJson), bytes: readFileSync(siteJson) };
+    assert.equal(after.stat.mtimeMs, before.stat.mtimeMs);
+    assert.ok(after.bytes.equals(before.bytes));
   });
 });

@@ -1,7 +1,7 @@
 import { defineField, defineType } from 'sanity';
 
 const FIGURE = ['network', 'bars', 'stack', 'flow', 'orbit', 'pulse'] as const;
-const STATUS = ['live', 'wip', 'archived'] as const;
+const STATUS = ['live', 'private', 'wip', 'archived'] as const;
 
 // Mirrors content/projects.json items + enabled/order for Studio control.
 export const projectItem = defineType({

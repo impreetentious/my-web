@@ -2,10 +2,10 @@
   {
     "id": "health-ledger",
     "title": "Health Ledger",
-    "description": "Single-page health tracking application with Firebase authentication, daily habit/metric logging, and interactive visualisations. Built in Vanilla JS. Deployed on Vercel. Development partially automated via an agentic workflow (OpenHands + Gemini).",
+    "description": "Single-page health tracking application with Firebase authentication, daily habit and metric logging, and interactive visualisations. Built in Vanilla JS and deployed on Vercel.",
     "stack": ["JavaScript", "Firebase", "Vercel", "EmailJS"],
     "href": null,
-    "status": "live",
+    "status": "private",
     "figure": "pulse"
   },
   {
@@ -13,8 +13,8 @@
     "title": "Notion Backup System",
     "description": "Automated daily backup pipeline for Notion workspaces. Generates a full export, builds a manifest file, archives to Google Drive via rclone, and sends SMTP completion notifications. Runs unattended via GitHub Actions.",
     "stack": ["Node.js", "GitHub Actions", "rclone", "Google Drive API"],
-    "href": "https://github.com/ItsMonarch04/NotionBackups",
-    "status": "live",
+    "href": null,
+    "status": "private",
     "figure": "flow"
   },
   {
@@ -23,7 +23,7 @@
     "description": "Offline AI infrastructure running Ollama (local model server), Open WebUI (chat interface), and n8n (workflow automation) on both Mac and Windows. Fully air-gapped — no data leaves the device. Includes full setup documentation in Notion.",
     "stack": ["Ollama", "Open WebUI", "n8n", "Docker"],
     "href": null,
-    "status": "live",
+    "status": "private",
     "figure": "stack"
   },
   {

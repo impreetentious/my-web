@@ -1,6 +1,6 @@
 {
   "name": "my-web",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "private": true,
   "engines": {
     "node": "22.22.x",
@@ -11,7 +11,7 @@
     "build": "next build --turbopack",
     "prebuild": "node scripts/pull-content.mjs && node scripts/validate-content.mjs",
     "content": "node scripts/pull-content.mjs",
-    "content:seed": "node scripts/seed-sanity.mjs",
+    "content:seed": "node scripts/validate-content.mjs && node scripts/seed-sanity.mjs",
     "content:validate": "node scripts/validate-content.mjs",
     "start": "next start",
     "lint": "eslint",

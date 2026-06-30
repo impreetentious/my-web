@@ -4,18 +4,20 @@ import projectsData from '@/content/projects.json';
 import { DossierBlock, DossierRow, DossierFigure } from '@/components/panels/dossier';
 import type { ProjectItem } from '@/types';
 
-// E3 — enabled: false hides a row without deleting its record; the counter
+// enabled: false hides a row without deleting its record; the counter
 // below counts the filtered list.
 const items = (projectsData as ProjectItem[]).filter((i) => i.enabled !== false);
 
 const STATUS_COLORS: Record<ProjectItem['status'], string> = {
   live: 'rgba(96, 200, 140, 0.9)',
+  private: 'var(--color-text-muted)',
   wip: 'rgba(224, 178, 110, 0.9)',
   archived: 'var(--color-text-muted)',
 };
 
 const STATUS_LABELS: Record<ProjectItem['status'], string> = {
   live: 'LIVE',
+  private: 'PRIVATE',
   wip: 'WIP',
   archived: 'ARCHIVED',
 };
@@ -71,19 +73,6 @@ export function ProjectsPanel() {
                 />
                 {STATUS_LABELS[item.status]}
               </span>
-              {/* Deployed but not publicly reachable — say so instead of
-                  dangling a dead "LIVE" affordance (brief C7) */}
-              {item.status === 'live' && !item.href && (
-                <span
-                  style={{
-                    fontSize: '9px',
-                    letterSpacing: '0.14em',
-                    color: 'var(--color-text-muted)',
-                  }}
-                >
-                  PRIVATE
-                </span>
-              )}
             </span>
           }
           title={item.title}

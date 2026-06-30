@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * G3 — Pull Sanity → content/* at build time.
- * Zero npm dependencies. Unset SANITY_PROJECT_ID → committed fallback, exit 0.
+ * Pull Sanity → content/* at build time.
+ * Unset SANITY_PROJECT_ID → committed fallback, exit 0.
  *
  * Env: SANITY_PROJECT_ID (required to pull)
  *      SANITY_DATASET (optional, default "production")
@@ -16,7 +16,11 @@ const CONTENT = path.join(ROOT, 'content');
 const BLOG = path.join(CONTENT, 'blog');
 const API_VERSION = '2024-01-01';
 const FIGURES = new Set(['network', 'bars', 'stack', 'flow', 'orbit', 'pulse']);
-const STATUSES = new Set(['live', 'wip', 'archived']);
+const STATUSES = new Set(['live', 'private', 'wip', 'archived']);
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SANITY_ID = /^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$/;
+const DATASET = /^[a-z][a-z0-9_-]{0,63}$/;
+const FETCH_TIMEOUT_MS = 20_000;
 
 /** Load .env / .env.local without a dependency (Next does not inject into prebuild). */
 function loadEnvFiles() {
@@ -57,12 +61,20 @@ if (!projectId) {
   ok('SANITY_PROJECT_ID not set — using committed content');
   process.exit(0);
 }
+if (!SANITY_ID.test(projectId)) {
+  warn('SANITY_PROJECT_ID has an invalid format');
+  process.exit(1);
+}
+if (!DATASET.test(dataset)) {
+  warn('SANITY_DATASET has an invalid format');
+  process.exit(1);
+}
 
 const base = `https://${projectId}.apicdn.sanity.io/v${API_VERSION}/data/query/${dataset}`;
 
 async function groq(query) {
   const url = `${base}?query=${encodeURIComponent(query)}`;
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
   if (!res.ok) {
     throw new Error(`GROQ ${res.status} ${res.statusText} for ${query.slice(0, 60)}…`);
   }
@@ -79,6 +91,37 @@ function slugOf(value) {
 
 function isEmail(s) {
   return typeof s === 'string' && /.+@.+\..+/.test(s);
+}
+
+function isHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function isOrigin(value) {
+  if (!isHttpUrl(value)) return false;
+  const url = new URL(value);
+  return (
+    url.protocol === 'https:' &&
+    url.pathname === '/' &&
+    !url.search &&
+    !url.hash &&
+    !/\/$/.test(value)
+  );
+}
+
+function isResumeHref(value) {
+  return typeof value === 'string' && (/^\/(?!\/)/.test(value) || isHttpUrl(value));
+}
+
+function isIsoDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }
 
 function stableStringify(value) {
@@ -115,8 +158,17 @@ function validate(data) {
     }
     if (site.email && !isEmail(site.email)) errors.push('site.email invalid');
     if (!site.socials?.linkedin || !site.socials?.github) errors.push('site.socials incomplete');
+    if (!isOrigin(site.domain))
+      errors.push('site.domain must be an origin without a trailing slash');
+    if (!isResumeHref(site.resumeHref)) errors.push('site.resumeHref invalid');
+    if (site.socials && Object.values(site.socials).some((url) => !isHttpUrl(url))) {
+      errors.push('site.socials contains an invalid URL');
+    }
     if (typeof site.resumeAvailable !== 'boolean')
       errors.push('site.resumeAvailable must be boolean');
+    if (site.resumeAvailable && !site.resume?.asset?.url && !site.resume?.url) {
+      errors.push('site.resumeAvailable is true but no resume asset is attached');
+    }
     if (!Array.isArray(site.keywords)) errors.push('site.keywords must be array');
   }
 
@@ -130,12 +182,17 @@ function validate(data) {
 
   if (!Array.isArray(portfolio)) errors.push('portfolio not array');
   else {
+    const ids = new Set();
     for (const item of portfolio) {
       const id = slugOf(item.id);
-      if (!id) errors.push('portfolio item missing id');
+      if (!SLUG.test(id)) errors.push(`portfolio ${id || '?'} invalid id`);
+      if (ids.has(id)) errors.push(`portfolio ${id} duplicated`);
+      ids.add(id);
       if (!item.title || !item.year || !item.description)
         errors.push(`portfolio ${id || '?'} incomplete`);
       if (item.figure && !FIGURES.has(item.figure)) errors.push(`portfolio ${id} bad figure`);
+      if (item.href && !isHttpUrl(item.href)) errors.push(`portfolio ${id} invalid href`);
+      if (!Array.isArray(item.tags)) errors.push(`portfolio ${id} tags must be an array`);
       if (item.caseStudy) {
         for (const k of ['context', 'decision', 'move', 'model', 'outcome']) {
           if (typeof item.caseStudy[k] !== 'string') errors.push(`portfolio ${id} caseStudy.${k}`);
@@ -146,27 +203,54 @@ function validate(data) {
 
   if (!Array.isArray(projects)) errors.push('projects not array');
   else {
+    const ids = new Set();
     for (const item of projects) {
       const id = slugOf(item.id);
-      if (!id) errors.push('project item missing id');
+      if (!SLUG.test(id)) errors.push(`project ${id || '?'} invalid id`);
+      if (ids.has(id)) errors.push(`project ${id} duplicated`);
+      ids.add(id);
       if (!item.title || !item.description || !STATUSES.has(item.status)) {
         errors.push(`project ${id || '?'} incomplete/bad status`);
       }
       if (item.figure && !FIGURES.has(item.figure)) errors.push(`project ${id} bad figure`);
+      if (item.href && !isHttpUrl(item.href)) errors.push(`project ${id} invalid href`);
+      if (!Array.isArray(item.stack)) errors.push(`project ${id} stack must be an array`);
+      if (item.status === 'live' && !item.href) errors.push(`project ${id} is live without href`);
+      if (item.status === 'private' && item.href) errors.push(`project ${id} is private with href`);
     }
   }
 
   if (!Array.isArray(seriesDocs) || seriesDocs.length < 1) errors.push('series empty');
   else {
+    const keys = new Set();
     for (const s of seriesDocs) {
-      if (!slugOf(s.key) || !s.title || typeof s.planned !== 'number' || !s.description) {
+      const key = slugOf(s.key);
+      if (
+        !SLUG.test(key) ||
+        !s.title ||
+        !Number.isInteger(s.planned) ||
+        s.planned < 1 ||
+        !s.description
+      ) {
         errors.push(`series ${slugOf(s.key) || '?'} incomplete`);
       }
+      if (keys.has(key)) errors.push(`series ${key} duplicated`);
+      keys.add(key);
     }
   }
 
   if (!Array.isArray(posts) || posts.length < 1) errors.push('need ≥1 post');
   else {
+    const slugs = new Set();
+    const seriesParts = new Set();
+    const seriesKeys = new Set(
+      Array.isArray(seriesDocs) ? seriesDocs.map((series) => slugOf(series.key)) : [],
+    );
+    const seriesPlans = new Map(
+      Array.isArray(seriesDocs)
+        ? seriesDocs.map((series) => [slugOf(series.key), series.planned])
+        : [],
+    );
     for (const p of posts) {
       const slug = slugOf(p.slug);
       if (
@@ -178,6 +262,26 @@ function validate(data) {
         !p.body.trim()
       ) {
         errors.push(`post ${slug || '?'} incomplete`);
+      }
+      if (!SLUG.test(slug)) errors.push(`post ${slug || '?'} invalid slug`);
+      if (!isIsoDate(p.date)) {
+        errors.push(`post ${slug || '?'} has invalid date`);
+      }
+      if (slugs.has(slug)) errors.push(`post ${slug} duplicated`);
+      slugs.add(slug);
+      if (p.seriesKey) {
+        if (!seriesKeys.has(p.seriesKey)) errors.push(`post ${slug} references unknown series`);
+        if (!Number.isInteger(p.seriesIndex) || p.seriesIndex < 1) {
+          errors.push(`post ${slug} has invalid seriesIndex`);
+        } else if (p.seriesIndex > seriesPlans.get(p.seriesKey)) {
+          errors.push(`post ${slug} exceeds its planned series length`);
+        } else {
+          const part = `${p.seriesKey}:${p.seriesIndex}`;
+          if (seriesParts.has(part)) errors.push(`series part ${part} duplicated`);
+          seriesParts.add(part);
+        }
+      } else if (p.seriesIndex != null) {
+        errors.push(`post ${slug} has seriesIndex without a series`);
       }
     }
   }
@@ -296,17 +400,29 @@ function renderMdx(post, seriesKey) {
   return lines.join('\n');
 }
 
-async function downloadResume(site) {
+async function fetchResume(site) {
+  if (!site.resumeAvailable) return null;
   const asset = site.resume;
   const url = asset?.asset?.url || asset?.url;
-  if (!url) return false;
-  const res = await fetch(url);
+  if (!url) throw new Error('resume is marked available but has no asset URL');
+  const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
   if (!res.ok) throw new Error(`resume download ${res.status}`);
-  const buf = Buffer.from(await res.arrayBuffer());
+  const contents = Buffer.from(await res.arrayBuffer());
+  if (!contents.subarray(0, 5).equals(Buffer.from('%PDF-'))) {
+    throw new Error('resume asset is not a PDF');
+  }
+  return contents;
+}
+
+function writeResume(contents) {
   const dest = path.join(ROOT, 'public', 'resume.pdf');
+  if (!contents) {
+    if (fs.existsSync(dest)) fs.unlinkSync(dest);
+    return false;
+  }
   const tmp = `${dest}.${process.pid}.tmp`;
   fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.writeFileSync(tmp, buf);
+  fs.writeFileSync(tmp, contents);
   fs.renameSync(tmp, dest);
   return true;
 }
@@ -334,17 +450,29 @@ async function main() {
       }`),
     ]);
   } catch (err) {
-    warn(`fetch failed — keeping committed content. ${err.message}`);
-    process.exit(0);
+    warn(`fetch failed — refusing to build stale content. ${err.message}`);
+    process.exit(1);
   }
 
   const errors = validate({ site, about, portfolio, projects, seriesDocs, posts });
   if (errors.length) {
-    warn(`validation failed — keeping committed content:\n  - ${errors.join('\n  - ')}`);
-    process.exit(0);
+    warn(
+      `validation failed — refusing to replace committed content:\n  - ${errors.join('\n  - ')}`,
+    );
+    process.exit(1);
   }
 
-  // Validate everything, THEN write everything (atomic per file via rename).
+  // Fetch binary assets before writing so a remote failure cannot leave a
+  // successful-looking, partially refreshed content tree.
+  let resume;
+  try {
+    resume = await fetchResume(site);
+  } catch (err) {
+    warn(`asset fetch failed — refusing to replace committed content. ${err.message}`);
+    process.exit(1);
+  }
+
+  // Validate and fetch everything, then write each file through a rename.
   try {
     writeAtomic(path.join(CONTENT, 'site.json'), stableStringify(mapSite(site)));
     writeAtomic(path.join(CONTENT, 'about.json'), stableStringify(mapAbout(about)));
@@ -366,7 +494,7 @@ async function main() {
       }
     }
 
-    const gotResume = await downloadResume(site);
+    const gotResume = writeResume(resume);
     if (gotResume) ok('wrote public/resume.pdf');
 
     ok(
@@ -374,8 +502,8 @@ async function main() {
     );
   } catch (err) {
     warn(`write failed — tree may be partial. ${err.message}`);
-    process.exit(0);
+    process.exit(1);
   }
 }
 
-main();
+await main();

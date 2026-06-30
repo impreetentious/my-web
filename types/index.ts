@@ -1,7 +1,7 @@
 // ─── Section Types ─────────────────────────────────────────────────────────
 
-export type SectionType = 'panel' | 'route';
-export type SectionSide = 'left' | 'right';
+type SectionType = 'panel' | 'route';
+type SectionSide = 'left' | 'right';
 export type ZoneName = 'sky' | 'horizon' | 'sea' | 'underwater';
 export type QualityLevel = 'high' | 'medium' | 'low';
 
@@ -10,7 +10,7 @@ export interface SectionConfig {
   enabled: boolean; // THE toggle — false means section does not exist anywhere
   label: string; // display name shown on card and in panel header
   type: SectionType; // 'panel' = opens overlay, 'route' = navigates to href
-  side?: SectionSide; // omitted = auto-alternate on the enabled list (E5);
+  side?: SectionSide; // omitted = auto-alternate on the enabled list;
   // set it only to pin a card to one side
   href?: string; // only required when type === 'route'
   tagline: string; // one sentence shown on the card below the label
@@ -46,35 +46,12 @@ export interface SiteStore {
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
 
-  quality: QualityLevel; // render tier (B3): high = full shader,
+  quality: QualityLevel; // render tier: high = full shader,
   // medium = dpr-1 lite shader (mobile
   // default), low = animated CSS world.
   // Set by lib/quality.ts on mount;
   // demoted by fps probe / context loss.
   setQuality: (q: QualityLevel) => void;
-}
-
-// ─── Content Types ─────────────────────────────────────────────────────────
-
-// E1 — the identity document: every personal fact exists ONLY in
-// content/site.json (Rule B). Components import it; nothing about the owner
-// may live as a literal in app/, components/ or lib/.
-export interface SiteContent {
-  name: string;
-  heroRoleLine: string;
-  email: string;
-  socials: Record<'linkedin' | 'github', string>;
-  domain: string; // canonical origin, "https://…" no trailing slash (L1 decides which host)
-  metaTitle: string;
-  metaDescription: string;
-  keywords: string[];
-  proposition: string; // what he does, recruiter-facing
-  availability: string; // e.g. "OPEN TO OPPORTUNITIES · 2026"
-  location: string; // e.g. "NEW DELHI · RELOCATION OPEN"
-  resumeHref: string; // "/resume.pdf" — becomes a Sanity asset at G3
-  // Keep the approved future path without rendering a broken download CTA.
-  // This flips only once the owner has supplied the actual document.
-  resumeAvailable: boolean;
 }
 
 export interface BlogPost {
@@ -83,18 +60,18 @@ export interface BlogPost {
   date: string; // ISO date string, e.g. "2025-05-11"
   excerpt: string;
   content?: string; // full MDX content, only present on individual post pages
-  readingTime: number; // minutes, computed from the source (C8)
+  readingTime: number; // minutes, computed from the source
   entry: number; // 1-based chronological log number (oldest = 1)
   series?: string; // series id from frontmatter — see SERIES in lib/blog.ts
   seriesIndex?: number; // 1-based part number within the series
 }
 
-// C4 — every dossier row carries an artifact: an abstract schematic drawn
+// every dossier row carries an artifact: an abstract schematic drawn
 // deterministically from the row's id, in one of these archetypes.
 export type FigureKind = 'network' | 'bars' | 'stack' | 'flow' | 'orbit' | 'pulse';
 
-// C5 — an anonymised case study rendered as a declassified extract inside
-// the dossier row. All narrative fields are owner-approved content.
+// an anonymised case study rendered as a declassified extract inside
+// the dossier row.
 export interface CaseStudy {
   context: string;
   decision: string;
@@ -105,14 +82,13 @@ export interface CaseStudy {
 
 export interface PortfolioItem {
   id: string;
-  enabled?: boolean; // false hides the row; missing = shown (E3)
+  enabled?: boolean; // false hides the row; missing = shown
   title: string;
   description: string;
   tags: string[];
   href?: string | null; // link to live project or case study; null (not just
   // omitted) means "no link" — content/portfolio.json (C.7)
-  // sets this explicitly on every item, matching the
-  // pattern used across all content JSON in this plan
+  // sets this explicitly on every item.
   year: string;
   figure?: FigureKind;
   caseStudy?: CaseStudy | null;
@@ -120,12 +96,12 @@ export interface PortfolioItem {
 
 export interface ProjectItem {
   id: string;
-  enabled?: boolean; // false hides the row; missing = shown (E3)
+  enabled?: boolean; // false hides the row; missing = shown
   title: string;
   description: string;
   stack: string[]; // technology tags
   href?: string | null; // GitHub or live link; null means "no link" — see
   // PortfolioItem.href above, same reasoning
-  status: 'live' | 'wip' | 'archived';
+  status: 'live' | 'private' | 'wip' | 'archived';
   figure?: FigureKind;
 }

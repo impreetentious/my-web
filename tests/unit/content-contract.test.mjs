@@ -5,7 +5,7 @@ import { describe, it } from 'node:test';
 
 const contentRoot = join(process.cwd(), 'content');
 const figures = new Set(['network', 'bars', 'stack', 'flow', 'orbit', 'pulse']);
-const statuses = new Set(['live', 'wip', 'archived']);
+const statuses = new Set(['live', 'private', 'wip', 'archived']);
 
 function readJson(name) {
   return JSON.parse(readFileSync(join(contentRoot, name), 'utf8'));
@@ -36,6 +36,8 @@ describe('content contracts', () => {
       assert.equal(statuses.has(project.status), true, `${project.id} has unknown status`);
       assert.equal(figures.has(project.figure), true, `${project.id} has unknown figure`);
       if (project.href !== null) assert.equal(isHttpUrl(project.href), true);
+      if (project.status === 'live') assert.equal(isHttpUrl(project.href), true);
+      if (project.status === 'private') assert.equal(project.href, null);
     }
   });
 

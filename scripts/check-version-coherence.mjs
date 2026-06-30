@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (file) => readFileSync(path.join(root, file), 'utf8');
 const pkg = JSON.parse(read('package.json'));
+const studioPkg = JSON.parse(read('studio/package.json'));
 const version = pkg.version;
 const errors = [];
 const EXPECTED = {
@@ -42,8 +43,6 @@ if (existsSync(path.join(root, 'package-lock.json'))) {
 }
 
 // README.md, package.json, and the lockfile root are the release-version surfaces.
-// Nothing else is gated: the build-time handover log is disposable by design, so no gate
-// may ever require its presence.
 for (const file of ['README.md']) {
   const found = markerVersion(file);
   if (!found) errors.push(`${file} missing **Version:** vX.Y.Z marker`);
@@ -57,6 +56,15 @@ if (pkg.engines?.node !== EXPECTED.engines) {
 }
 if (pkg.engines?.npm !== EXPECTED.npm) {
   errors.push(`package.json engines.npm ${pkg.engines?.npm} != ${EXPECTED.npm}`);
+}
+if (studioPkg.engines?.node !== EXPECTED.engines) {
+  errors.push(`studio/package.json engines.node ${studioPkg.engines?.node} != ${EXPECTED.engines}`);
+}
+if (studioPkg.engines?.npm !== EXPECTED.npm) {
+  errors.push(`studio/package.json engines.npm ${studioPkg.engines?.npm} != ${EXPECTED.npm}`);
+}
+if (pkg.devDependencies?.['eslint-config-next'] !== pkg.dependencies?.next) {
+  errors.push('eslint-config-next must exactly match the installed Next.js version');
 }
 
 // Every job in the workflow must pin the same runtime, not just the first one —

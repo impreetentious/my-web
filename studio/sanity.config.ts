@@ -4,8 +4,7 @@ import { visionTool } from '@sanity/vision';
 import { schemaTypes } from './schemaTypes';
 import { deskStructure } from './structure';
 
-// Env-parameterized until the owner supplies a real projectId (owner action).
-// Local: copy studio/.env.example → studio/.env and set SANITY_STUDIO_PROJECT_ID.
+// Local development reads the project and dataset from studio/.env.
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || process.env.SANITY_PROJECT_ID || '';
 const dataset = process.env.SANITY_STUDIO_DATASET || process.env.SANITY_DATASET || 'production';
 

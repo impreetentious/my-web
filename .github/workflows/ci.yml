@@ -15,11 +15,13 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 22.22.2
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: studio/package-lock.json
       - run: npm ci --prefix studio
-      - run: npx --prefix studio tsc --noEmit -p studio/tsconfig.json
+      - run: npm audit --prefix studio --omit=dev --audit-level=high
+      - run: npm run typecheck --prefix studio
+      - run: npm run build --prefix studio
 
   verify:
     runs-on: ubuntu-latest
@@ -27,7 +29,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 22.22.2
+          node-version-file: .nvmrc
           cache: npm
       - run: npm ci
       - run: npm audit --omit=dev --audit-level=high
@@ -47,10 +49,9 @@ jobs:
       # no Sanity credentials are needed in CI.
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
-      # L6 — both placeholder states must typecheck AND build. Last, because it
+      # Both placeholder states must typecheck and build. This runs last because it
       # clears `.next` and leaves it holding the placeholder-enabled build,
       # which is not what the budgets and e2e above are meant to measure.
       - run: node scripts/verify-placeholder-states.mjs
-      # The state flip is an env var now, not a rewrite of config/sections.ts.
-      # This fails if that ever regresses to mutating tracked source.
+      # The state flip is environment-driven; fail if any gate mutates source.
       - run: git diff --exit-code

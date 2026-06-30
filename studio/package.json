@@ -1,7 +1,7 @@
 {
   "name": "the-descent-studio",
   "private": true,
-  "version": "0.17.2",
+  "version": "0.17.3",
   "description": "Sanity Studio for The Descent portfolio — separate from the Next app (no shared deps).",
   "license": "MIT",
   "repository": {
@@ -11,6 +11,7 @@
   },
   "scripts": {
     "dev": "sanity dev",
+    "typecheck": "tsc --noEmit",
     "build": "sanity build",
     "deploy": "sanity deploy",
     "start": "sanity start"
@@ -28,11 +29,17 @@
     "typescript": "^5"
   },
   "overrides": {
+    "@module-federation/dts-plugin": {
+      "undici": "7.25.0"
+    },
+    "js-yaml": "4.1.1",
+    "smol-toml": "1.6.1",
     "typeid-js": {
-      "uuid": "~11.1.0"
+      "uuid": "~11.1.1"
     }
   },
   "engines": {
-    "node": ">=22.12"
+    "node": "22.22.x",
+    "npm": ">=10"
   }
 }

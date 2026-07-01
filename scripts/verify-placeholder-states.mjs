@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * L6 — both placeholder states must produce a sane parametric world.
+ * both placeholder states must produce a sane parametric world.
  *
  * The toggle is driven by MW_FORCE_PLACEHOLDER (read in config/sections.ts),
  * so this script never writes to tracked source: an interrupted run leaves the

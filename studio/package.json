@@ -1,7 +1,7 @@
 {
   "name": "the-descent-studio",
   "private": true,
-  "version": "0.17.12",
+  "version": "0.17.13",
   "description": "Sanity Studio for The Descent portfolio — separate from the Next app (no shared deps).",
   "license": "MIT",
   "repository": {

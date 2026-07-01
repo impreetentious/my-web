@@ -12,9 +12,8 @@ const securityHeaders = [
     //
     // Note that a hash or nonce in the same directive makes browsers IGNORE
     // `'unsafe-inline'` entirely (CSP3), so the two cannot be combined as a
-    // belt-and-braces measure — that is what previously blocked all nine
-    // inline scripts. `npm run budget:lighthouse` fails on console CSP
-    // violations, which is what caught it.
+    // belt-and-braces measure. `npm run budget:lighthouse` fails on console
+    // CSP violations so this policy remains covered by a release gate.
     //
     // Every other executable script stays external, and JSON-LD tags are inert
     // data that need no execution allowance. Sanity is pulled by

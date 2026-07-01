@@ -42,7 +42,7 @@ yarn-error.log*
 # vercel
 .vercel
 
-# local Claude session tooling
+# local tool state
 .claude/
 
 # typescript

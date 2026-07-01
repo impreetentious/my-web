@@ -15,12 +15,12 @@ import { motionAllowed, EASE_ARRIVE_CSS } from '@/lib/motion';
 import { activeSections, sectionCenterFractionMobile } from '@/lib/activeSections';
 import { MOBILE_GUTTER_VW } from '@/config/world';
 
-// A3 — the probe's wake on a phone: slimmed to a side gutter the cards
+// the probe's wake on a phone: slimmed to a side gutter the cards
 // indent off. Desktop rules carry over wholesale: NOTHING renders ahead of
 // the comet, anchors materialise on approach and ripple once when passed,
 // connectors draw toward the card, the head cools warm→teal at the actual
-// on-screen waterline. A6: the comet's screen position eases with a heavier
-// lag underwater, so the medium change is FELT as visual drag even though
+// on-screen waterline. The comet's screen position eases with a heavier lag
+// underwater, so the medium change is felt as visual drag even though
 // touch scrolling stays native.
 
 const HOT_TAIL_PX = 170;
@@ -207,7 +207,7 @@ export default function MobileSpine() {
       const t = useSiteStore.getState().scrollT;
       const vh = window.innerHeight;
 
-      // A6 — heavier medium: above the surface the screen position tracks
+      // heavier medium: above the surface the screen position tracks
       // tightly; underwater it drags behind the hand and settles late
       const targetVh = cometScreenVhMobile(t);
       if (easedVh === null || !allowMotion) {
@@ -217,7 +217,7 @@ export default function MobileSpine() {
         easedVh += (targetVh - easedVh) * (0.42 - 0.3 * uw);
       }
 
-      // C2 — buoyancy rides on top of the eased position (not through it:
+      // buoyancy rides on top of the eased position (not through it:
       // the underwater lag would smear the rebound into mush)
       const buoy = allowMotion ? buoyancyVh(plungeElapsed(performance.now())) : 0;
 

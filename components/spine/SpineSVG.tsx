@@ -12,7 +12,7 @@ interface SpineSVGProps {
   totalHeight: number;
 }
 
-// The spine is the probe's wake. v2 rules:
+// The spine is the probe's wake:
 //   · NOTHING renders ahead of the comet — no route hint, no waiting nodes.
 //   · the traced trail is layered strokes only (no SVG gaussian filters):
 //     a near-white 1px core at low opacity over one wide soft under-glow,
@@ -275,7 +275,7 @@ export default function SpineSVG({ totalHeight }: SpineSVGProps) {
 
       const t = useSiteStore.getState().scrollT;
       const vh = window.innerHeight;
-      // C2 — the probe overshoots the crossing with its momentum and one
+      // the probe overshoots the crossing with its momentum and one
       // damped rebound settles it; same curve the shader's world offset rides
       const buoy = allowMotion ? buoyancyVh(plungeElapsed(now)) : 0;
       // screen-curve + live scrollY: exact at any window size, immune to the

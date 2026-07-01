@@ -9,8 +9,8 @@ import { getScrollLimit } from '@/lib/scrollSystem';
 // their real altitudes — 400 km of sky against 4 km of water. Page-anchored
 // (they belong to places, not moments) with a slight parallax so they pass
 // marginally faster than the content; exact at their own altitude.
-// A4: phones keep the landmark trio (core milestones); the rest are hidden
-// by CSS (.milestone[data-extra]). B8: per-milestone opacity bells keep at
+// phones keep the landmark trio (core milestones); the rest are hidden
+// by CSS (.milestone[data-extra]). Per-milestone opacity bells keep at
 // most one caption prominent where they cluster around the crossing.
 
 const DEFAULT_BELL = 0.085;

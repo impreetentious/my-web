@@ -8,11 +8,11 @@ let lenis: Lenis | null = null;
 let rafId: number | null = null;
 let teardownExtras: (() => void) | null = null;
 
-// §3.5.2 — scroll has physics. Light and fast in orbit, heavy and damped
+// scroll has physics. Light and fast in orbit, heavy and damped
 // underwater; lerped every frame, never stepped, so the medium change is felt
 // in the hand before the eyes name it.
 //
-// A6 (touch): phones keep NATIVE touch scrolling — Lenis syncTouch fights the
+// Phones keep native touch scrolling — Lenis syncTouch fights the
 // iOS rubber-band and can't be tuned blind from here. Lenis still tracks the
 // native scroll every raf, so velocity/scrollT stay truthful; the medium
 // change on touch is delivered visually instead — the comet's screen position
@@ -22,7 +22,7 @@ const DURATION_ABYSS = 1.9;
 const WHEEL_ORBIT = 1.0;
 const WHEEL_ABYSS = 0.62;
 
-const IDLE_AFTER_MS = 20000; // §3.5.6 — idle life
+const IDLE_AFTER_MS = 20000; // idle life
 const IDLE_REPEAT_MS = 26000;
 const PLUNGE_THROTTLE_MS = 1500;
 
@@ -33,14 +33,14 @@ function nativeLimit(): number {
 /** The scrollable extent every scroll-t consumer must normalise against —
  *  Lenis's own limit while it runs, the native document extent otherwise
  *  (reduced motion). Never raw scrollHeight−vh in Lenis mode: late-injected
- *  overlays (dev tools) pad the body past the scrollable extent (B9). */
+ *  overlays (dev tools) pad the body past the scrollable extent. */
 export function getScrollLimit(): number {
   if (lenis && lenis.limit) return lenis.limit;
   return nativeLimit();
 }
 
 export function initScrollSystem(): void {
-  // B2 — reduced motion reduces the SCROLL itself: no Lenis, no smoothing,
+  // reduced motion reduces the SCROLL itself: no Lenis, no smoothing,
   // no plunge shock, no idle beats. Scrolling is native/instant; the world
   // stays truthful through a passive scroll listener so telemetry, colour
   // and geometry still belong to the place the visitor is at.
@@ -95,9 +95,8 @@ export function initScrollSystem(): void {
     if (journey.startedAt === null && scrollT > 0.004) journey.startedAt = now;
     if (scrollT > journey.maxT) journey.maxT = scrollT;
 
-    // water weight — lerp Lenis params toward the zone target. F2: same
-    // crossing-anchored gate as MobileSpine's underwater drag (was 0.7/0.85,
-    // tied to the old 0.76 world).
+    // Water weight — lerp Lenis params toward the same crossing-anchored
+    // target used by MobileSpine's underwater drag.
     const uw = smoothstep(CROSS_T - 0.06, CROSS_T + 0.09, scrollT);
     duration += (DURATION_ORBIT + (DURATION_ABYSS - DURATION_ORBIT) * uw - duration) * 0.08;
     wheel += (WHEEL_ORBIT + (WHEEL_ABYSS - WHEEL_ORBIT) * uw - wheel) * 0.08;
@@ -130,7 +129,7 @@ export function initScrollSystem(): void {
     rafId = requestAnimationFrame(raf);
   }
 
-  // B4 — a hidden tab gets no scroll loop at all; on return, zero the
+  // a hidden tab gets no scroll loop at all; on return, zero the
   // velocity and idle clock so the away-time doesn't integrate into one
   // spike or an instant idle beat.
   const onVisibility = () => {

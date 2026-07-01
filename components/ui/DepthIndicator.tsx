@@ -16,7 +16,7 @@ const ZONE_LABELS: Record<ZoneName, string> = {
   underwater: 'BELOW SEA LEVEL',
 };
 
-// C3a — the rate line is REAL data only: journey.velocity (px/frame) mapped
+// the rate line is REAL data only: journey.velocity (px/frame) mapped
 // through the scroll extent into t/s, then through the altitude/depth model's
 // local derivative into world units. Negative = falling, like the readings.
 const RATE_TICK_MS = 120;
@@ -40,7 +40,7 @@ function rateReading(t: number): string {
   return `RATE ${mPerSec > 0 ? '+' : '−'}${Math.abs(mPerSec).toLocaleString('en-US')} M/S`;
 }
 
-// C3b — plunge warning burst: two lines inside the glitch window. The
+// plunge warning burst: two lines inside the glitch window. The
 // reacquisition figure is the scramble window itself — a real number.
 const WARN_LINE_1 = 'WARNING: PRESSURE SPIKE';
 const WARN_LINE_2 = 'SIGNAL REACQUIRED +360MS';
@@ -48,7 +48,7 @@ const WARN_SWAP_MS = 760;
 const WARN_FADE_MS = 2100;
 const WARN_CLEAR_MS = 2500;
 
-// C11 — the audio gauge: four blocks breathing with the mix intensity.
+// the audio gauge: four blocks breathing with the mix intensity.
 function audioGauge(on: boolean, intensity: number): string {
   if (!on) return '░░░░';
   const lit = Math.max(1, Math.min(4, Math.round(intensity * 4)));
@@ -166,7 +166,7 @@ export default function DepthIndicator() {
     return () => clearInterval(interval);
   }, [audioOn]);
 
-  // A4 — the ticker lives on every device: placement and type scale are
+  // the ticker lives on every device: placement and type scale are
   // CSS-resolved (.depth-indicator), smaller and tucked lower on phones.
   return (
     <div className="depth-indicator">
@@ -222,7 +222,7 @@ export default function DepthIndicator() {
       >
         {ZONE_LABELS[displayZone]}
       </div>
-      {/* C11 — the score's gauge; mute is the default, the click is the
+      {/* the score's gauge; mute is the default, the click is the
           autoplay gesture */}
       <button
         type="button"

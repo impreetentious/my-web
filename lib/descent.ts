@@ -1,8 +1,8 @@
 // The descent timing + colour system: one vertical journey from orbit to the
 // ocean floor. Every scroll-driven visual (sky shader, spine trail, comet,
 // depth ticker, waterline) samples this module so the world stays in one
-// story. v2 moves the waterline crossing to t = CROSS_T (derived, ~0.84 at the
-// 5-card default) so the sky reads as ~¾+ of the journey — a 400 km fall
+// story. The waterline crossing is t = CROSS_T (derived, ~0.84 at the
+// 5-card default), so the sky reads as ~¾+ of the journey — a 400 km fall
 // against a 4 km dive.
 //
 // "u" below is normalised page depth (y / totalHeight), NOT scrollT — colours
@@ -12,7 +12,7 @@
 import { activeSections, totalPageHeight } from '@/lib/activeSections';
 import { SECTION_HEIGHT_PX, HEADER_HEIGHT_PX } from '@/config/world';
 
-// ─── The plunge moment (derived — F2) ───────────────────────────────────────
+// ─── The derived plunge moment ──────────────────────────────────────────────
 // CROSS_T is no longer hand-tuned to a 4-card page: it derives from the
 // enabled section count so both placeholder states (5 or 6 cards) land the
 // crossing in the GAP between the last two cards. Every scroll-t literal in
@@ -20,8 +20,7 @@ import { SECTION_HEIGHT_PX, HEADER_HEIGHT_PX } from '@/config/world';
 // relative to CROSS_T / U_SURFACE / K so the whole world stretches with it.
 
 /** Viewport height the tuning is normalised to. Real viewports (700–1100px)
- *  drift the card/crossing alignment ±0.02 t — the same slop as the old
- *  hand-tuned world. */
+ *  drift the card/crossing alignment by no more than about ±0.02 t. */
 const NOMINAL_VH = 900;
 
 const N = activeSections.length;
@@ -42,12 +41,11 @@ export const CROSS_T = Math.min(0.88, (tCard(N - 2) + tCard(N - 1)) / 2);
  *  gates. */
 export const U_SURFACE = (CROSS_T * limit + NOMINAL_VH / 2) / totalPageHeight;
 
-/** Sky-stretch factor: early-journey beats scale with the longer sky. The
- *  0.76 anchor is the old hand-tuned crossing the literals were authored at. */
+/** Sky-stretch factor: early-journey beats scale from the 0.76 reference
+ *  crossing used by the underlying animation constants. */
 export const K = CROSS_T / 0.76;
 
-/** Scroll-t zone boundaries (moved out of config/world.ts in F2 so they can
- *  derive from CROSS_T — config/world must not import descent). Consumed by
+/** Scroll-t zone boundaries derive from CROSS_T. Consumed by
  *  store/useSiteStore to label the active zone. */
 export const ZONE_THRESHOLDS = {
   sky: 0, // always starts here
@@ -63,9 +61,9 @@ export interface TrailStop {
   color: string; // hex
 }
 
-// v2 palette: desaturated against v1's candy gold/cyan. The handover brackets
-// U_SURFACE so each part of the wake keeps the light of the altitude where it
-// was made. Pure #00FFEE survives only as tiny UI accents, never here.
+// The desaturated handover brackets U_SURFACE so each part of the wake keeps
+// the light of the altitude where it was made. Pure #00FFEE is reserved for
+// tiny UI accents.
 export const TRAIL_STOPS: TrailStop[] = [
   { u: 0.0, color: '#EADCBC' }, // pale starlight gold
   { u: 0.34, color: '#DDB878' }, // gold
@@ -110,7 +108,7 @@ export function smoothstep(edge0: number, edge1: number, x: number): number {
 }
 
 /** Linear ramp 0→1 between edges, clamped. */
-export function ramp(edge0: number, edge1: number, x: number): number {
+function ramp(edge0: number, edge1: number, x: number): number {
   return Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
 }
 
@@ -209,7 +207,7 @@ export function cometScreenVh(t: number): number {
   return 100 * (t - (CROSS_T - 0.5) * rise * fall);
 }
 
-/** Mobile comet screen path (A3), in vh from the top of the viewport. The
+/** Mobile comet screen path, in vh from the top of the viewport. The
  *  probe hovers in the upper third while the sky is young, meets the
  *  waterline mid-frame at CROSS_T — the plunge beat is shared with desktop —
  *  then pulls ahead into the lower third across the deep. */
@@ -226,7 +224,7 @@ export function cometScreenVhMobile(t: number): number {
 
 /** Opacity of each background/particle layer at scroll t. Weights are
  *  independent (layers stack back-to-front), not a partition of unity.
- *  v2 beats (now parametric — F2): early-sky beats scale by K, the crossing
+ *  Early-sky beats scale by K, while the crossing
  *  band and everything below anchor to CROSS_T; orbit/high-atmosphere occupy
  *  the fixed upper sky, golden hour → crossing → underwater track the surface. */
 export function zoneWeights(t: number): {
@@ -263,10 +261,10 @@ const ORBIT_KM = 400; // start at ISS altitude
 const FLOOR_M = 3800; // average ocean depth
 
 /** Altitude hits zero here… */
-export const SEA_T0 = CROSS_T - 0.025;
+const SEA_T0 = CROSS_T - 0.025;
 /** …and depth leaves zero here; between them the ticker reads SEA LEVEL
  *  until the plunge hard-flips it to DEPTH. */
-export const DEPTH_T0 = CROSS_T + 0.005;
+const DEPTH_T0 = CROSS_T + 0.005;
 
 const ALT_EXP = 3.2; // log-ish: early kilometres fly past, low ones crawl
 const DEPTH_EXP = 1.6;
@@ -282,13 +280,13 @@ export function depthMetres(t: number): number {
 }
 
 /** Inverse of altitudeKm — scroll t at which the reading passes `km`. */
-export function tAtAltitudeKm(km: number): number {
+function tAtAltitudeKm(km: number): number {
   const x = 1 - Math.pow(km / ORBIT_KM, 1 / ALT_EXP);
   return 0.02 + x * (SEA_T0 - 0.02);
 }
 
 /** Inverse of depthMetres — scroll t at which the reading passes `m` below. */
-export function tAtDepthM(m: number): number {
+function tAtDepthM(m: number): number {
   const x = Math.pow(m / FLOOR_M, 1 / DEPTH_EXP);
   return DEPTH_T0 + x * (1 - DEPTH_T0);
 }
@@ -317,9 +315,9 @@ export interface Milestone {
   accent?: boolean; // sea level gets the gold
   /** Opacity bell half-width in t (default 0.085). Narrowed where milestones
    *  cluster around the crossing so at most one caption is prominent near
-   *  the plunge (B8) — the set piece stays uncrowded. */
+   *  the plunge — the set piece stays uncrowded. */
   bell?: number;
-  /** Survives the mobile cut (A4) — phones show only the landmark trio. */
+  /** Survives the mobile cut — phones show only the landmark trio. */
   core?: boolean;
 }
 

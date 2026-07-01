@@ -1,9 +1,9 @@
 import { track } from '@vercel/analytics';
 
 // The single tracking surface for the site. Everything routes through the
-// Vercel Analytics `track` already wired in app/layout.tsx — the same
-// cookieless, PII-free destination the owner opted into. No new endpoint, no
-// device fingerprint, nothing stored client-side. Two event families:
+// Vercel Analytics `track` already wired in app/layout.tsx. There is no other
+// endpoint, device fingerprint, or client-side analytics storage. Two event
+// families:
 //
 //   • conversions — the handful of actions that mean a visitor is trying to
 //     reach me (email, résumé, a social relay). Named once here so no stray

@@ -4,13 +4,13 @@ import site from '@/content/site.json';
 import { DossierBlock, DossierHead, DossierRow, ChannelLink } from '@/components/panels/dossier';
 import { trackConversion } from '@/lib/analytics';
 
-// F1 — Contact is the deepest transmission: "OPEN CHANNEL". It reuses the
-// dossier kit wholesale (no new visual language) and owns the recruiter path
-// the footer used to carry. Every fact comes from site.json (Rule B); the
-// fiction chrome (the footnote) is a code string (Rule A).
+// Contact is the deepest transmission: "OPEN CHANNEL". It reuses the
+// dossier kit wholesale (no new visual language) and owns the recruiter path.
+// Every fact comes from site.json; the fiction
+// chrome (the footnote) is a presentation string.
 
-/** Display host of a social URL — DERIVED from site.json so the domain chip
- *  is never a second source for the link (Rule B: no hardcoded host literal). */
+/** Derive the display host from site.json so the domain chip is never a
+ *  second source for the link. */
 function host(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, '');
@@ -103,7 +103,7 @@ export function ContactPanel() {
         }
       />
 
-      {/* Fiction footnote — chrome, so it lives as a code string (Rule A) */}
+      {/* Fiction footnote — presentation chrome, so it lives in code. */}
       <DossierBlock style={{ marginTop: '44px' }}>
         <p
           style={{

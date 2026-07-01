@@ -12,13 +12,13 @@ import {
 } from '@/components/panels/dossier';
 import { trackConversion } from '@/lib/analytics';
 
-// C4 — About is an actual dossier now: a display-serif pull-quote carries the
+// About is an actual dossier now: a display-serif pull-quote carries the
 // strongest field record, the transcript gets margin annotations, and the
-// C6 channels block closes the file with the recruiter path — proposition,
+// channels block closes the file with the recruiter path — proposition,
 // availability, full record, open channel. Dossier copy lives in about.json;
-// identity facts (name, email, channels) come from site.json (E1, Rule B).
+// identity facts (name, email, channels) come from site.json.
 // ChannelLink is the shared CTA — extracted to dossier.tsx so ContactPanel
-// (F1) speaks the same language.
+// speaks the same language.
 
 export function AboutPanel() {
   const hasResume = site.resumeAvailable && Boolean(site.resumeHref);
@@ -51,7 +51,7 @@ export function AboutPanel() {
         </p>
       </DossierBlock>
 
-      {/* The strongest field record speaks the document voice (C4) */}
+      {/* The strongest field record speaks the document voice */}
       <PullQuote quote={aboutData.pullQuote} refLine={aboutData.pullQuoteRef} />
 
       {/* Impact readout */}
@@ -69,7 +69,7 @@ export function AboutPanel() {
             style={{
               background: 'rgba(255, 255, 255, 0.025)',
               padding: '18px 14px 16px',
-              minWidth: 0, // grid items must be allowed to shrink — labels wrap instead of clipping (A10)
+              minWidth: 0, // grid items must be allowed to shrink — labels wrap instead of clipping
             }}
           >
             <p
@@ -101,7 +101,7 @@ export function AboutPanel() {
         ))}
       </DossierBlock>
 
-      {/* Bio — the transcript, with margin annotations (C4) */}
+      {/* Bio — the transcript, with margin annotations */}
       <DossierHead>Transcript</DossierHead>
       {aboutData.bio.map((paragraph, i) => (
         <DossierBlock key={paragraph.slice(0, 32)}>
@@ -159,7 +159,7 @@ export function AboutPanel() {
         </ChipRow>
       </DossierBlock>
 
-      {/* Channels — the recruiter path, on-fiction (C6) */}
+      {/* Channels — the recruiter path, on-fiction */}
       <DossierHead>Channels</DossierHead>
       <DossierBlock>
         <p

@@ -4,13 +4,13 @@ import { useState } from 'react';
 import site from '@/content/site.json';
 import { trackConversion } from '@/lib/analytics';
 
-// C15 — the contact plate carries a transmit mark, not a stock envelope: a
+// the contact plate carries a transmit mark, not a stock envelope: a
 // source point firing two arcs toward the sky. Hover completes the send —
 // the arcs light in sequence and a signal dot leaves the dish.
 export default function EmailIcon() {
   const [hover, setHover] = useState(false);
 
-  // A9 — hidden below the breakpoint (CSS .email-fab): fixed bottom-right
+  // hidden below the breakpoint (CSS .email-fab): fixed bottom-right
   // overlapped full-width cards on phones; the contact affordance lives in
   // the footer's social row there instead.
   return (

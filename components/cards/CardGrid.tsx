@@ -7,7 +7,7 @@ import {
 } from '@/lib/activeSections';
 import { Card } from '@/components/cards/Card';
 
-// One DOM for both breakpoints (A8): every card lives in an absolutely
+// One DOM for both breakpoints: every card lives in an absolutely
 // positioned slot whose geometry is resolved in CSS (.card-slot) from the
 // custom properties below — beside the spine on desktop, indented off the
 // gutter wake on mobile. Server HTML, phone paint and desktop paint all

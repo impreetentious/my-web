@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSiteStore } from '@/store/useSiteStore';
 import { motionAllowed } from '@/lib/motion';
 
-// C14 — a restrained cursor for the descent only: a small ring trailing the
+// a restrained cursor for the descent only: a small ring trailing the
 // pointer, tightening over interactives, gaining a sonar blip underwater.
 // Fine pointers with motion allowed, and only after the first real move —
 // touch and reduced-motion never see it; blog routes keep the system cursor.

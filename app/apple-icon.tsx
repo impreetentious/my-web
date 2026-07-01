@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-// L3 — apple-touch-icon (180). Same comet/waterline mark, larger canvas.
+// apple-touch-icon (180). Same comet/waterline mark, larger canvas.
 export const size = { width: 180, height: 180 };
 export const contentType = 'image/png';
 

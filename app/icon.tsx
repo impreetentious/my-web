@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-// L3 — comet/waterline mark. Multiple sizes via generateImageMetadata.
+// comet/waterline mark. Multiple sizes via generateImageMetadata.
 export function generateImageMetadata() {
   return [
     { contentType: 'image/png', size: { width: 16, height: 16 }, id: '16' },

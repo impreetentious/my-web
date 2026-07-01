@@ -7,16 +7,14 @@ import { useSiteStore } from '@/store/useSiteStore';
 import { journey } from '@/lib/journey';
 import { scrambleText } from '@/lib/scramble';
 
-// Loading → hero is ONE take (§3.5.5): the final acquisition line detaches
+// Loading → hero is ONE take: the final acquisition line detaches
 // from the boot list, glides to the hero tag's exact position while
 // scramble-morphing into "— SIGNAL RECEIVED —", the veil lifts underneath it
 // (comet igniting at the top of the path in the same beat), and the hero's
 // own tag crossfades in beneath the departing line. No screen swap.
 //
-// B6 — every beat rides ONE GSAP timeline. The old setInterval/setTimeout
-// stack desynced under tab throttling (boot observed stretched to multiple
-// seconds); gsap's ticker + lagSmoothing keep the sequence coherent and
-// finish() is guarded to run exactly once.
+// Every beat rides one GSAP timeline. Its ticker and lag smoothing keep the
+// sequence coherent under tab throttling, and finish() runs exactly once.
 
 const BOOT_LINES = [
   'TELEMETRY LINK ESTABLISHED',

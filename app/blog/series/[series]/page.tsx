@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllPosts, getSeriesPosts, SERIES } from '@/lib/blog';
 
-// C8 — a series is a numbered mission file: published parts link out,
+// a series is a numbered mission file: published parts link out,
 // unpublished parts hold their slots as TRANSMISSION PENDING.
 
 export async function generateStaticParams() {

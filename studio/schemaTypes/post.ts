@@ -1,6 +1,6 @@
 import { defineField, defineType } from 'sanity';
 
-// Posts stay Markdown strings (not Portable Text) — §15.
+// Posts stay Markdown strings rather than Portable Text.
 export const post = defineType({
   name: 'post',
   title: 'Post',

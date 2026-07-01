@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-// C8 — dossier vocabulary for the reading surface: serif display headings,
+// dossier vocabulary for the reading surface: serif display headings,
 // gold accents, mono code. Body text stays the instrument sans for length.
 const postBodyCss = `
 .post-body {

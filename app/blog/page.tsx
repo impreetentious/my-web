@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllPosts, SERIES } from '@/lib/blog';
 
-// C8 — the blog is the mission's transmission log: same fiction, no Lenis,
+// the blog is the mission's transmission log: same fiction, no Lenis,
 // server-rendered and fast. Entries are numbered chronologically; series
 // membership reads as PART n/planned.
 

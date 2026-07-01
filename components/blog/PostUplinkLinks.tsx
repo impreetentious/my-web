@@ -7,7 +7,7 @@ import { trackConversion } from '@/lib/analytics';
 // The end-of-post uplink links, split into a client island so each channel can
 // record a `blog_uplink` conversion (the surrounding post page is a static
 // Server Component). Markup + copy are unchanged from the inline version;
-// facts still come only from site.json (Rule B).
+// identity facts still come only from site.json.
 export default function PostUplinkLinks() {
   return (
     <div className="log-uplink__links">

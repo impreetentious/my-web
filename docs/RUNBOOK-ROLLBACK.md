@@ -1,93 +1,39 @@
 # Runbook — Rollback
 
-How to take the live site back to a known-good state. There are three
-independent things that can go wrong, and each rolls back separately: the
-**deployment** (code/build), the **content** (Sanity), and the **DNS/domain**.
-Start by deciding which one is broken — a bad deploy and bad content have
-different fixes, and rolling back the wrong layer wastes time.
+The deployment, build-time Sanity content, and DNS are independent failure domains. Identify the affected layer before rolling anything back.
 
-The stack: static Next.js export, hosted on **Vercel**, content pulled from
-**Sanity** at build time (`scripts/pull-content.mjs` in `prebuild`), with the
-committed `content/*.json` as the fallback/history. There is no server runtime
-to restart — every "deploy" is an immutable static build.
+## Deployment rollback
 
----
+Use Vercel's deployment history when a newly promoted build is broken but an earlier deployment is healthy:
 
-## 1. Deployment rollback (bad code or bad build)
+1. Open the project in Vercel and select **Deployments**.
+2. Find and inspect the last known-good production deployment.
+3. Promote that deployment to production.
+4. Hard-refresh the production URL and verify the home page, a dossier, a blog post, and both feeds.
 
-**Symptom:** the site is broken/regressed after a push or a rebuild, but the
-content is fine.
+The application does not own a long-running backend service, so there is no process to restart. Promoting an existing immutable deployment is the fastest recovery path.
 
-**Fastest path — Instant Rollback (no rebuild):**
+## Content rollback
 
-1. Vercel dashboard → the project → **Deployments**.
-2. Find the last known-good production deployment (green, correct commit).
-3. **⋯ → Promote to Production** (a.k.a. Instant Rollback). Vercel re-points the
-   production alias at that existing build in seconds — nothing rebuilds.
-4. Confirm the production URL serves the good build (hard-refresh; check the
-   footer/version and a couple of pages).
+Sanity content is pulled during the build and baked into the generated pages. A content correction therefore requires a new build.
 
-**Durable path — revert the source:**
+1. Restore or correct the affected published document in Sanity.
+2. Trigger a Vercel rebuild.
+3. Confirm that `prebuild` completed the Sanity pull and content validation.
+4. Verify the corrected production page.
 
-1. `git revert <bad-sha>` (or revert the merge) on `main`. Preserve published
-   history; the [release discipline](./ENGINEERING-OPERATIONS.md#release-discipline)
-   forbids force-pushing or rewriting a shared branch.
-2. Push. Vercel builds the revert and promotes it on success.
-3. Bump the README version block per the versioning protocol in the same commit.
+If Sanity is unavailable, remove `SANITY_PROJECT_ID` from that deployment and rebuild to use the reviewed, committed `content/` fallback. When the project ID is configured, fetch or validation errors intentionally fail the build.
 
-> The `prebuild` runs `pull-content.mjs` then `validate-content.mjs`. An empty
-> `SANITY_PROJECT_ID` **fails the production build immediately** by design, so a
-> misconfigured deploy never goes live — the previous deployment stays serving.
-> That is a safety feature, not the incident: fix the env, don't bypass the gate.
+## Domain and DNS recovery
 
-**Do not** run `npm audit fix --force` as part of a rollback — it proposes an
-unsafe Next downgrade.
+1. In Vercel project settings, confirm that the custom domain is attached to the intended project and production deployment.
+2. At the DNS provider, restore the last known-good records if they changed.
+3. Allow for the records' TTL, then verify HTTPS, redirects, `robots.txt`, and `sitemap.xml` on the canonical host.
 
----
+## Verification
 
-## 2. Content rollback (bad copy/data from Sanity)
-
-**Symptom:** the layout is fine but the text/links/data are wrong, usually right
-after a Studio publish + deploy-hook rebuild.
-
-Because content is **build-time static**, wrong content is baked into the live
-build. Two ways back:
-
-**A — fix in Sanity, then rebuild (preferred):**
-
-1. Sanity Studio → the affected document → **History** → restore the previous
-   revision (or re-publish the corrected fields).
-2. Trigger a rebuild: the Studio publish fires the Vercel Deploy Hook
-   automatically; if it didn't, hit the Deploy Hook URL (Vercel → Settings →
-   Git → Deploy Hooks) or redeploy from the dashboard.
-3. `prebuild` re-pulls the corrected content; confirm live.
-
-**B — fall back to the committed content (Sanity down / can't wait):**
-
-1. The `content/*.json` files are the committed fallback. If they already hold
-   the good values, deploy with an **empty `SANITY_PROJECT_ID`** so the pull is
-   skipped and the build uses the committed JSON.
-2. If the committed JSON is also stale, `git revert` the offending
-   `content/*.json` change (or edit it directly), push, and let Vercel rebuild.
-
----
-
-## 3. Domain / DNS rollback
-
-**Symptom:** the site is unreachable or the wrong project answers the domain.
-
-1. Vercel → Project → **Settings → Domains**: confirm the custom domain is
-   attached to _this_ project and points at the production deployment.
-2. If DNS records were changed at the registrar, restore the previous A/CNAME
-   records. DNS changes propagate on the record's TTL — plan for minutes to
-   hours, and communicate that window.
-
----
-
-## Verification checklist (after any rollback)
-
-- [ ] Home page loads; the descent boot completes (or skips) cleanly.
-- [ ] A blog post renders; RSS at `/feed.xml` responds.
-- [ ] Contact channels resolve (email link, socials) — the conversion surfaces.
-- [ ] No new console errors; Web Vitals look sane (see the error-monitoring runbook).
-- [ ] README version block matches the deployed commit.
+- Home page loads and the intro completes or skips cleanly.
+- Dossier deep links open and browser Back closes the overlay.
+- A blog post renders; `/feed.xml` and `/feed.atom` respond with XML.
+- Contact and social links point to their intended destinations.
+- Browser console and Vercel build logs show no new errors.

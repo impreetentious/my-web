@@ -1,30 +1,37 @@
 # Privacy posture
 
-The site is **local-first and low-telemetry by design**. This document is the
-honest, complete account of what leaves a visitor's browser — kept current so
-any claim on the site or in review can be checked against it.
+The site is low-telemetry by design. This document describes the analytics
+enabled by the application and the data stored in the browser.
 
 ## Principles
 
 - No accounts, no login, no server-side session, no first-party cookies set by
   the app.
 - No fingerprinting, no cross-site tracking, no ad/marketing pixels.
-- No personal data is collected, stored, or transmitted by the app. The only
-  "contact" surfaces are outbound links (`mailto:`, social profiles) the visitor
-  chooses to follow — the site never holds an address book or a form submission.
-- The only analytics is **Vercel Analytics**, which is cookieless and does not
-  collect personally identifiable information.
+- The application has no contact form or user database. Contact surfaces are
+  outbound links (`mailto:` and social profiles) that the visitor chooses to follow.
+- The only analytics is **Vercel Web Analytics**, which uses no tracking
+  cookies and stores anonymized, aggregated data.
 
-## What is actually sent
+## What analytics records
 
-| Data              | Mechanism                                                | Contains                                                                              | Destination                  |
-| ----------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------- |
-| Page view         | `@vercel/analytics` (`<Analytics/>` in `app/layout.tsx`) | Route, referrer, coarse device/geo — cookieless, no PII                               | Vercel Analytics             |
-| Conversion events | `lib/analytics.ts` `trackConversion`                     | An event name + low-cardinality props (a surface name, a platform) — see below        | Vercel Analytics (same pipe) |
-| Field Web Vitals  | `lib/vitals.ts` → `trackVital`                           | `metric` (LCP/CLS/INP), a rounded `value`, a `rating` — no session id, no route trace | Vercel Analytics (same pipe) |
+`<Analytics/>` in `app/layout.tsx` records page views. Vercel documents that a
+data point may include the timestamp, URL and route, filtered query parameters,
+referrer, coarse geolocation, operating system, browser, and device class.
+Vercel derives a daily visitor hash from the incoming request; it does not use
+a tracking cookie or associate the data point with an individual or IP address.
+See Vercel's [Privacy and Compliance](https://vercel.com/docs/analytics/privacy-policy)
+documentation for the service-level details.
+
+The application also sends two kinds of custom event through the same service:
+
+| Data             | Mechanism                            | Custom properties                                            |
+| ---------------- | ------------------------------------ | ------------------------------------------------------------ |
+| Conversion event | `lib/analytics.ts` `trackConversion` | Event name plus a surface name and, where relevant, platform |
+| Field Web Vital  | `lib/vitals.ts` → `trackVital`       | `metric` (LCP/CLS/INP), rounded `value`, and `rating`        |
 
 There is **no separate endpoint**. Everything routes through the single Vercel
-Analytics pipeline the owner opted into; the code adds no new destination.
+Analytics pipeline; the application adds no other telemetry destination.
 
 ### Enumerated conversion events
 
@@ -37,14 +44,14 @@ visitor activates a contact affordance:
 - `social_link` — a social relay was clicked. Props: `platform`, `surface`.
 - `blog_uplink` — an end-of-post channel was clicked. Prop: `channel`.
 
-None of these carry visitor-identifying data — only which affordance was used.
+The routes contain no user identifiers, and the custom properties above contain
+no free-form visitor input.
 
 ## What is NOT collected
 
-- No IP address logging by the app; no cookies; no `localStorage` identity.
-  (`sessionStorage` holds a single non-identifying `mw-booted` flag so the intro
-  doesn't replay in-session, and `localStorage` may hold reading progress — both
-  device-local, never transmitted.)
+- No IP address logging by application code, no first-party cookies, and no `localStorage`.
+  `sessionStorage` holds two non-identifying, device-local flags so the intro and
+  one visual effect do not replay during the same tab session.
 - No form data — there is no form.
 - No error payloads are sent in the field today (see the error-monitoring
   runbook; any future addition must be scrubbed and added to this table first).
@@ -57,13 +64,11 @@ Sanity — there is no runtime CMS fetch from the browser.
 
 ## Turning analytics off
 
-Remove `<Analytics/>` from `app/layout.tsx` (and, if desired, the `track` calls
-route through `lib/analytics.ts`, so guarding or no-op'ing that one module
-disables every conversion/vital event at once). No other privacy-relevant wiring
-exists to unwind.
+Remove `<Analytics/>` from `app/layout.tsx`, remove the `@vercel/analytics`
+dependency, and remove or disable the calls in `lib/analytics.ts`. No other
+analytics integration exists in the application.
 
-## Keeping this honest
+## Keeping this document current
 
-Any change that sends new data — a new event, a new prop, an error tracker, a
-third-party script — updates this file **in the same change**. If it isn't in the
-table above, the site doesn't send it.
+Document any new event property, endpoint, error tracker, or third-party script
+here when it is introduced.

@@ -1,15 +1,11 @@
 # Engineering operations
 
-## Release discipline
+## Performance budgets
 
-Commits use real timestamps. Reverts preserve published history: use `git revert`
-for a bad production change and do not force-push or rewrite a shared branch.
-Every release-version change keeps the README version block, `package.json`, and
-the package-lock root in sync.
+The production build has three complementary performance gates:
 
-## Home JavaScript budget
+- `npm run budget:bundle` limits gzip-compressed initial JavaScript to 230 KiB on the home route and 250 KiB on other prerendered routes.
+- `npm run budget:performance` limits HTML shell size, script count, preload count, and external stylesheets.
+- `npm run budget:lighthouse` runs three desktop Lighthouse samples for the settled home page and blog, then enforces performance and accessibility scores of at least 0.95.
 
-The home route's First Load JavaScript budget is 230 kB. Treat an increase as a
-performance regression: measure the production build, identify the imported
-route code, and either remove the cost or record and enforce a revised budget
-before release.
+Treat a budget failure as a regression to investigate. Revise a threshold only when the product requirement itself has changed and the new limit is documented with the corresponding code change.

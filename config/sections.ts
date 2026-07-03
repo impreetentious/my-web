@@ -4,10 +4,17 @@ import type { SectionConfig } from '@/types';
 // states. It flips this env var rather than rewriting the file, so an
 // interrupted run can never leave tracked source dirty. Unset (the normal case)
 // means the literal below wins.
+//
+// The NEXT_PUBLIC_ prefix is load-bearing. This module is reachable from a
+// client component, and Next only inlines NEXT_PUBLIC_* into the browser
+// bundle — any other name compiles to a runtime lookup that is always
+// undefined there. Without the prefix the forced build renders 6 cards on the
+// server and hydrates a 5-card tree, so the gate would pass on an artifact
+// that could never work.
 const PLACEHOLDER_ENABLED =
-  process.env.MW_FORCE_PLACEHOLDER === undefined
+  process.env.NEXT_PUBLIC_MW_FORCE_PLACEHOLDER === undefined
     ? undefined
-    : process.env.MW_FORCE_PLACEHOLDER === 'true';
+    : process.env.NEXT_PUBLIC_MW_FORCE_PLACEHOLDER === 'true';
 
 // `side` is omitted everywhere on purpose: lib/activeSections derives it
 // by alternating over the ENABLED list, so any toggle state stays correct.

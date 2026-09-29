@@ -1,3 +1,4 @@
+// Shared content shapes. These mirror the Sanity schemas and the committed JSON fallback.
 // ─── Section Types ─────────────────────────────────────────────────────────
 
 type SectionType = 'panel' | 'route';

@@ -110,10 +110,14 @@ See the [engineering budgets](docs/ENGINEERING-OPERATIONS.md),
 [rollback runbook](docs/RUNBOOK-ROLLBACK.md), and
 [privacy posture](docs/PRIVACY.md).
 
+## Contributing
+
+Issues and pull requests are welcome on [GitHub](https://github.com/impreetentious/my-web). Open an issue before anything substantial, keep changes focused and leave the checks under [Verification](#verification) green.
+
 ## License
 
-MIT © Sidakpreet Singh — see [LICENSE](LICENSE).
+Apache-2.0 © 2025-2026 Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-**Version:** v0.18.0
+**Version:** v0.18.1

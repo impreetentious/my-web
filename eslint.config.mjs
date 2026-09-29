@@ -5,6 +5,8 @@ import { FlatCompat } from '@eslint/eslintrc';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Flat config. Generated and build output are ignored here rather than in .eslintignore,
+// which flat config no longer reads.
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });

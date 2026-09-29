@@ -1,3 +1,4 @@
+// Reading surface for MDX post bodies.
 import type { ReactNode } from 'react';
 
 // dossier vocabulary for the reading surface: serif display headings,

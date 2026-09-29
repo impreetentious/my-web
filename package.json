@@ -1,6 +1,6 @@
 {
   "name": "my-web",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "private": true,
   "engines": {
     "node": "22.22.x",
@@ -30,51 +30,52 @@
     "@react-three/fiber": "^9.6.1",
     "@vercel/analytics": "^2.0.1",
     "gsap": "^3.15.0",
-    "lenis": "^1.3.23",
-    "lucide-react": "^1.14.0",
-    "next": "15.5.18",
+    "lenis": "^1.3.25",
+    "lucide-react": "^1.23.0",
+    "next": "15.5.24",
     "next-mdx-remote": "^6.0.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "three": "^0.184.0",
-    "yaml": "^2.8.4",
-    "zustand": "^5.0.13"
+    "three": "^0.185.1",
+    "yaml": "^2.9.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.3",
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/eslintrc": "^3",
     "@lhci/cli": "^0.15.1",
-    "@playwright/test": "^1.59.1",
+    "@playwright/test": "^1.61.1",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/three": "^0.184.1",
-    "autoprefixer": "^10.5.0",
+    "@types/three": "^0.185.0",
+    "autoprefixer": "^10.5.2",
     "eslint": "^9",
-    "eslint-config-next": "15.5.18",
-    "postcss": "^8.5.14",
+    "eslint-config-next": "15.5.24",
+    "postcss": "^8.5.26",
     "postcss-load-config": "^6.0.1",
-    "prettier": "^3.8.3",
+    "prettier": "^3.9.5",
     "tailwindcss": "3.4",
     "typescript": "^5"
   },
   "overrides": {
     "next": {
-      "postcss": "8.5.14",
-      "sharp": "^0.34.5"
+      "postcss": "8.5.26",
+      "sharp": "0.35.4"
     },
-    "tmp": "0.2.5",
-    "uuid": "11.1.1"
+    "tmp": "0.2.7",
+    "uuid": "11.1.1",
+    "sharp": "0.35.4"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "Sidakpreet Singh",
   "description": "Personal website for Sidakpreet Singh.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ItsMonarch04/my-web.git"
+    "url": "git+https://github.com/impreetentious/my-web.git"
   },
   "bugs": {
-    "url": "https://github.com/ItsMonarch04/my-web/issues"
+    "url": "https://github.com/impreetentious/my-web/issues"
   },
   "homepage": "https://sidakpreetsingh.com"
 }

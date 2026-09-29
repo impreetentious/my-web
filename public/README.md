@@ -1,6 +1,7 @@
 # `public/`
 
-Static assets served from the site root. Next.js maps `public/x` to `/x`.
+Static assets served from the site root. Next.js maps `public/x` to `/x`, so anything
+added here is public the moment it ships.
 
 This directory exists so that a root-served file has somewhere to land:
 

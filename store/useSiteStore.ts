@@ -1,3 +1,4 @@
+// Client-only view state. Nothing here is persisted or sent anywhere.
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { SiteStore, ZoneName } from '@/types';

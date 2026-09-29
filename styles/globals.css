@@ -1,3 +1,4 @@
+/* Tailwind entrypoint. Colour tokens are CSS variables declared below, not config keys. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

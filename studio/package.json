@@ -1,12 +1,12 @@
 {
   "name": "the-descent-studio",
   "private": true,
-  "version": "0.18.0",
-  "description": "Sanity Studio for The Descent portfolio — separate from the Next app (no shared deps).",
-  "license": "MIT",
+  "version": "0.18.1",
+  "description": "Sanity Studio for The Descent portfolio \u2014 separate from the Next app (no shared deps).",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ItsMonarch04/my-web.git",
+    "url": "git+https://github.com/impreetentious/my-web.git",
     "directory": "studio"
   },
   "scripts": {
@@ -17,10 +17,10 @@
     "start": "sanity start"
   },
   "dependencies": {
-    "@sanity/vision": "6.0.0",
+    "@sanity/vision": "^6.6.0",
     "react": "^19.2.2",
     "react-dom": "^19.2.2",
-    "sanity": "6.0.0",
+    "sanity": "^6.6.0",
     "styled-components": "^6.1.15"
   },
   "devDependencies": {
@@ -30,13 +30,17 @@
   },
   "overrides": {
     "@module-federation/dts-plugin": {
-      "undici": "7.25.0"
+      "undici": "7.29.0"
     },
-    "js-yaml": "4.1.1",
-    "smol-toml": "1.6.1",
+    "js-yaml": "5.2.3",
+    "smol-toml": "1.7.1",
     "typeid-js": {
       "uuid": "~11.1.1"
-    }
+    },
+    "@sanity/runtime-cli": {
+      "adm-zip": "0.6.1"
+    },
+    "adm-zip": "0.6.1"
   },
   "engines": {
     "node": "22.22.x",

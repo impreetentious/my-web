@@ -1,3 +1,4 @@
+// The section list is the site's spine: order here drives navigation, scroll, and the URL hash.
 import type { SectionConfig } from '@/types';
 
 // `scripts/verify-placeholder-states.mjs` builds the site in both toggle

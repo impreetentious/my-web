@@ -1,7 +1,8 @@
 # Privacy posture
 
 The site is low-telemetry by design. This document describes the analytics
-enabled by the application and the data stored in the browser.
+enabled by the application and the data stored in the browser, and it is the
+reference the deployment is checked against rather than a statement of intent.
 
 ## Principles
 

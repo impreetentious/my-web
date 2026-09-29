@@ -1,3 +1,4 @@
+// Contract test: committed content must satisfy the same shape the CMS returns.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';

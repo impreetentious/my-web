@@ -1,3 +1,4 @@
+// Scroll-position resolution for the navigation spine; pure, so it is unit-testable.
 import { SECTIONS } from '@/config/sections';
 import {
   SECTION_HEIGHT_PX,

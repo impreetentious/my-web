@@ -1,5 +1,8 @@
 import type { NextConfig } from 'next';
 
+// Headers are declared here rather than at the host so a preview and production
+// deploy cannot diverge.
+
 const securityHeaders = [
   {
     // `'unsafe-inline'` in script-src is load-bearing, not laziness. The App

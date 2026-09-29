@@ -1,3 +1,4 @@
+// Root layout: fonts, metadata, and the single place analytics is mounted.
 import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Space_Mono, Instrument_Serif } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';

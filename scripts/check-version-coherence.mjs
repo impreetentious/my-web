@@ -11,14 +11,14 @@ const studioPkg = JSON.parse(read('studio/package.json'));
 const version = pkg.version;
 const errors = [];
 const EXPECTED = {
-  nvmrc: '22.22.2',
+  nvmrc: '22.23.3',
   // `.npmrc` sets engine-strict=true, so this range is enforced on install. It
   // is deliberately narrower than a bare `>=22`, which admitted 23/24/25 and let
   // a contributor produce a lockfile the CI runner never sees.
-  engines: '22.22.x',
+  engines: '22.23.x',
   npm: '>=10',
   workflow: '.github/workflows/ci.yml',
-  ciNode: '22.22.2',
+  ciNode: '22.23.3',
 };
 
 function markerVersion(file) {

@@ -1,7 +1,7 @@
 {
   "name": "the-descent-studio",
   "private": true,
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Sanity Studio for The Descent portfolio \u2014 separate from the Next app (no shared deps).",
   "license": "Apache-2.0",
   "repository": {
@@ -17,11 +17,11 @@
     "start": "sanity start"
   },
   "dependencies": {
-    "@sanity/vision": "^6.6.0",
-    "react": "^19.2.2",
-    "react-dom": "^19.2.2",
-    "sanity": "^6.6.0",
-    "styled-components": "^6.1.15"
+    "@sanity/vision": "^6.17.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "sanity": "^6.17.0",
+    "styled-components": "^6.5.3"
   },
   "devDependencies": {
     "@types/node": "^22",
@@ -30,9 +30,9 @@
   },
   "overrides": {
     "@module-federation/dts-plugin": {
-      "undici": "7.29.0"
+      "undici": "7.30.0"
     },
-    "js-yaml": "5.2.3",
+    "js-yaml": "5.4.2",
     "smol-toml": "1.7.1",
     "typeid-js": {
       "uuid": "~11.1.1"
@@ -43,7 +43,7 @@
     "adm-zip": "0.6.1"
   },
   "engines": {
-    "node": "22.22.x",
+    "node": "22.23.x",
     "npm": ">=10"
   }
 }

@@ -8,7 +8,7 @@ Next.js 15 · TypeScript · Tailwind CSS v3 · Three.js + React Three Fiber · G
 
 ## Local development
 
-Use Node `22.22.x` (`.nvmrc` pins `22.22.2`). The repository enables npm's strict engine check.
+Use Node `22.23.x` (`.nvmrc` pins `22.23.3`). The repository enables npm's strict engine check.
 
 ```bash
 npm ci
@@ -19,7 +19,7 @@ Open `http://localhost:3000`.
 
 ## Verification
 
-The CI workflow runs the following release gates with Node 22.22.2:
+The CI workflow runs the following release gates with Node 22.23.3:
 
 ```bash
 npm ci
@@ -120,4 +120,4 @@ Apache-2.0 © 2025-2026 Sidakpreet Singh — see [LICENSE](LICENSE).
 
 ---
 
-**Version:** v0.18.1
+**Version:** v0.18.2
